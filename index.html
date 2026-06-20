@@ -4,7 +4,40 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Jean-Claude — Code Maximizer</title>
-<!-- Inspiration Universal Paperclips : aucun CSS, uniquement des éléments HTML natifs. -->
+<!-- Inspiration Universal Paperclips : pas de CSS, uniquement des éléments HTML natifs…
+     …à une exception près, demandée : le Journal de Jean-Claude a un look « terminal ». -->
+<style>
+  /* Seul morceau de style du jeu : le Journal en fenêtre terminal. */
+  #journal-term {
+    background: #07090a;
+    border: 1px solid #14301c;
+    border-radius: 3px;
+    padding: 0.5em 0.75em;
+    font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, "Courier New", monospace;
+    font-size: 0.82em;
+    color: #46e07a;
+    text-shadow: 0 0 3px rgba(70, 224, 122, 0.45); /* léger glow CRT */
+  }
+  #journal {
+    height: 15em;
+    overflow-y: auto;
+    line-height: 1.45;
+  }
+  #journal p {
+    margin: 0 0 0.25em 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  #journal p:last-child { color: #8effb6; } /* dernière ligne plus vive */
+  #journal-prompt {
+    border-top: 1px solid #14301c;
+    margin-top: 0.4em;
+    padding-top: 0.35em;
+    color: #6affa0;
+  }
+  #journal-cursor { animation: jc-blink 1.05s step-end infinite; }
+  @keyframes jc-blink { 50% { opacity: 0; } }
+</style>
 </head>
 <body>
 
@@ -154,7 +187,10 @@
 
   <fieldset>
     <legend><b>Journal de Jean-Claude</b></legend>
-    <div id="journal"></div>
+    <div id="journal-term">
+      <div id="journal"></div>
+      <div id="journal-prompt">jean-claude@bac-a-sable:~$&nbsp;<span id="journal-cursor">▮</span></div>
+    </div>
   </fieldset>
 
 

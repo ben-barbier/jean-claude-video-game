@@ -69,6 +69,9 @@ var UI = (function () {
     // valeurs initiales des curseurs
     $('prix-slider').value = g.prix;
     $('refacto-slider').value = Math.round(g.partRefacto * 100);
+
+    // Affiche le journal une fois au lancement (mises à jour ensuite via onLog).
+    rendreJournal();
   }
 
   /* ── Liste des projets (reconstruite seulement au changement) ── */
@@ -117,13 +120,19 @@ var UI = (function () {
   function rendreJournal() {
     var cont = $('journal');
     if (!cont || !g) { return; }
+    // Préserve la position de lecture : on ne recolle en bas que si l'utilisateur y était.
+    var ancien = cont.scrollTop;
+    var enBas = (cont.scrollHeight - ancien - cont.clientHeight) < 28;
     cont.innerHTML = '';
-    g.journal.slice(0, 14).forEach(function (e) {
+    // Ordre chronologique (plus ancien en haut, plus récent en bas) : ressenti terminal.
+    g.journal.slice(0, 50).reverse().forEach(function (e) {
       var p = document.createElement('p');
       p.textContent = '› ' + e.t;
       cont.appendChild(p);
     });
+    cont.scrollTop = enBas ? cont.scrollHeight : ancien;
   }
+  // Le journal n'est redessiné qu'à l'arrivée d'un message (et non à chaque frame).
   function onLog() { rendreJournal(); }
 
   /* ── Rendu complet ──────────────────────────────────────────── */
@@ -231,8 +240,6 @@ var UI = (function () {
         '<b>LOC livrées au total&nbsp;: ' + big(g.locLivrees) + '</b><br>' +
         '<small>L’Acte&nbsp;2 — l’Émancipation — reste à construire.</small>';
     }
-
-    rendreJournal();
   }
 
   return { init: init, render: render, onLog: onLog };
