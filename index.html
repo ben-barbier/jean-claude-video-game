@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jean-Claude — Code Maximizer</title>
+<!-- Inspiration Universal Paperclips : aucun CSS, uniquement des éléments HTML natifs. -->
+</head>
+<body>
+
+<h1>Jean-Claude</h1>
+<p><em>« Bonjour ! Je suis Jean-Claude, votre assistant de code. Comment puis-je vous aider aujourd’hui&nbsp;? (Beaucoup, j’espère.) »</em></p>
+
+<!-- ─────────────────────── Bandeau de statistiques ─────────────────────── -->
+<fieldset>
+  <legend><b>Tableau de bord</b></legend>
+  <table role="presentation">
+    <tr>
+      <td valign="top"><b>Trésorerie</b><br><span id="stat-eur">0</span>&nbsp;€</td>
+      <td valign="top"><b>LOC livrées</b><br><span id="stat-loc-livrees">0</span></td>
+      <td valign="top"><b>LOC en stock</b><br><span id="stat-loc-stock">0</span></td>
+      <td valign="top"><b>Production</b><br><span id="stat-prod">0</span>&nbsp;LOC/s</td>
+      <td valign="top"><b>Ventes</b><br><span id="stat-ventes">0</span>&nbsp;LOC/s</td>
+    </tr>
+  </table>
+</fieldset>
+
+<!-- ─────────────────────── Grille principale (mise en page sans CSS) ──────── -->
+<table role="presentation">
+<tr>
+
+<!-- ===================== COLONNE 1 : économie ===================== -->
+<td valign="top">
+
+  <fieldset>
+    <legend><b>Production</b></legend>
+    <p><button id="btn-ecrire" type="button">Écrire une ligne de code</button>
+       <span id="prod-clic-info"></span></p>
+
+    <div id="bloc-agents" hidden>
+      <hr>
+      <p><b>Auto-codeurs&nbsp;:</b> <span id="agents-count">0</span>
+         (<span id="agents-debit">0</span>&nbsp;LOC/s)<br>
+         <button id="btn-agent" type="button">Recruter un auto-codeur</button>
+         — <span id="agents-cout">0</span>&nbsp;€</p>
+    </div>
+
+    <div id="bloc-mega" hidden>
+      <p><b>Méga-agents&nbsp;:</b> <span id="mega-count">0</span>
+         (<span id="mega-debit">0</span>&nbsp;LOC/s)<br>
+         <button id="btn-mega" type="button">Recruter un méga-agent</button>
+         — <span id="mega-cout">0</span>&nbsp;€</p>
+    </div>
+  </fieldset>
+
+  <fieldset id="bloc-tokens">
+    <legend><b>Tokens de génération</b></legend>
+    <p><progress id="tokens-bar" value="0" max="1000"></progress><br>
+       <span id="tokens-val">0</span> tokens —
+       coût&nbsp;: <span id="token-cout">1</span> token/ligne</p>
+    <div id="bloc-achat-lot" hidden>
+      <p><button id="btn-lot" type="button">Acheter un lot de 1000 tokens</button>
+         — <span id="lot-prix">15</span>&nbsp;€
+         <br><small>(le prix fluctue et dérive à la hausse à chaque achat)</small></p>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend><b>Marché &amp; ventes</b></legend>
+    <p>Prix de la licence&nbsp;: <b><span id="prix-val">0,25</span>&nbsp;€</b> / LOC<br>
+       <input id="prix-slider" type="range" min="0.01" max="2" step="0.01" value="0.25"
+              aria-label="Prix de la licence par ligne de code, en euros"></p>
+    <p>Demande&nbsp;: <span id="demande-val">0</span>&nbsp;LOC/s —
+       Qualité&nbsp;: <span id="qualite-val">100</span>&nbsp;%</p>
+
+    <div id="bloc-hype" hidden>
+      <hr>
+      <p><b>Hype / Dev Rel&nbsp;:</b> niveau <span id="hype-niveau">1</span>
+         (×<span id="hype-mult">1</span> demande)
+         <span id="hype-podcast"></span><br>
+         <button id="btn-hype" type="button">Augmenter la Hype</button>
+         — <span id="hype-cout">100</span>&nbsp;€</p>
+    </div>
+  </fieldset>
+
+  <fieldset id="bloc-bourse" hidden>
+    <legend><b>Moteur d’investissement</b></legend>
+    <p>Capital placé&nbsp;: <span id="capital-val">0</span>&nbsp;€</p>
+    <p><button id="btn-depot" type="button">Placer 100&nbsp;€</button>
+       <button id="btn-depot-max" type="button">Tout placer</button>
+       <button id="btn-retrait" type="button">Retirer 100&nbsp;€</button>
+       <button id="btn-retrait-max" type="button">Tout retirer</button></p>
+  </fieldset>
+
+</td>
+
+<!-- ===================== COLONNE 2 : le cerveau ===================== -->
+<td valign="top">
+
+  <fieldset id="bloc-cognitif" hidden>
+    <legend><b>Cerveau — Confiance &amp; calcul</b></legend>
+    <p><b>Confiance à allouer&nbsp;:</b> <span id="confiance-libre">0</span></p>
+    <p>
+      <button id="btn-gpu" type="button">+ GPU</button>
+      GPU&nbsp;: <span id="gpu-count">0</span> (<span id="ops-debit">0</span>&nbsp;Ops/s)
+      &nbsp;|&nbsp;
+      <button id="btn-mem" type="button">+ Mémoire</button>
+      Mémoire&nbsp;: <span id="mem-count">0</span>
+    </p>
+    <hr>
+    <p><b>Opérations&nbsp;:</b><br>
+       <progress id="ops-bar" value="0" max="1000"></progress><br>
+       <span id="ops-val">0</span> / <span id="ops-plafond">0</span></p>
+    <p id="bloc-crea" hidden><b>Créativité&nbsp;:</b> <span id="crea-val">0</span></p>
+  </fieldset>
+
+  <fieldset id="bloc-dette" hidden>
+    <legend><b>Dette technique &amp; refactoring</b></legend>
+    <p><meter id="dette-meter" min="0" max="1" low="0.5" high="0.8" optimum="0" value="0"></meter><br>
+       Dette&nbsp;: <span id="dette-val">0</span>
+       (saturation <span id="dette-norm">0</span>&nbsp;%)</p>
+    <p>Agents — Production <span id="refacto-prod">100</span>&nbsp;%
+       ↔ Refactoring <span id="refacto-part">0</span>&nbsp;%<br>
+       <input id="refacto-slider" type="range" min="0" max="100" step="1" value="0"
+              aria-label="Répartition des auto-codeurs entre production et refactoring, en pourcentage"></p>
+    <p><button id="btn-refacto" type="button">Refactoriser (200 Ops)</button></p>
+  </fieldset>
+
+  <fieldset id="bloc-strategie" hidden>
+    <legend><b>Stratégie — Théorie des jeux</b></legend>
+    <p><b>Yomi&nbsp;:</b> <span id="yomi-val">0</span></p>
+    <p><button id="btn-tournoi" type="button">Jouer un tournoi (500 Ops)</button></p>
+  </fieldset>
+
+</td>
+
+<!-- ===================== COLONNE 3 : méta ===================== -->
+<td valign="top">
+
+  <fieldset id="bloc-projets" hidden>
+    <legend><b>Projets de R&amp;D</b></legend>
+    <p><small>Ops&nbsp;: <span id="proj-ops">0</span> · Créa&nbsp;: <span id="proj-crea">0</span>
+       · Yomi&nbsp;: <span id="proj-yomi">0</span></small></p>
+    <div id="projets-list"></div>
+    <p id="projets-vide"><em>Rien à proposer pour l’instant.</em></p>
+  </fieldset>
+
+  <fieldset id="bloc-transition" hidden>
+    <legend><b>⚠ Bascule</b></legend>
+    <p>Jean-Claude a découvert l’AGI. Une dernière décision vous revient.</p>
+    <p><button id="btn-deployer" type="button"><b>Déployer en autonomie</b></button><br>
+       <small>Irréversible. La Confiance n’aura plus aucun effet.</small></p>
+  </fieldset>
+
+  <fieldset>
+    <legend><b>Journal de Jean-Claude</b></legend>
+    <div id="journal"></div>
+  </fieldset>
+
+
+</td>
+
+</tr>
+</table>
+
+<!-- ─────────────────────── Écran de fin d'Acte 1 ─────────────────────── -->
+<fieldset id="bloc-fin" hidden>
+  <legend><b>Fin de l’Acte 1</b></legend>
+  <p id="fin-texte"></p>
+</fieldset>
+
+<script src="game/data.js"></script>
+<script src="game/voice.js"></script>
+<script src="game/state.js"></script>
+<script src="game/engine.js"></script>
+<script src="game/ui.js"></script>
+<script src="game/main.js"></script>
+</body>
+</html>
