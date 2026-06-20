@@ -3,13 +3,11 @@
 
 var VOICE = (function () {
 
-  function pousser(g, texte) {
+  function log(g, texte) {
     g.journal.unshift({ t: texte });
     if (g.journal.length > 60) { g.journal.length = 60; }
     if (typeof UI !== 'undefined' && UI.onLog) { UI.onLog(); }
   }
-  function log(g, texte) { pousser(g, texte); }
-
   function choix(liste) { return liste[Math.floor(Math.random() * liste.length)]; }
 
   /* Messages d'événements. (Avant l'installation, le terminal reste muet.) */
@@ -54,19 +52,19 @@ var VOICE = (function () {
 
   /* Flavor texts d'achat de projet : on privilégie la réplique du projet. */
   function projet(g, p) {
-    if (p && p.flavor) { pousser(g, '« ' + p.flavor + ' » — projet livré : ' + p.nom + '.'); }
-    else { pousser(g, 'Projet livré : ' + (p ? p.nom : '?') + '.'); }
+    if (p && p.flavor) { log(g, '« ' + p.flavor + ' » — projet livré : ' + p.nom + '.'); }
+    else { log(g, 'Projet livré : ' + (p ? p.nom : '?') + '.'); }
   }
 
   function event(g, cle) {
     var liste = MSG[cle];
-    if (liste) { pousser(g, choix(liste)); }
+    if (liste) { log(g, choix(liste)); }
   }
 
   // Installation : deux lignes — la commande, puis le bonjour de Jean-Claude.
   function install(g) {
-    pousser(g, '$ install jean-claude …');
-    pousser(g, '✓ Bonjour ! Je suis Jean-Claude, votre assistant de code. Comment puis-je vous aider aujourd’hui ? (Beaucoup, j’espère.)');
+    log(g, '$ install jean-claude …');
+    log(g, '✓ Bonjour ! Je suis Jean-Claude, votre assistant de code. Comment puis-je vous aider aujourd’hui ? (Beaucoup, j’espère.)');
   }
 
   return { log: log, event: event, projet: projet, install: install, MSG: MSG };

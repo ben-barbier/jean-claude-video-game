@@ -5,6 +5,19 @@ var ENGINE = (function () {
   var K = DATA.K;
   function clamp(x, lo, hi) { return Math.max(lo, Math.min(hi, x)); }
 
+  /* ── Petits helpers numériques (factorisation DRY, sans effet de bord) ── */
+  // Lissage exponentiel : rapproche `val` de `cible` d'une fraction `facteur`.
+  function lissageEMA(val, cible, facteur) { return val + (cible - val) * facteur; }
+  // Choc aléatoire centré dans [−vol ; +vol] (un seul appel à Math.random()).
+  function chocAleatoire(vol) { return (Math.random() - 0.5) * 2 * vol; }
+  // Courbe saturante (dérivée bornée) : 0 → max, moitié atteinte en x = demi.
+  function saturation(x, max, demi) { return max * x / (x + demi); }
+  // Coût géométrique brut : base × facteur^expo (sans arrondi).
+  function coutCroissant(base, facteur, expo) { return base * Math.pow(facteur, expo); }
+  // Coûts de projet multi-ressources : peut-on payer ? et débit symétrique.
+  function couvre(g, c) { return g.ops >= c.ops && g.creativite >= c.crea && g.yomi >= c.yomi && g.eur >= c.eur; }
+  function debiter(g, c) { g.ops -= c.ops; g.creativite -= c.crea; g.yomi -= c.yomi; g.eur -= c.eur; }
+
   /* ── Grandeurs dérivées ─────────────────────────────────────── */
   // Dette normalisée « vs taille de la base » : une base de code mature tolère plus de
   // dette absolue (sinon, à l'échelle, la dette sature en permanence → incidents en boucle).
@@ -45,16 +58,16 @@ var ENGINE = (function () {
   function prodBruteParS(g) { return prodAgentsParS(g) + prodMegaParS(g); }
 
   // Facteur « foncer = bâcler » borné : 1 (lent) → 1+VELOCITE_MAX (très rapide).
-  function factVelocite(pb) { return 1 + K.VELOCITE_MAX * pb / (pb + K.VELOCITE_SEUIL); }
+  function factVelocite(pb) { return 1 + saturation(pb, K.VELOCITE_MAX, K.VELOCITE_SEUIL); }
 
   function opsParS(g) { return g.gpu * K.OPS_PAR_GPU * g.mult.quantum; }
   function opsPlafond(g) { return g.mem * K.TAILLE_MEM; }
 
   /* ── Coûts d'achat ──────────────────────────────────────────── */
   // Coût du n-ième agent (n = g.agents+1) : 1er à 5×1,10 ≈ 5,50 € (cf. déroulé §4.7).
-  function coutAgent(g) { return K.AGENT_COUT_BASE * Math.pow(K.AGENT_COUT_FACTEUR, g.agents + 1); }
-  function coutMega(g) { return K.MEGA_COUT_BASE * Math.pow(K.MEGA_COUT_FACTEUR, g.megas); }
-  function coutHype(g) { return K.HYPE_COUT_BASE * Math.pow(2, g.hypeNiveau - 1); }
+  function coutAgent(g) { return coutCroissant(K.AGENT_COUT_BASE, K.AGENT_COUT_FACTEUR, g.agents + 1); }
+  function coutMega(g) { return coutCroissant(K.MEGA_COUT_BASE, K.MEGA_COUT_FACTEUR, g.megas); }
+  function coutHype(g) { return coutCroissant(K.HYPE_COUT_BASE, 2, g.hypeNiveau - 1); }
   function prochainPalierConfiance(g) { return Math.round(K.CONFIANCE_PALIER * Math.pow(2, g.paliersConfiance)); }
 
   /* Coût effectif d'un projet (applique la réduction projetCout sur les Ops/Créa). */
@@ -69,11 +82,13 @@ var ENGINE = (function () {
     };
   }
 
-  /* ── Boucle : un tick de DT secondes ────────────────────────── */
-  function tick(g, dt) {
-    if (g.deployed) { return; } // Acte 1 terminé : la simulation s'arrête.
+  /* ── Boucle : un tick de DT secondes ────────────────────────────
+   * Chaque phase est isolée dans sa propre fonction (SRP). tick() n'est qu'un
+   * orchestrateur : l'ORDRE des phases — donc des appels à Math.random()
+   * (bourse → incidents → prix) — est strictement conservé. */
 
-    /* 1. Production automatique (consomme des tokens, génère de la dette). */
+  // 1. Production automatique (consomme des tokens, génère de la dette).
+  function tickProduction(g, dt) {
     var prodA = prodAgentsParS(g) * dt;
     var prodM = prodMegaParS(g) * dt;
     var prodTotal = prodA + prodM;
@@ -101,8 +116,10 @@ var ENGINE = (function () {
         * K.BASE_DETTE * velocite * g.mult.detteParLigne * g.mult.detteAccum;
       g.dette += detteAjout;
     }
+  }
 
-    /* 2. Vente. */
+  // 2. Vente + débit de ventes lissé.
+  function tickVente(g, dt) {
     var dem = demandeParS(g) * dt;
     var ventes = Math.min(dem, g.locStock);
     if (ventes > 0) {
@@ -112,20 +129,24 @@ var ENGINE = (function () {
     }
     // Débit de ventes RÉEL (lissé) : reflète ce qui s'écoule vraiment, même quand le stock
     // est vendu aussi vite qu'il est produit (l'affichage ne tombe plus à 0 à tort).
-    g.ventesParS += ((dt > 0 ? ventes / dt : 0) - g.ventesParS) * 0.3;
+    g.ventesParS = lissageEMA(g.ventesParS, dt > 0 ? ventes / dt : 0, K.EXP_SMOOTH);
     if (g.burstTimer > 0) { g.burstTimer = Math.max(0, g.burstTimer - dt); }
     if (g.prodBurstTimer > 0) { g.prodBurstTimer = Math.max(0, g.prodBurstTimer - dt); }
+  }
 
-    /* 3. Paliers de Confiance (sur les LOC livrées cumulées) — seulement une fois
-     *    Jean-Claude installé (la « confiance » est celle accordée à l'IA). */
+  // 3. Paliers de Confiance (sur les LOC livrées cumulées) — seulement une fois
+  //    Jean-Claude installé (la « confiance » est celle accordée à l'IA).
+  function tickPaliersConfiance(g) {
     while (g.jcInstalled && g.locLivrees >= prochainPalierConfiance(g)) {
       g.paliersConfiance += 1;
       g.confianceLibre += 1;
       g.confianceTotale += 1;
       VOICE.event(g, 'palierConfiance');
     }
+  }
 
-    /* 4. Boucle cognitive. */
+  // 4. Boucle cognitive (Ops produites, créativité au plafond).
+  function tickCognition(g, dt) {
     if (g.gpu > 0) {
       g.ops += opsParS(g) * dt;
       var plafond = opsPlafond(g);
@@ -137,46 +158,72 @@ var ENGINE = (function () {
         g.creativite += K.TAUX_OVERFLOW * g.gpu * dt;
       }
     }
+  }
 
-    /* 5. Refactoring automatique (agents affectés à l'entretien). */
+  // 5. Refactoring automatique (agents affectés à l'entretien).
+  function tickRefacto(g, dt) {
     if (g.partRefacto > 0 && g.agents > 0 && g.dette > 0) {
       g.dette = Math.max(0, g.dette - g.agents * g.partRefacto * K.TAUX_AGENT_REFACTO * dt);
     }
+  }
 
-    /* 6. Bourse (rendement passif bruité). */
+  // 6. Bourse (rendement passif bruité).
+  function tickBourse(g, dt) {
     if (g.bourseUnlocked && g.capital > 0) {
-      var choc = (Math.random() - 0.5) * 2 * K.BOURSE_VOL;
+      var choc = chocAleatoire(K.BOURSE_VOL);
       g.capital *= (1 + (K.BOURSE_TAUX + choc) * dt);
       if (g.capital < 0) { g.capital = 0; }
     }
+  }
 
-    /* 7. Incidents quand la dette est trop élevée (−Confiance). */
+  // 7. Incidents quand la dette est trop élevée (−Confiance).
+  function tickIncidents(g, dt) {
     if (detteNorm(g) > K.SEUIL_INCIDENT && Math.random() < K.INCIDENT_PROBA * dt) {
       incident(g);
     }
+  }
 
-    /* 8. Yomi passif (auto-tournoi). */
+  // 8. Yomi passif (auto-tournoi).
+  function tickYomi(g, dt) {
     if (g.autoTournoi) {
       g.yomi += K.YOMI_PASSIF * g.mult.yomiGain * dt;
     }
+  }
 
-    /* 9. Prix des tokens : fluctue toutes les LOT_PRIX_PERIODE secondes (random walk avec
-     *    retour à la moyenne vers la cible). On peut « acheter au creux » (façon Paperclips). */
+  // 9. Prix des tokens : fluctue toutes les LOT_PRIX_PERIODE secondes (random walk avec
+  //    retour à la moyenne vers la cible). On peut « acheter au creux » (façon Paperclips).
+  function tickPrixLot(g, dt) {
     g.prixLotTimer += dt;
     if (g.prixLotTimer >= K.LOT_PRIX_PERIODE) {
       g.prixLotTimer -= K.LOT_PRIX_PERIODE;
       var cible = prixLotCible(g);
-      var choc = (Math.random() - 0.5) * 2 * K.LOT_VOL;
-      g.prixLot += (cible - g.prixLot) * K.LOT_REVERSION + choc;
+      var choc = chocAleatoire(K.LOT_VOL);
+      g.prixLot = lissageEMA(g.prixLot, cible, K.LOT_REVERSION) + choc;
       var b = bornesPrixLot(g);
       g.prixLot = clamp(g.prixLot, b.bas, b.haut);
     }
+  }
 
-    // Débit de production manuelle (clics) lissé, pour l'afficher comme un taux LOC/s.
+  // Débits affichés (production manuelle lissée) + pic de tokens (échelle de la jauge).
+  function tickDebitsManuels(g, dt) {
     var tauxManuel = dt > 0 ? g.clicsAcc / dt : 0;
-    g.prodManuelleParS += (tauxManuel - g.prodManuelleParS) * 0.3;
+    g.prodManuelleParS = lissageEMA(g.prodManuelleParS, tauxManuel, K.EXP_SMOOTH);
     g.clicsAcc = 0;
-    g.tokensMax = Math.max(g.tokensMax, g.tokens); // pic de tokens → échelle de la jauge
+    g.tokensMax = Math.max(g.tokensMax, g.tokens);
+  }
+
+  function tick(g, dt) {
+    if (g.deployed) { return; } // Acte 1 terminé : la simulation s'arrête.
+    tickProduction(g, dt);
+    tickVente(g, dt);
+    tickPaliersConfiance(g);
+    tickCognition(g, dt);
+    tickRefacto(g, dt);
+    tickBourse(g, dt);
+    tickIncidents(g, dt);
+    tickYomi(g, dt);
+    tickPrixLot(g, dt);
+    tickDebitsManuels(g, dt);
     majDeblocages(g);
   }
 
@@ -281,7 +328,7 @@ var ENGINE = (function () {
    * deviennent impayables à l'échelle des Super Agents → soft-lock). Le prix affiché
    * (g.prixLot) gravite autour de cette cible et fluctue dans le temps (cf. tick). */
   function prixLotCible(g) {
-    var derive = K.LOT_DRIFT_MAX * g.lotsAchetes / (g.lotsAchetes + K.LOT_DRIFT_DEMI);
+    var derive = saturation(g.lotsAchetes, K.LOT_DRIFT_MAX, K.LOT_DRIFT_DEMI);
     return (K.LOT_PRIX_BASE + derive) * g.mult.lotPrix;
   }
   function bornesPrixLot(g) {
@@ -346,8 +393,8 @@ var ENGINE = (function () {
     if (!p.repeatable && g.projetsFaits[id]) { return false; }
     if (typeof p.show === 'function' && !p.show(g)) { return false; }
     var c = coutProjet(g, p);
-    if (g.ops < c.ops || g.creativite < c.crea || g.yomi < c.yomi || g.eur < c.eur) { return false; }
-    g.ops -= c.ops; g.creativite -= c.crea; g.yomi -= c.yomi; g.eur -= c.eur;
+    if (!couvre(g, c)) { return false; }
+    debiter(g, c);
     p.effet(g);
     if (p.repeatable) {
       g.projetsAchats[id] = (g.projetsAchats[id] || 0) + 1;
@@ -361,8 +408,7 @@ var ENGINE = (function () {
   function projetAchetable(g, p) {
     if (!p.repeatable && g.projetsFaits[p.id]) { return false; }
     if (typeof p.show === 'function' && !p.show(g)) { return false; }
-    var c = coutProjet(g, p);
-    return g.ops >= c.ops && g.creativite >= c.crea && g.yomi >= c.yomi && g.eur >= c.eur;
+    return couvre(g, coutProjet(g, p));
   }
 
   /* Bouton final irréversible : transition vers l'Acte 2. */

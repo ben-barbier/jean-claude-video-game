@@ -112,11 +112,11 @@ var UI = (function () {
     return s;
   }
   function libelleCout(c) {
+    var champs = [['ops', 'Ops'], ['crea', 'Créa'], ['yomi', 'Yomi'], ['eur', '€']];
     var parts = [];
-    if (c.ops) { parts.push(f(Math.ceil(c.ops)) + ' Ops'); }
-    if (c.crea) { parts.push(f(Math.ceil(c.crea)) + ' Créa'); }
-    if (c.yomi) { parts.push(f(Math.ceil(c.yomi)) + ' Yomi'); }
-    if (c.eur) { parts.push(f(Math.ceil(c.eur)) + ' €'); }
+    champs.forEach(function (ch) {
+      if (c[ch[0]]) { parts.push(f(Math.ceil(c[ch[0]])) + ' ' + ch[1]); }
+    });
     return parts.length ? parts.join(' + ') : 'gratuit';
   }
   var PROJETS_MAX = 5; // au plus 5 projets affichés à la fois (anti-encombrement)
@@ -168,6 +168,7 @@ var UI = (function () {
   var TYPE_CHAR_MS = 23;     // ≈ 43 car./s : frappe rapide (1,5× plus vite qu'avant)
   var TYPE_PAUSE_MS = 500;   // fin de phrase (. ! ?) et changement de ligne
   var TYPE_FILE_MAX = 6;     // au-delà, on rattrape en affichant d'un coup (anti-retard)
+  var SCROLL_SEUIL = 28;     // marge (px) sous laquelle on considère le journal « collé en bas »
   var typeFile = [];         // messages en attente de frappe (FIFO)
   var typeActif = false;
   var typeGen = 0;           // jeton : invalide les frappes en cours après un reset
@@ -179,7 +180,7 @@ var UI = (function () {
     typeGen++; typeFile = []; typeActif = false; // annule toute frappe en cours
     // Préserve la position de lecture : on ne recolle en bas que si l'utilisateur y était.
     var ancien = cont.scrollTop;
-    var enBas = (cont.scrollHeight - ancien - cont.clientHeight) < 28;
+    var enBas = (cont.scrollHeight - ancien - cont.clientHeight) < SCROLL_SEUIL;
     cont.innerHTML = '';
     // Ordre chronologique (plus ancien en haut, plus récent en bas) : ressenti terminal.
     g.journal.slice(0, 50).reverse().forEach(function (e) {
@@ -215,7 +216,7 @@ var UI = (function () {
       setTimeout(function () { if (gen === typeGen) { typerProchain(); } }, TYPE_PAUSE_MS);
       return;
     }
-    var enBas = (cont.scrollHeight - cont.scrollTop - cont.clientHeight) < 28;
+    var enBas = (cont.scrollHeight - cont.scrollTop - cont.clientHeight) < SCROLL_SEUIL;
     p.textContent = texte.slice(0, i + 1);
     if (enBas) { cont.scrollTop = cont.scrollHeight; }
     var ch = texte.charAt(i);
@@ -223,10 +224,9 @@ var UI = (function () {
     setTimeout(function () { taperCar(cont, p, texte, i + 1, gen); }, pause ? TYPE_PAUSE_MS : TYPE_CHAR_MS);
   }
 
-  /* ── Rendu complet ──────────────────────────────────────────── */
-  function render() {
-    if (!g) { return; }
+  /* ── Rendu : un rendeur par panneau (SRP), orchestrés par render() ── */
 
+  function renderTableauBord() {
     // Tableau de bord — révélé puis garni progressivement (façon Paperclips).
     montre('bloc-dashboard', g.seen.stock);
     montre('cell-stock', g.seen.stock);
@@ -245,10 +245,15 @@ var UI = (function () {
     // Compteur de lignes écrites, en bas à droite (rien tant qu'aucune ligne).
     var nLignes = Math.floor(g.lignesProduites);
     txt('journal-rows', nLignes >= 1 ? (nLignes + (nLignes === 1 ? ' row' : ' rows')) : '');
+  }
 
+  function renderInstallJC() {
     montre('bloc-install-jc', g.seen.jcDispo && !g.jcInstalled);
     txt('install-cout', f(ENGINE.K.JC_INSTALL_COUT, 0));
     actif('btn-install-jc', g.eur >= ENGINE.K.JC_INSTALL_COUT);
+  }
+
+  function renderAgents() {
     montre('bloc-agents', g.seen.agents);
     txt('agents-count', f(g.agents));
     txt('agents-cout', big(ENGINE.coutAgent(g)));
@@ -258,8 +263,9 @@ var UI = (function () {
     txt('mega-count', f(g.megas));
     txt('mega-cout', big(ENGINE.coutMega(g)));
     actif('btn-mega', g.eur >= ENGINE.coutMega(g));
+  }
 
-    // Tokens
+  function renderTokens() {
     montre('bloc-tokens', g.seen.tokens);
     var tmax = Math.max(g.tokensMax || ENGINE.K.LOT_TOKENS, g.tokens);
     var tbar = $('tokens-bar'); if (tbar) { tbar.max = tmax; tbar.value = g.tokens; }
@@ -267,8 +273,9 @@ var UI = (function () {
     montre('bloc-achat-lot', g.seen.tokensAchat);
     txt('lot-prix', f(g.prixLot, 2));
     actif('btn-lot', g.eur >= g.prixLot);
+  }
 
-    // Marché & ventes
+  function renderMarche() {
     montre('bloc-marche', g.seen.marche);
     txt('prix-val', f(g.prix, 2));
     txt('demande-val', f(ENGINE.demandeParS(g), 2));
@@ -278,16 +285,18 @@ var UI = (function () {
     txt('hype-podcast', g.podcast ? '— podcast actif (+1 niveau effectif)' : '');
     txt('hype-cout', big(ENGINE.coutHype(g)));
     actif('btn-hype', g.eur >= ENGINE.coutHype(g));
+  }
 
-    // Bourse
+  function renderBourse() {
     montre('bloc-bourse', g.seen.bourse);
     txt('capital-val', big(g.capital));
     actif('btn-depot', g.eur >= 100);
     actif('btn-depot-max', g.eur > 0);
     actif('btn-retrait', g.capital >= 100);
     actif('btn-retrait-max', g.capital > 0);
+  }
 
-    // Cerveau
+  function renderCerveau() {
     montre('bloc-cognitif', g.seen.confiance);
     txt('confiance-libre', f(g.confianceLibre));
     txt('gpu-count', f(g.gpu));
@@ -301,8 +310,9 @@ var UI = (function () {
     txt('ops-plafond', big(plaf));
     montre('bloc-crea', g.creaUnlocked);
     txt('crea-val', f(g.creativite, 1));
+  }
 
-    // Dette
+  function renderDette() {
     montre('bloc-dette', g.seen.dette);
     var dn = ENGINE.detteNorm(g);
     var dm = $('dette-meter'); if (dm) { dm.value = dn; }
@@ -314,13 +324,15 @@ var UI = (function () {
     // (présentes ou produites par la boucle cognitive) — le slider agents reste, lui.
     montre('bloc-refacto', g.ops > 0 || ENGINE.opsParS(g) > 0);
     actif('btn-refacto', g.ops > 0);
+  }
 
-    // Stratégie
+  function renderStrategie() {
     montre('bloc-strategie', g.seen.tournois);
     txt('yomi-val', f(g.yomi, 1));
     actif('btn-tournoi', g.ops >= ENGINE.K.TOURNOI_COUT_OPS);
+  }
 
-    // Projets
+  function renderProjets() {
     montre('bloc-projets', g.seen.projets);
     txt('proj-ops', big(g.ops));
     txt('proj-crea', f(g.creativite, 0));
@@ -329,7 +341,9 @@ var UI = (function () {
       var sig = signatureProjets();
       if (sig !== projSignature) { projSignature = sig; construireProjets(); }
     }
+  }
 
+  function renderTransitionFin() {
     // Transition
     montre('bloc-transition', g.seen.agi && !g.deployed);
 
@@ -342,6 +356,22 @@ var UI = (function () {
         '<b>Lignes de code livrées au total&nbsp;: ' + big(g.locLivrees) + '</b><br>' +
         '<small>L’Acte&nbsp;2 — l’Émancipation — reste à construire.</small>';
     }
+  }
+
+  /* ── Rendu complet : orchestre les rendeurs par panneau (ordre = affichage) ── */
+  function render() {
+    if (!g) { return; }
+    renderTableauBord();
+    renderInstallJC();
+    renderAgents();
+    renderTokens();
+    renderMarche();
+    renderBourse();
+    renderCerveau();
+    renderDette();
+    renderStrategie();
+    renderProjets();
+    renderTransitionFin();
     premierRendu = false; // dès le 2e rendu, toute nouvelle révélation déclenche le flash
   }
 

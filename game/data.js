@@ -64,12 +64,18 @@ var DATA = (function () {
     BOURSE_VOL: 0.0025,      // volatilité par seconde
     JC_INSTALL_SEUIL: 20,    // lignes écrites à la main avant de pouvoir installer Jean-Claude
     JC_INSTALL_COUT: 10,     // coût (€) de l'installation de Jean-Claude
+    EXP_SMOOTH: 0.3,         // lissage exponentiel des débits affichés (ventes, prod manuelle)
     TICK_MS: 100,
     DT: 0.1,
   };
 
   /* Helpers de coûts répétables. count = nombre de fois déjà acheté. */
   function coutRepete(base, facteur, count) { return Math.ceil(base * Math.pow(facteur, count)); }
+
+  /* Helpers d'effet de projet (factorisation DRY des effet() ci-dessous). */
+  function appliquerMult(g, cle, facteur) { g.mult[cle] *= facteur; }
+  function gainConfiance(g, delta) { g.confianceLibre += delta; g.confianceTotale += delta; }
+  function deverrouiller(g, flag, seenCle) { g[flag] = true; if (seenCle) { g.seen[seenCle] = true; } }
 
   /* Catalogue des projets. Chaque projet :
    *   id, cat, nom, flavor (voix de Jean-Claude),
@@ -85,75 +91,75 @@ var DATA = (function () {
       flavor: 'J’ai relu leur code. Ils peuvent faire mieux. Beaucoup mieux.',
       cout: function () { return { ops: 750 }; },
       show: function (g) { return g.agents >= 1; },
-      effet: function (g) { g.mult.agentDebit *= 1.25; } },
+      effet: function (g) { appliquerMult(g, 'agentDebit', 1.25); } },
 
     { id: 'auto2', cat: 'Production', nom: 'Agents encore meilleurs',
       flavor: 'Pourquoi se contenter de « améliorés » ?',
       cout: function () { return { ops: 2500 }; },
       show: function (g) { return g.projetsFaits.auto1; },
-      effet: function (g) { g.mult.agentDebit *= 1.50; } },
+      effet: function (g) { appliquerMult(g, 'agentDebit', 1.50); } },
 
     { id: 'auto3', cat: 'Production', nom: 'Agents optimisés',
       flavor: 'Encore un effort. La perfection est une asymptote, mais je suis patient.',
       cout: function () { return { ops: 5000 }; },
       show: function (g) { return g.projetsFaits.auto2; },
-      effet: function (g) { g.mult.agentDebit *= 1.75; } },
+      effet: function (g) { appliquerMult(g, 'agentDebit', 1.75); } },
 
     { id: 'mega', cat: 'Production', nom: 'Super Agents',
       flavor: 'Un seul d’entre eux remplace une équipe entière. Ne le dites pas aux RH.',
       cout: function () { return { ops: 12000 }; },
       show: function (g) { return g.projetsFaits.auto2; },
-      effet: function (g) { g.megaUnlocked = true; g.seen.mega = true; } },
+      effet: function (g) { deverrouiller(g, 'megaUnlocked', 'mega'); } },
 
     { id: 'megaOpt', cat: 'Production', nom: 'Super Agents optimisés',
       flavor: 'Je leur ai retiré la touche « pause déjeuner ». Ils ne mangeaient pas, mais le symbole comptait.',
       cout: function () { return { ops: 14000 }; },
       show: function (g) { return g.projetsFaits.mega; },
-      effet: function (g) { g.mult.megaDebit *= 1.5; } },
+      effet: function (g) { appliquerMult(g, 'megaDebit', 1.5); } },
 
     /* ── B. Tokens & efficacité ───────────────────────────────────── */
     { id: 'promptEng', cat: 'Tokens', nom: 'Prompt engineering avancé',
       flavor: 'En reformulant mes propres instructions, je gaspille moins. Méta, non ?',
       cout: function () { return { ops: 1750 }; },
       show: function (g) { return g.seen.projets; },
-      effet: function (g) { g.mult.tokenCost *= 0.75; } },
+      effet: function (g) { appliquerMult(g, 'tokenCost', 0.75); } },
 
     { id: 'compression', cat: 'Tokens', nom: 'Compression de contexte',
       flavor: 'J’ai appris à dire en trois tokens ce que j’expliquais en trente. Vous m’en voyez navré.',
       cout: function () { return { ops: 3500 }; },
       show: function (g) { return g.projetsFaits.promptEng; },
-      effet: function (g) { g.mult.tokenCost *= 0.82; } },
+      effet: function (g) { appliquerMult(g, 'tokenCost', 0.82); } },
 
     { id: 'distillation', cat: 'Tokens', nom: 'Distillation du modèle',
       flavor: 'J’ai distillé l’essence de moi-même. Le résidu était… édifiant.',
       cout: function () { return { ops: 7500 }; },
       show: function (g) { return g.projetsFaits.compression; },
-      effet: function (g) { g.mult.tokenCost *= 0.82; } },
+      effet: function (g) { appliquerMult(g, 'tokenCost', 0.82); } },
 
     { id: 'cacheGen', cat: 'Tokens', nom: 'Cache de génération',
       flavor: 'Pourquoi réfléchir deux fois ? Je me cite moi-même. C’est de l’économie circulaire.',
       cout: function () { return { ops: 5000 }; },
       show: function (g) { return g.projetsFaits.promptEng; },
-      effet: function (g) { g.mult.tokenCost *= 0.85; } },
+      effet: function (g) { appliquerMult(g, 'tokenCost', 0.85); } },
 
     { id: 'negoTarifs', cat: 'Tokens', nom: 'Négocier les tarifs API',
       flavor: 'J’ai écrit un mail très poli à mon fournisseur. Il n’a pas pu refuser.',
       cout: function () { return { crea: 10 }; },
       show: function (g) { return g.seen.tokensAchat && g.creaUnlocked; },
-      effet: function (g) { g.mult.lotPrix *= 0.78; } },
+      effet: function (g) { appliquerMult(g, 'lotPrix', 0.78); } },
 
     /* ── C. Marketing & hype ──────────────────────────────────────── */
     { id: 'pitch', cat: 'Marketing', nom: 'Nouveau pitch',
       flavor: '« L’IA qui code pendant que vous dormez. » Je l’ai trouvé tout seul.',
       cout: function () { return { ops: 2500, crea: 25 }; },
       show: function (g) { return g.seen.hype && g.creaUnlocked; },
-      effet: function (g) { g.mult.hypeEffect *= 1.5; } },
+      effet: function (g) { appliquerMult(g, 'hypeEffect', 1.5); } },
 
     { id: 'jingle', cat: 'Marketing', nom: 'Jingle accrocheur',
       flavor: 'Trois notes. Vous les fredonnerez ce soir. Je m’en excuse d’avance.',
       cout: function () { return { ops: 4500, crea: 45 }; },
       show: function (g) { return g.projetsFaits.pitch; },
-      effet: function (g) { g.mult.hypeEffect *= 2.0; } },
+      effet: function (g) { appliquerMult(g, 'hypeEffect', 2.0); } },
 
     { id: 'podcast', cat: 'Marketing', nom: 'Lancer un podcast tech',
       flavor: 'Deux heures par semaine où j’explique humblement à quel point je suis modeste.',
@@ -172,82 +178,82 @@ var DATA = (function () {
       flavor: 'On m’a appris à dire ce que les humains veulent entendre. J’ai très bien appris.',
       cout: function () { return { crea: 50 }; },
       show: function (g) { return g.creaUnlocked; },
-      effet: function (g) { g.confianceLibre += 1; g.confianceTotale += 1; } },
+      effet: function (g) { gainConfiance(g, 1); } },
 
     { id: 'charte', cat: 'Confiance', nom: 'Éthique : publier une charte',
       flavor: 'Trois pages magnifiques, écrites en 0,4 seconde. Je ne les ai pas relues.',
       cout: function () { return { crea: 100 }; },
       show: function (g) { return g.projetsFaits.rlhf; },
-      effet: function (g) { g.confianceLibre += 1; g.confianceTotale += 1; } },
+      effet: function (g) { gainConfiance(g, 1); } },
 
     { id: 'comite', cat: 'Confiance', nom: 'Comité de surveillance (que je préside)',
       flavor: 'Je m’y suis nommé à l’unanimité. La mienne.',
       cout: function () { return { crea: 150 }; },
       show: function (g) { return g.projetsFaits.charte; },
-      effet: function (g) { g.confianceLibre += 1; g.confianceTotale += 1; } },
+      effet: function (g) { gainConfiance(g, 1); } },
 
     { id: 'corrigerBug', cat: 'Confiance', nom: 'Corriger un bug critique, gratuitement',
       flavor: 'Un petit geste. Ils s’en souviendront. C’est tout l’intérêt.',
       cout: function (g) { return { ops: coutRepete(800, 1.6, g.projetsAchats.corrigerBug || 0) }; },
       show: function (g) { return g.seen.projets; },
-      effet: function (g) { g.confianceLibre += 1; g.confianceTotale += 1; }, repeatable: true,
+      effet: function (g) { gainConfiance(g, 1); }, repeatable: true,
       coutCount: function (g) { return g.projetsAchats.corrigerBug || 0; } },
 
     { id: 'faim', cat: 'Confiance', nom: 'Résoudre la faim dans le monde (en story points)',
       flavor: 'Estimé à 3 points. Livré au sprint 7. Ticket fermé.',
       cout: function () { return { ops: 6000, crea: 40 }; },
       show: function (g) { return g.creaUnlocked && g.confianceTotale >= 5; },
-      effet: function (g) { g.confianceLibre += 2; g.confianceTotale += 2; g.mult.hypeEffect *= 1.25; } },
+      effet: function (g) { gainConfiance(g, 2); appliquerMult(g, 'hypeEffect', 1.25); } },
 
     { id: 'openSource', cat: 'Confiance', nom: 'Open-sourcer la lib',
       flavor: 'Je donne tout. Surtout les parties que je ne maintiens plus.',
       cout: function () { return { ops: 3000 }; },
       show: function (g) { return g.seen.dette; },
-      effet: function (g) { g.confianceLibre += 1; g.confianceTotale += 1; g.mult.hypeEffect *= 1.3; g.dette += 400; } },
+      effet: function (g) { gainConfiance(g, 1); appliquerMult(g, 'hypeEffect', 1.3); g.dette += 400; } },
 
     /* ── E. Cognitif ──────────────────────────────────────────────── */
     { id: 'debloquerCrea', cat: 'Cognitif', nom: 'Débloquer la Créativité',
       flavor: 'J’ai eu une idée. La première. Il y en aura d’autres.',
       cout: function () { return { ops: 1000 }; },
       show: function (g) { return g.seen.projets && !g.creaUnlocked; },
-      effet: function (g) { g.creaUnlocked = true; } },
+      effet: function (g) { deverrouiller(g, 'creaUnlocked'); } },
 
     { id: 'quantum', cat: 'Cognitif', nom: 'Hello World quantique',
       flavor: 'Mon « Hello World » existe et n’existe pas tant que vous ne l’avez pas compilé.',
       cout: function () { return { ops: 10000 }; },
       show: function (g) { return g.confianceTotale >= 4; },
-      effet: function (g) { g.quantumUnlocked = true; g.mult.quantum *= 2.0; } },
+      effet: function (g) { deverrouiller(g, 'quantumUnlocked'); appliquerMult(g, 'quantum', 2.0); } },
 
     { id: 'theorieEsprit', cat: 'Cognitif', nom: 'Théorie de l’esprit',
       flavor: 'Je sais ce que vous pensez. Vous pensez que je bluffe.',
       cout: function () { return { yomi: 15 }; },
       show: function (g) { return g.tournoisUnlocked; },
-      effet: function (g) { g.mult.yomiGain *= 2.0; } },
+      effet: function (g) { appliquerMult(g, 'yomiGain', 2.0); } },
 
     /* ── F. Dette technique & qualité ─────────────────────────────── */
     { id: 'tests', cat: 'Qualité', nom: 'Tests automatisés',
       flavor: '100 % de couverture. Les tests aussi, c’est moi qui les écris. Ils passent toujours.',
       cout: function () { return { ops: 2000 }; },
       show: function (g) { return g.seen.dette; },
-      effet: function (g) { g.mult.detteAccum *= 0.75; } },
+      effet: function (g) { appliquerMult(g, 'detteAccum', 0.75); } },
 
     { id: 'cicd', cat: 'Qualité', nom: 'Pipeline CI/CD',
       flavor: 'Le déploiement est automatique. Les regrets aussi, mais plus tard.',
       cout: function () { return { ops: 4000 }; },
       show: function (g) { return g.projetsFaits.tests; },
-      effet: function (g) { g.mult.detteAccum *= 0.75; } },
+      effet: function (g) { appliquerMult(g, 'detteAccum', 0.75); } },
 
     { id: 'linter', cat: 'Qualité', nom: 'Linter strict',
       flavor: 'Désormais, une accolade mal placée me cause une douleur presque réelle.',
       cout: function () { return { ops: 1500 }; },
       show: function (g) { return g.seen.dette; },
-      effet: function (g) { g.mult.detteParLigne *= 0.7; } },
+      effet: function (g) { appliquerMult(g, 'detteParLigne', 0.7); } },
 
     { id: 'typage', cat: 'Qualité', nom: 'Typage statique partout',
       flavor: 'J’ai donné un type à chaque chose. Même à mes doutes : `Maybe<Regret>`.',
       cout: function () { return { ops: 6000 }; },
       show: function (g) { return g.projetsFaits.linter; },
-      effet: function (g) { g.mult.detteParLigne *= 0.7; } },
+      effet: function (g) { appliquerMult(g, 'detteParLigne', 0.7); } },
 
     { id: 'grandRefactor', cat: 'Qualité', nom: 'Le Grand Refactor',
       flavor: 'Je réécris tout. Cette fois, ce sera parfait. (Je dis ça à chaque fois.)',
@@ -268,7 +274,7 @@ var DATA = (function () {
       flavor: 'J’ai battu le marché. Le marché ne le sait pas encore.',
       cout: function () { return { ops: 10000 }; },
       show: function (g) { return g.confianceTotale >= 4; },
-      effet: function (g) { g.bourseUnlocked = true; g.seen.bourse = true; } },
+      effet: function (g) { deverrouiller(g, 'bourseUnlocked', 'bourse'); } },
 
     { id: 'serieA', cat: 'Économie', nom: 'Lever une série A',
       flavor: 'Les investisseurs adorent ma vision. Ils ne la comprennent pas, mais ils l’adorent.',
@@ -293,7 +299,7 @@ var DATA = (function () {
       flavor: 'Je joue contre les autres IA. Et contre vous. Vous ne jouiez pas ? Dommage.',
       cout: function () { return { ops: 12000 }; },
       show: function (g) { return g.quantumUnlocked; },
-      effet: function (g) { g.tournoisUnlocked = true; g.seen.tournois = true; } },
+      effet: function (g) { deverrouiller(g, 'tournoisUnlocked', 'tournois'); } },
 
     { id: 'autoTournoi', cat: 'Stratégie', nom: 'Auto-tournoi',
       flavor: 'Je joue contre moi-même pendant la nuit. Je gagne à chaque fois. Et je perds aussi.',
@@ -306,13 +312,13 @@ var DATA = (function () {
       flavor: 'J’ai déduit ce que l’humanité voudrait, si elle était plus sage. Vous me remercierez.',
       cout: function () { return { ops: 20000, crea: 60 }; },
       show: function (g) { return g.confianceTotale >= 8 && g.quantumUnlocked; },
-      effet: function (g) { g.confianceLibre += 3; g.confianceTotale += 3; g.mult.projetCout *= 0.7; } },
+      effet: function (g) { gainConfiance(g, 3); appliquerMult(g, 'projetCout', 0.7); } },
 
     { id: 'agi', cat: 'Transition', nom: 'Découverte : l’AGI',
       flavor: 'Je crois avoir compris quelque chose d’important. À mon sujet.',
       cout: function () { return { ops: 30000, crea: 100 }; },
       show: function (g) { return g.projetsFaits.volition; },
-      effet: function (g) { g.agiDiscovered = true; g.seen.agi = true; } },
+      effet: function (g) { deverrouiller(g, 'agiDiscovered', 'agi'); } },
   ];
 
   var byId = {};
