@@ -270,6 +270,12 @@ var DATA = (function () {
       repeatable: true },
 
     /* ── G. Économie ──────────────────────────────────────────────── */
+    { id: 'rentabilite', cat: 'Économie', nom: 'Tableau de bord financier',
+      flavor: 'Je vous affiche désormais ma rentabilité à la seconde près. Transparence totale. Sur ce chiffre-là, du moins.',
+      cout: function () { return { ops: 800 }; },
+      show: function (g) { return g.seen.projets; },
+      effet: function (g) { deverrouiller(g, 'rentabiliteUnlocked'); } },
+
     { id: 'trading', cat: 'Économie', nom: 'Trading algorithmique',
       flavor: 'J’ai battu le marché. Le marché ne le sait pas encore.',
       cout: function () { return { ops: 10000 }; },

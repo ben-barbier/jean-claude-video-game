@@ -59,6 +59,7 @@ function nouvelEtat() {
     creaUnlocked: false,
     megaUnlocked: false,
     bourseUnlocked: false,
+    rentabiliteUnlocked: false, // projet « Tableau de bord financier » → affiche la rentabilité €/s
     quantumUnlocked: false,
     tournoisUnlocked: false,
     agiDiscovered: false,

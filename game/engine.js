@@ -57,6 +57,15 @@ var ENGINE = (function () {
   }
   function prodBruteParS(g) { return prodAgentsParS(g) + prodMegaParS(g); }
 
+  // Rentabilité nette affichée (€/s) : recette des ventes − coût des tokens consommés par
+  // la production automatique (l'écriture manuelle, gratuite, ne coûte pas de tokens).
+  function rentabiliteParS(g) {
+    var recette = g.ventesParS * g.prix;
+    var prixParToken = K.LOT_TOKENS > 0 ? g.prixLot / K.LOT_TOKENS : 0;
+    var coutTokens = prodBruteParS(g) * coutTokenLigne(g) * prixParToken;
+    return recette - coutTokens;
+  }
+
   // Facteur « foncer = bâcler » borné : 1 (lent) → 1+VELOCITE_MAX (très rapide).
   function factVelocite(pb) { return 1 + saturation(pb, K.VELOCITE_MAX, K.VELOCITE_SEUIL); }
 
@@ -422,7 +431,7 @@ var ENGINE = (function () {
   return {
     K: K, clamp: clamp,
     detteNorm: detteNorm, coutTokenLigne: coutTokenLigne, qualite: qualite,
-    multHype: multHype, demandeParS: demandeParS,
+    multHype: multHype, demandeParS: demandeParS, rentabiliteParS: rentabiliteParS,
     prodAgentsParS: prodAgentsParS, prodMegaParS: prodMegaParS, prodBruteParS: prodBruteParS,
     multProd: multProd, perdreConfiance: perdreConfiance,
     opsParS: opsParS, opsPlafond: opsPlafond,

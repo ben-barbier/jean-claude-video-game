@@ -21,7 +21,7 @@ const DEFAUTS = Object.assign({}, CTX.DATA.K);
 let lastG = null; // dernier état simulé (pour diagnostic)
 
 const PRIO = [
-  'debloquerCrea', 'promptEng', 'linter', 'tests', 'cacheGen', 'compression', 'typage', 'cicd', 'distillation',
+  'debloquerCrea', 'rentabilite', 'promptEng', 'linter', 'tests', 'cacheGen', 'compression', 'typage', 'cicd', 'distillation',
   'auto1', 'pitch', 'auto2', 'rlhf', 'jingle', 'charte', 'auto3', 'comite', 'quantum', 'trading',
   'mega', 'megaOpt', 'modelisation', 'autoTournoi', 'theorieEsprit', 'negoTarifs', 'faim', 'openSource',
   'serieA', 'serieB', 'serieC', 'podcast', 'volition', 'agi',

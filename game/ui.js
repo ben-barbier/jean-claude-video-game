@@ -235,10 +235,12 @@ var UI = (function () {
     montre('cell-ventes', g.seen.stock);
     montre('cell-prod', g.seen.stock);
     txt('stat-eur', big(g.eur));
-    txt('stat-loc-livrees', big(g.locLivrees));
-    txt('stat-loc-stock', big(g.locStock));
+    txt('stat-loc-livrees', big(Math.round(g.locLivrees)));
+    txt('stat-loc-stock', big(Math.round(g.locStock)));
     txt('stat-prod', f(ENGINE.prodBruteParS(g) + g.prodManuelleParS, 1));
     txt('stat-ventes', f(g.ventesParS, 1));
+    montre('cell-rentabilite', g.rentabiliteUnlocked);
+    txt('stat-rentabilite', f(ENGINE.rentabiliteParS(g), 2));
 
     // Prompt du terminal : user@main avant l'IA, jean-claude@bac-a-sable après.
     txt('journal-host', g.jcInstalled ? 'jean-claude@bac-a-sable' : 'user@main');
