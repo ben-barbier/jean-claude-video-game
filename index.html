@@ -123,15 +123,16 @@
   <fieldset id="bloc-marche" hidden>
     <legend><b>Marché &amp; ventes</b></legend>
     <p>Prix de vente&nbsp;: <b><span id="prix-val">0,25</span>&nbsp;€</b> / ligne<br>
+       <button id="btn-prix-moins" type="button" aria-label="Baisser le prix">−</button>
        <input id="prix-slider" type="range" min="0.01" max="2" step="0.01" value="0.25"
-              aria-label="Prix de vente par ligne de code, en euros"></p>
+              aria-label="Prix de vente par ligne de code, en euros">
+       <button id="btn-prix-plus" type="button" aria-label="Augmenter le prix">+</button></p>
     <p>Demande&nbsp;: <span id="demande-val">0</span>&nbsp;lignes/s —
        Qualité&nbsp;: <span id="qualite-val">100</span>&nbsp;%</p>
 
     <div id="bloc-hype" hidden>
       <hr>
       <p><b>Hype / Dev Rel&nbsp;:</b> niveau <span id="hype-niveau">1</span>
-         (×<span id="hype-mult">1</span> demande)
          <span id="hype-podcast"></span><br>
          <button id="btn-hype" type="button">Augmenter la Hype</button>
          — <span id="hype-cout">100</span>&nbsp;€</p>
@@ -233,7 +234,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '6';
+    var version = '7';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {

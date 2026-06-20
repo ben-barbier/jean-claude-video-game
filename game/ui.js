@@ -52,6 +52,13 @@ var UI = (function () {
       g.prix = ENGINE.clamp(parseFloat(e.target.value), ENGINE.K.PRIX_MIN, ENGINE.K.PRIX_MAX);
       render();
     });
+    function ajusterPrix(d) {
+      g.prix = ENGINE.clamp(Math.round((g.prix + d) * 100) / 100, ENGINE.K.PRIX_MIN, ENGINE.K.PRIX_MAX);
+      $('prix-slider').value = g.prix;
+      render();
+    }
+    $('btn-prix-moins').addEventListener('click', function () { ajusterPrix(-0.01); });
+    $('btn-prix-plus').addEventListener('click', function () { ajusterPrix(0.01); });
     $('refacto-slider').addEventListener('input', function (e) {
       g.partRefacto = ENGINE.clamp(parseFloat(e.target.value) / 100, 0, 1);
       render();
@@ -180,7 +187,6 @@ var UI = (function () {
     txt('qualite-val', f(ENGINE.qualite(g) * 100, 0));
     montre('bloc-hype', g.seen.hype);
     txt('hype-niveau', f(g.hypeNiveau));
-    txt('hype-mult', f(ENGINE.multHype(g), 2));
     txt('hype-podcast', g.podcast ? '— podcast actif (+1 niveau effectif)' : '');
     txt('hype-cout', big(ENGINE.coutHype(g)));
     actif('btn-hype', g.eur >= ENGINE.coutHype(g));
