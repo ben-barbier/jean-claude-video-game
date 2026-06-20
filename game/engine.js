@@ -203,15 +203,16 @@ var ENGINE = (function () {
   }
   function majDeblocages(g) {
     // ── Phase « dev en solo » (avant l'installation de l'IA) ──────────────
+    // Les panneaux apparaissent sans message : on laisse le joueur interpréter.
     if (g.lignesProduites >= 1) {
-      reveler(g, 'stock', 'premiereLigne'); // 1re ligne → tableau de bord
-      reveler(g, 'marche');                 // … et le marché pour la vendre
+      reveler(g, 'stock');   // 1re ligne → tableau de bord
+      reveler(g, 'marche');  // … et le marché pour la vendre
     }
     if (g.eur > 0 || g.locLivrees >= 1) { reveler(g, 'tresorerie'); } // 1re vente → €
 
     if (!g.jcInstalled) {
-      // À 20 lignes écrites : on peut installer Jean-Claude.
-      if (g.lignesProduites >= K.JC_INSTALL_SEUIL) { reveler(g, 'jcDispo', 'jcDispo'); }
+      // À 20 lignes écrites : le bouton « Installer Jean-Claude » apparaît (sans texte).
+      if (g.lignesProduites >= K.JC_INSTALL_SEUIL) { reveler(g, 'jcDispo'); }
       return; // tout le reste n'apparaît qu'une fois Jean-Claude installé
     }
 

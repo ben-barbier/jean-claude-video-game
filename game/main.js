@@ -4,9 +4,7 @@
   var K = DATA.K;
 
   // Charge la partie sauvegardée, sinon en démarre une nouvelle.
-  var G = SAVE.charger();
-  var nouvellePartie = false;
-  if (!G) { G = nouvelEtat(); nouvellePartie = true; }
+  var G = SAVE.charger() || nouvelEtat();
   window.G = G; // pratique pour déboguer dans la console
 
   // Migration : une partie d'avant le pivot « dev → IA » a déjà Jean-Claude (agents,
@@ -20,7 +18,6 @@
   function rendreApresAction(fn) { fn(G); UI.render(); }
 
   UI.init(G, rendreApresAction);
-  if (nouvellePartie) { VOICE.event(G, 'bienvenueDev'); }
   ENGINE.majDeblocages(G);
   UI.render();
 

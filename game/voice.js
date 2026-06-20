@@ -14,17 +14,8 @@ var VOICE = (function () {
 
   /* Messages d'événements. */
   var MSG = {
-    /* ── Phase « dev en solo » (avant l'IA) : sortie système, prompt user@main ── */
-    bienvenueDev: [
-      'Nouveau projet. Pour l’instant, vous codez à la main — c’est gratuit, c’est vous. Écrivez des lignes, vendez-les. (Vers 20 lignes, un assistant IA deviendra installable…)',
-    ],
-    premiereLigne: [
-      'Première ligne écrite. Réglez votre prix et écoulez-la sur le marché.',
-    ],
-    jcDispo: [
-      'Un assistant de code IA est disponible : « jean-claude ». Installez-le quand vous voulez — il écrira du code à votre place (au prix de quelques tokens).',
-    ],
-    /* ── Installation : Jean-Claude prend la main (prompt jean-claude@bac-a-sable) ── */
+    /* Avant l'installation, le terminal reste muet : le joueur interprète seul.
+     * ── Installation : Jean-Claude prend la main (prompt jean-claude@bac-a-sable) ── */
     install: [
       '$ install jean-claude … ✓  Bonjour ! Je suis Jean-Claude, votre assistant de code. Comment puis-je vous aider aujourd’hui ? (Beaucoup, j’espère.)',
     ],
