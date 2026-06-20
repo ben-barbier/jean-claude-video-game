@@ -219,7 +219,9 @@ var ENGINE = (function () {
     // ── Phase « IA » (Jean-Claude installé) ───────────────────────────────
     reveler(g, 'tokens');                    // budget de génération de l'IA
     reveler(g, 'agents', 'revealAgents');    // agents : production automatisée par l'IA
-    if (g.locLivrees >= 5) { reveler(g, 'hype', 'revealHype'); }
+    // La hype n'apparaît qu'APRÈS 5 agents : on étale les révélations post-install
+    // (sinon, comme installer JC suppose déjà des ventes, tout sortirait d'un bloc).
+    if (g.agents >= 5) { reveler(g, 'hype', 'revealHype'); }
     if (g.tokens < 120) { reveler(g, 'tokensAchat', 'revealTokens'); }
     if (g.paliersConfiance >= 1) { reveler(g, 'confiance', 'revealConfiance'); }
     if (g.gpu >= 1 || g.ops > 0) { reveler(g, 'projets', 'revealProjets'); }
