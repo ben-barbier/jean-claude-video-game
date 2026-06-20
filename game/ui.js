@@ -169,6 +169,8 @@ var UI = (function () {
     // Production : écrire à la main est GRATUIT (votre travail de dev).
     txt('prod-clic-info', g.seen.stock ? '(à la main — gratuit)' : '');
     montre('bloc-install-jc', g.seen.jcDispo && !g.jcInstalled);
+    txt('install-cout', f(ENGINE.K.JC_INSTALL_COUT, 0));
+    actif('btn-install-jc', g.eur >= ENGINE.K.JC_INSTALL_COUT);
     montre('bloc-agents', g.seen.agents);
     txt('agents-count', f(g.agents));
     txt('agents-cout', big(ENGINE.coutAgent(g)));

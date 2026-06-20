@@ -104,7 +104,7 @@
     <div id="bloc-install-jc" hidden>
       <hr>
       <p><button id="btn-install-jc" type="button">Installer Jean-Claude</button>
-         <small>— assistant de code IA</small></p>
+         — <span id="install-cout">10</span>&nbsp;€</p>
     </div>
 
     <div id="bloc-agents" hidden>
@@ -236,7 +236,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '12';
+    var version = '13';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {

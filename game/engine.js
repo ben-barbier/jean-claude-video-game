@@ -244,6 +244,8 @@ var ENGINE = (function () {
   function installerJC(g) {
     if (g.jcInstalled || g.deployed) { return false; }
     if (g.lignesProduites < K.JC_INSTALL_SEUIL) { return false; }
+    if (g.eur < K.JC_INSTALL_COUT) { return false; }
+    g.eur -= K.JC_INSTALL_COUT;
     g.jcInstalled = true;
     VOICE.event(g, 'install');
     majDeblocages(g);
