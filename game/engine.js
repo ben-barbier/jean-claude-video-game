@@ -247,7 +247,7 @@ var ENGINE = (function () {
     if (g.eur < K.JC_INSTALL_COUT) { return false; }
     g.eur -= K.JC_INSTALL_COUT;
     g.jcInstalled = true;
-    VOICE.event(g, 'install');
+    VOICE.install(g);
     majDeblocages(g);
     return true;
   }

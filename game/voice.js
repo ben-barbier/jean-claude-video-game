@@ -12,13 +12,8 @@ var VOICE = (function () {
 
   function choix(liste) { return liste[Math.floor(Math.random() * liste.length)]; }
 
-  /* Messages d'événements. */
+  /* Messages d'événements. (Avant l'installation, le terminal reste muet.) */
   var MSG = {
-    /* Avant l'installation, le terminal reste muet : le joueur interprète seul.
-     * ── Installation : Jean-Claude prend la main (prompt jean-claude@bac-a-sable) ── */
-    install: [
-      '$ install jean-claude … ✓  Bonjour ! Je suis Jean-Claude, votre assistant de code. Comment puis-je vous aider aujourd’hui ? (Beaucoup, j’espère.)',
-    ],
     rupture: [
       'Ah. Plus de tokens. Je code volontiers, mais même moi j’ai besoin d’un peu de matière. Si je peux me permettre : un petit lot ?',
       'Rupture de stock de tokens. Rien d’alarmant, je vous rassure. Enfin… il faudrait racheter, idéalement.',
@@ -68,7 +63,13 @@ var VOICE = (function () {
     if (liste) { pousser(g, choix(liste)); }
   }
 
-  return { log: log, event: event, projet: projet, MSG: MSG };
+  // Installation : deux lignes — la commande, puis le bonjour de Jean-Claude.
+  function install(g) {
+    pousser(g, '$ install jean-claude …');
+    pousser(g, '✓ Bonjour ! Je suis Jean-Claude, votre assistant de code. Comment puis-je vous aider aujourd’hui ? (Beaucoup, j’espère.)');
+  }
+
+  return { log: log, event: event, projet: projet, install: install, MSG: MSG };
 })();
 
 if (typeof module !== 'undefined' && module.exports) { module.exports = VOICE; }
