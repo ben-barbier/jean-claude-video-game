@@ -16,10 +16,12 @@
     font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     font-size: 14px;
     line-height: 1.4;
+    /* Mobile : désactive le double-tap-to-zoom (on tape vite) en gardant le pinch-zoom. */
+    touch-action: manipulation;
   }
   /* Les lignes des panneaux et du tableau de bord tiennent sur une seule ligne. */
   fieldset p, #bloc-dashboard div, #projets-list div { white-space: nowrap; }
-  button { white-space: nowrap; }
+  button { white-space: nowrap; touch-action: manipulation; }
   /* Tableau de bord : libellés à largeur fixe (monospace) → « : » et valeurs alignés. */
   #bloc-dashboard .dk { display: inline-block; width: 16ch; }
   /* Le Journal de Jean-Claude : fenêtre terminal. */
