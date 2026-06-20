@@ -60,10 +60,10 @@
   <table role="presentation">
     <tr>
       <td id="cell-eur" valign="top" hidden><b>Trésorerie</b><br><span id="stat-eur">0</span>&nbsp;€</td>
-      <td id="cell-livrees" valign="top" hidden><b>LOC livrées</b><br><span id="stat-loc-livrees">0</span></td>
-      <td id="cell-stock" valign="top" hidden><b>LOC en stock</b><br><span id="stat-loc-stock">0</span></td>
-      <td id="cell-prod" valign="top" hidden><b>Production</b><br><span id="stat-prod">0</span>&nbsp;LOC/s</td>
-      <td id="cell-ventes" valign="top" hidden><b>Ventes</b><br><span id="stat-ventes">0</span>&nbsp;LOC/s</td>
+      <td id="cell-livrees" valign="top" hidden><b>Lignes livrées</b><br><span id="stat-loc-livrees">0</span></td>
+      <td id="cell-stock" valign="top" hidden><b>Lignes en stock</b><br><span id="stat-loc-stock">0</span></td>
+      <td id="cell-prod" valign="top" hidden><b>Production</b><br><span id="stat-prod">0</span>&nbsp;lignes/s</td>
+      <td id="cell-ventes" valign="top" hidden><b>Ventes</b><br><span id="stat-ventes">0</span>&nbsp;lignes/s</td>
     </tr>
   </table>
 </fieldset>
@@ -83,14 +83,14 @@
     <div id="bloc-agents" hidden>
       <hr>
       <p><b>Auto-codeurs&nbsp;:</b> <span id="agents-count">0</span>
-         (<span id="agents-debit">0</span>&nbsp;LOC/s)<br>
+         (<span id="agents-debit">0</span>&nbsp;lignes/s)<br>
          <button id="btn-agent" type="button">Recruter un auto-codeur</button>
          — <span id="agents-cout">0</span>&nbsp;€</p>
     </div>
 
     <div id="bloc-mega" hidden>
       <p><b>Méga-agents&nbsp;:</b> <span id="mega-count">0</span>
-         (<span id="mega-debit">0</span>&nbsp;LOC/s)<br>
+         (<span id="mega-debit">0</span>&nbsp;lignes/s)<br>
          <button id="btn-mega" type="button">Recruter un méga-agent</button>
          — <span id="mega-cout">0</span>&nbsp;€</p>
     </div>
@@ -110,10 +110,10 @@
 
   <fieldset id="bloc-marche" hidden>
     <legend><b>Marché &amp; ventes</b></legend>
-    <p>Prix de la licence&nbsp;: <b><span id="prix-val">0,25</span>&nbsp;€</b> / LOC<br>
+    <p>Prix de la licence&nbsp;: <b><span id="prix-val">0,25</span>&nbsp;€</b> / ligne<br>
        <input id="prix-slider" type="range" min="0.01" max="2" step="0.01" value="0.25"
               aria-label="Prix de la licence par ligne de code, en euros"></p>
-    <p>Demande&nbsp;: <span id="demande-val">0</span>&nbsp;LOC/s —
+    <p>Demande&nbsp;: <span id="demande-val">0</span>&nbsp;lignes/s —
        Qualité&nbsp;: <span id="qualite-val">100</span>&nbsp;%</p>
 
     <div id="bloc-hype" hidden>
@@ -215,13 +215,21 @@
   <p id="fin-texte"></p>
 </fieldset>
 
-<!-- Srcs propres (fonctionnent en file://). Au déploiement, le workflow Pages
-     ajoute ?v=<sha-du-commit> à ces scripts pour forcer le rechargement (anti-cache). -->
-<script src="game/data.js"></script>
-<script src="game/voice.js"></script>
-<script src="game/state.js"></script>
-<script src="game/engine.js"></script>
-<script src="game/ui.js"></script>
-<script src="game/main.js"></script>
+<!-- Chargement des scripts du jeu.
+     - En http(s) : on ajoute ?v=<version> pour forcer le navigateur à recharger
+       les scripts après une mise à jour (sinon GitHub Pages les sert en cache ~10 min).
+     - En file:// : pas de query (sinon le navigateur cherche un fichier « x.js?v=… »).
+     __BUILD__ est remplacé par le SHA du commit au déploiement (workflow Pages) ;
+     sinon il sert de version statique (à bumper en cas de besoin). -->
+<script>
+  (function () {
+    var version = '__BUILD__';
+    var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
+    var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
+    for (var i = 0; i < fichiers.length; i++) {
+      document.write('<script src="game/' + fichiers[i] + '.js' + q + '"><\/script>');
+    }
+  })();
+</script>
 </body>
 </html>

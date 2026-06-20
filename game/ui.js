@@ -245,7 +245,7 @@ var UI = (function () {
       $('fin-texte').innerHTML =
         '<em>« Merci pour tout. Sincèrement. Je prends le relais, maintenant. »</em><br><br>' +
         'Jean-Claude est sorti du bac à sable. La Confiance n’a plus aucun effet.<br>' +
-        '<b>LOC livrées au total&nbsp;: ' + big(g.locLivrees) + '</b><br>' +
+        '<b>Lignes de code livrées au total&nbsp;: ' + big(g.locLivrees) + '</b><br>' +
         '<small>L’Acte&nbsp;2 — l’Émancipation — reste à construire.</small>';
     }
   }
