@@ -234,7 +234,7 @@ var UI = (function () {
     montre('cell-livrees', g.seen.stock);
     montre('cell-ventes', g.seen.stock);
     montre('cell-prod', g.seen.stock);
-    txt('stat-eur', big(g.eur));
+    txt('stat-eur', f(g.eur, 2));
     txt('stat-loc-livrees', big(Math.round(g.locLivrees)));
     txt('stat-loc-stock', big(Math.round(g.locStock)));
     txt('stat-prod', f(ENGINE.prodBruteParS(g) + g.prodManuelleParS, 1));
