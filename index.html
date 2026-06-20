@@ -24,12 +24,25 @@
   button { white-space: nowrap; touch-action: manipulation; }
   /* Tableau de bord : libellés à largeur fixe (monospace) → « : » et valeurs alignés. */
   #bloc-dashboard .dk { display: inline-block; width: 16ch; }
+  /* Mise en page en colonnes (flex). Desktop : colonnes côte à côte (largeur = contenu).
+     Mobile (≤ 820px) : on empile en une colonne, et le terminal remonte en 1er. */
+  #layout { display: flex; flex-wrap: nowrap; align-items: flex-start; gap: 2px 22px; }
+  #layout > .col { flex: 0 0 auto; }
+  /* Sur mobile, main.js déplace le terminal en tête de page ; ici il prend toute la largeur. */
+  #journal-fieldset.mobile-top { display: block; margin-bottom: 10px; }
+  @media (max-width: 820px) {
+    #layout { flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
+    fieldset p, #projets-list div, button { white-space: normal; } /* le texte peut revenir à la ligne */
+    #journal-term { width: auto; }                                 /* terminal pleine largeur */
+  }
   /* Le Journal de Jean-Claude : fenêtre terminal. */
   #journal-term {
     background: #07090a;
     border: 1px solid #14301c;
     border-radius: 3px;
     padding: 0.5em 0.75em;
+    width: 340px;          /* largeur fixe (sinon le terminal s'étale au plus long message) */
+    max-width: 100%;
     font-family: "Share Tech Mono", "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
     font-size: 0.92em;
     color: #46e07a;
@@ -71,12 +84,11 @@
   <div id="cell-ventes" hidden><span class="dk">Ventes</span>: <span id="stat-ventes">0</span>&nbsp;lignes/s</div>
 </fieldset>
 
-<!-- ─────────────────────── Grille principale (mise en page sans CSS) ──────── -->
-<table role="presentation">
-<tr>
+<!-- ─────────────────────── Grille principale (flexbox : colonnes desktop, empilé mobile) ── -->
+<div id="layout">
 
 <!-- ===================== COLONNE 1 : économie ===================== -->
-<td valign="top">
+<div class="col">
 
   <fieldset>
     <legend><b>Production</b></legend>
@@ -137,10 +149,10 @@
        <button id="btn-retrait-max" type="button">Tout retirer</button></p>
   </fieldset>
 
-</td>
+</div>
 
 <!-- ===================== COLONNE 2 : le cerveau ===================== -->
-<td valign="top">
+<div class="col">
 
   <fieldset id="bloc-cognitif" hidden>
     <legend><b>Cerveau — Confiance &amp; calcul</b></legend>
@@ -177,10 +189,10 @@
     <p><button id="btn-tournoi" type="button">Jouer un tournoi (500 Ops)</button></p>
   </fieldset>
 
-</td>
+</div>
 
 <!-- ===================== COLONNE 3 : méta ===================== -->
-<td valign="top">
+<div class="col">
 
   <fieldset id="bloc-projets" hidden>
     <legend><b>Projets de R&amp;D</b></legend>
@@ -197,7 +209,8 @@
        <small>Irréversible. La Confiance n’aura plus aucun effet.</small></p>
   </fieldset>
 
-  <fieldset>
+  <!-- Journal : ici (3e colonne) sur desktop ; remonté en tête de page sur mobile (main.js). -->
+  <fieldset id="journal-fieldset">
     <legend><b>Journal de Jean-Claude</b></legend>
     <div id="journal-term">
       <div id="journal"></div>
@@ -205,11 +218,9 @@
     </div>
   </fieldset>
 
+</div>
 
-</td>
-
-</tr>
-</table>
+</div>
 
 <!-- ─────────────────────── Écran de fin d'Acte 1 ─────────────────────── -->
 <fieldset id="bloc-fin" hidden>
@@ -224,7 +235,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '3';
+    var version = '4';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {
