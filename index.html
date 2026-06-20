@@ -98,8 +98,7 @@
 
   <fieldset>
     <legend><b>Production</b></legend>
-    <p><button id="btn-ecrire" type="button">Écrire une ligne de code</button>
-       <span id="prod-clic-info"></span></p>
+    <p><button id="btn-ecrire" type="button">Écrire une ligne de code</button></p>
 
     <div id="bloc-install-jc" hidden>
       <hr>
@@ -236,7 +235,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '13';
+    var version = '14';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {

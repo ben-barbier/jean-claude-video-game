@@ -166,8 +166,6 @@ var UI = (function () {
     var nLignes = Math.floor(g.lignesProduites);
     txt('journal-rows', nLignes >= 1 ? (nLignes + (nLignes === 1 ? ' row' : ' rows')) : '');
 
-    // Production : écrire à la main est GRATUIT (votre travail de dev).
-    txt('prod-clic-info', g.seen.stock ? '(à la main — gratuit)' : '');
     montre('bloc-install-jc', g.seen.jcDispo && !g.jcInstalled);
     txt('install-cout', f(ENGINE.K.JC_INSTALL_COUT, 0));
     actif('btn-install-jc', g.eur >= ENGINE.K.JC_INSTALL_COUT);
