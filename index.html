@@ -97,15 +97,13 @@
 
     <div id="bloc-agents" hidden>
       <hr>
-      <p><b>Auto-codeurs&nbsp;:</b> <span id="agents-count">0</span>
-         (<span id="agents-debit">0</span>&nbsp;lignes/s)<br>
+      <p><b>Auto-codeurs&nbsp;:</b> <span id="agents-count">0</span><br>
          <button id="btn-agent" type="button">Recruter un auto-codeur</button>
          — <span id="agents-cout">0</span>&nbsp;€</p>
     </div>
 
     <div id="bloc-mega" hidden>
-      <p><b>Méga-agents&nbsp;:</b> <span id="mega-count">0</span>
-         (<span id="mega-debit">0</span>&nbsp;lignes/s)<br>
+      <p><b>Méga-agents&nbsp;:</b> <span id="mega-count">0</span><br>
          <button id="btn-mega" type="button">Recruter un méga-agent</button>
          — <span id="mega-cout">0</span>&nbsp;€</p>
     </div>
@@ -235,7 +233,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '5';
+    var version = '6';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {

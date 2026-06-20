@@ -156,13 +156,11 @@ var UI = (function () {
     txt('prod-clic-info', g.seen.stock ? '(coût : ' + f(ENGINE.coutTokenLigne(g), 2) + ' token/ligne)' : '');
     montre('bloc-agents', g.seen.agents);
     txt('agents-count', f(g.agents));
-    txt('agents-debit', f(ENGINE.prodAgentsParS(g), 1));
     txt('agents-cout', big(ENGINE.coutAgent(g)));
     actif('btn-agent', g.eur >= ENGINE.coutAgent(g));
 
     montre('bloc-mega', g.megaUnlocked);
     txt('mega-count', f(g.megas));
-    txt('mega-debit', f(ENGINE.prodMegaParS(g), 0));
     txt('mega-cout', big(ENGINE.coutMega(g)));
     actif('btn-mega', g.eur >= ENGINE.coutMega(g));
 
