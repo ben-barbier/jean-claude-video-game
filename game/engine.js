@@ -155,6 +155,18 @@ var ENGINE = (function () {
       g.yomi += K.YOMI_PASSIF * g.mult.yomiGain * dt;
     }
 
+    /* 9. Prix des tokens : fluctue ~chaque seconde (random walk avec retour à la moyenne
+     *    vers la cible). On peut « acheter au creux » (façon prix du fil dans Paperclips). */
+    g.prixLotTimer += dt;
+    if (g.prixLotTimer >= 1) {
+      g.prixLotTimer -= 1;
+      var cible = prixLotCible(g);
+      var choc = (Math.random() - 0.5) * 2 * K.LOT_VOL;
+      g.prixLot += (cible - g.prixLot) * K.LOT_REVERSION + choc;
+      var b = bornesPrixLot(g);
+      g.prixLot = clamp(g.prixLot, b.bas, b.haut);
+    }
+
     majDeblocages(g);
   }
 
@@ -234,21 +246,23 @@ var ENGINE = (function () {
     g.eur -= c; g.megas += 1; return true;
   }
 
-  /* Prix d'un lot : fluctue, dérive ↑ avec les achats mais SATURE (sinon les tokens
-   * deviennent impayables à l'échelle des méga-agents → soft-lock). */
-  function prixLotCourant(g) {
+  /* Prix « cible » d'un lot : dérive ↑ avec les achats mais SATURE (sinon les tokens
+   * deviennent impayables à l'échelle des méga-agents → soft-lock). Le prix affiché
+   * (g.prixLot) gravite autour de cette cible et fluctue dans le temps (cf. tick). */
+  function prixLotCible(g) {
     var derive = K.LOT_DRIFT_MAX * g.lotsAchetes / (g.lotsAchetes + K.LOT_DRIFT_DEMI);
-    var bruit = (Math.random() - 0.5) * 6; // ±3 €
-    var p = (K.LOT_PRIX_BASE + derive + bruit) * g.mult.lotPrix;
-    return clamp(p, K.LOT_PRIX_MIN, (K.LOT_PRIX_BASE + K.LOT_DRIFT_MAX + 4) * g.mult.lotPrix);
+    return (K.LOT_PRIX_BASE + derive) * g.mult.lotPrix;
+  }
+  function bornesPrixLot(g) {
+    return { bas: K.LOT_PRIX_MIN * g.mult.lotPrix,
+             haut: (K.LOT_PRIX_BASE + K.LOT_DRIFT_MAX + 8) * g.mult.lotPrix };
   }
   function acheterLot(g) {
     var c = g.prixLot;
     if (g.eur < c) { return false; }
     g.eur -= c;
     g.tokens += K.LOT_TOKENS;
-    g.lotsAchetes += 1;
-    g.prixLot = prixLotCourant(g); // on tire le prix du prochain lot
+    g.lotsAchetes += 1; // fait monter la cible : le prix dérivera ↑ dans les secondes qui suivent
     return true;
   }
 
@@ -342,7 +356,7 @@ var ENGINE = (function () {
     acheterLot: acheterLot, acheterHype: acheterHype, allouerConfiance: allouerConfiance,
     refactoriser: refactoriser, deposerBourse: deposerBourse, retirerBourse: retirerBourse,
     jouerTournoi: jouerTournoi, acheterProjet: acheterProjet, projetAchetable: projetAchetable,
-    deployer: deployer, prixLotCourant: prixLotCourant,
+    deployer: deployer, prixLotCible: prixLotCible,
   };
 })();
 

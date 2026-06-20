@@ -19,6 +19,8 @@ var DATA = (function () {
     LOT_PRIX_MIN: 12,
     LOT_DRIFT_MAX: 20,       // dérive ↑ maximale du prix d'un lot (bornée/saturante)
     LOT_DRIFT_DEMI: 60,      // nb de lots pour atteindre la moitié de la dérive
+    LOT_REVERSION: 0.30,     // retour à la moyenne du prix vers sa cible (par seconde)
+    LOT_VOL: 2.5,            // amplitude de la fluctuation aléatoire (€, par seconde)
     DEBIT_AGENT: 1.0,        // LOC/s par auto-codeur
     AGENT_COUT_BASE: 5,
     AGENT_COUT_FACTEUR: 1.10,

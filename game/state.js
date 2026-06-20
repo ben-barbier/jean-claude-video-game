@@ -31,6 +31,7 @@ function nouvelEtat() {
     /* ── Marché des tokens ──────────────────────────────────── */
     lotsAchetes: 0,
     prixLot: K.LOT_PRIX_BASE,
+    prixLotTimer: 0,       // cadence de fluctuation du prix des tokens (~1 s)
 
     /* ── Multiplicateurs (modifiés par les projets) ─────────── */
     mult: {
