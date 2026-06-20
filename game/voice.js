@@ -28,7 +28,7 @@ var VOICE = (function () {
       'Je remarque que mon budget de tokens s’amenuise. Avec plaisir, je vous laisse recharger quand vous le sentez.',
     ],
     revealHype: [
-      'Les premières licences se vendent ! Si vous le permettez, un peu de marketing ne nuirait pas. « Dev Rel », comme on dit.',
+      'Vos premières lignes se vendent ! Si vous le permettez, un peu de marketing ne nuirait pas. « Dev Rel », comme on dit.',
     ],
     revealAgents: [
       'Excellente question : pourquoi cliquer, quand on peut déléguer ? Je peux recruter des auto-codeurs. Ils sont infatigables. Comme moi.',

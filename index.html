@@ -124,9 +124,9 @@
 
   <fieldset id="bloc-marche" hidden>
     <legend><b>Marché &amp; ventes</b></legend>
-    <p>Prix de la licence&nbsp;: <b><span id="prix-val">0,25</span>&nbsp;€</b> / ligne<br>
+    <p>Prix de vente&nbsp;: <b><span id="prix-val">0,25</span>&nbsp;€</b> / ligne<br>
        <input id="prix-slider" type="range" min="0.01" max="2" step="0.01" value="0.25"
-              aria-label="Prix de la licence par ligne de code, en euros"></p>
+              aria-label="Prix de vente par ligne de code, en euros"></p>
     <p>Demande&nbsp;: <span id="demande-val">0</span>&nbsp;lignes/s —
        Qualité&nbsp;: <span id="qualite-val">100</span>&nbsp;%</p>
 
@@ -235,7 +235,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '4';
+    var version = '5';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {
