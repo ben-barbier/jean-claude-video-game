@@ -33,8 +33,7 @@ var DATA = (function () {
     CONFIANCE_INIT: 2,
     OPS_PAR_GPU: 12,         // Ops/s par GPU
     TAILLE_MEM: 2000,        // plafond d'Ops par Mémoire (équilibré : rend les gros projets atteignables)
-    TAUX_OVERFLOW: 1.0,      // Créa/s × N_GPU en bonus quand Ops au plafond (idées émergentes)
-    CREA_PASSIVE: 0.05,      // Créa/s × N_GPU en filet passif (la créa suit la capacité cognitive)
+    TAUX_OVERFLOW: 1.0,      // Créa/s × N_GPU quand les Ops sont au plafond (la créativité n'émerge que là)
     BASE_DETTE: 0.10,        // dette/ligne × source_factor
     SF_CLIC: 0.2,
     SF_AGENT: 1.0,

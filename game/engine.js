@@ -110,6 +110,9 @@ var ENGINE = (function () {
       g.locStock -= ventes;
       g.locLivrees += ventes;
     }
+    // Débit de ventes RÉEL (lissé) : reflète ce qui s'écoule vraiment, même quand le stock
+    // est vendu aussi vite qu'il est produit (l'affichage ne tombe plus à 0 à tort).
+    g.ventesParS += ((dt > 0 ? ventes / dt : 0) - g.ventesParS) * 0.3;
     if (g.burstTimer > 0) { g.burstTimer = Math.max(0, g.burstTimer - dt); }
     if (g.prodBurstTimer > 0) { g.prodBurstTimer = Math.max(0, g.prodBurstTimer - dt); }
 
@@ -128,10 +131,10 @@ var ENGINE = (function () {
       var plafond = opsPlafond(g);
       var capped = g.ops >= plafond;
       if (capped) { g.ops = plafond; }
-      if (g.creaUnlocked) {
-        // Filet passif (toujours) + bonus d'overflow quand le contexte est plein.
-        g.creativite += K.CREA_PASSIVE * g.gpu * dt;
-        if (capped) { g.creativite += K.TAUX_OVERFLOW * g.gpu * dt; }
+      // La créativité n'émerge QUE lorsque les Ops sont à 100 % de leur capacité
+      // (contexte plein : mémoire non nulle ET Ops au plafond).
+      if (g.creaUnlocked && plafond > 0 && capped) {
+        g.creativite += K.TAUX_OVERFLOW * g.gpu * dt;
       }
     }
 

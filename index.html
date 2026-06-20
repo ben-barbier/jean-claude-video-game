@@ -24,8 +24,9 @@
   button { white-space: nowrap; touch-action: manipulation; }
   /* Tableau de bord : libellés à largeur fixe (monospace) → « : » et valeurs alignés. */
   #bloc-dashboard .dk { display: inline-block; width: 16ch; }
-  /* La jauge de tokens occupe toute la largeur de son panneau. */
-  #tokens-bar { display: block; width: 100%; }
+  /* « Token : [====] 1234 » sur une ligne ; la jauge occupe tout l'espace libre. */
+  #ligne-tokens { display: flex; align-items: center; gap: 0.6ch; }
+  #tokens-bar { flex: 1; min-width: 0; }
   /* Mise en page en colonnes (flex). Desktop : colonnes côte à côte (largeur = contenu).
      Mobile (≤ 820px) : on empile en une colonne. */
   #layout { display: flex; flex-wrap: nowrap; align-items: flex-start; gap: 2px 22px; }
@@ -135,8 +136,8 @@
 
   <fieldset id="bloc-tokens" hidden>
     <legend><b>Tokens de génération</b></legend>
-    <p><progress id="tokens-bar" value="0" max="1000"></progress><br>
-       <span id="tokens-val">0</span> tokens</p>
+    <p id="ligne-tokens">Token&nbsp;: <progress id="tokens-bar" value="0" max="1000"></progress>
+       <span id="tokens-val">0</span></p>
     <div id="bloc-achat-lot" hidden>
       <p><button id="btn-lot" type="button">Acheter un lot de 1000 tokens</button>
          — <span id="lot-prix">15</span>&nbsp;€</p>
@@ -182,7 +183,8 @@
     <p>
       <button id="btn-gpu" type="button">+ GPU</button>
       GPU&nbsp;: <span id="gpu-count">0</span> (<span id="ops-debit">0</span>&nbsp;Ops/s)
-      &nbsp;|&nbsp;
+    </p>
+    <p>
       <button id="btn-mem" type="button">+ Mémoire</button>
       Mémoire&nbsp;: <span id="mem-count">0</span>
     </p>

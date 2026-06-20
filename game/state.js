@@ -29,6 +29,7 @@ function nouvelEtat() {
     lignesProduites: 0,    // cumul de lignes produites (déclencheur d'installation)
     clicsAcc: 0,           // lignes écrites à la main depuis le dernier tick (→ débit manuel)
     prodManuelleParS: 0,   // débit manuel lissé (clics), intégré à « Production »
+    ventesParS: 0,         // débit de ventes réel lissé (affichage « Ventes »)
 
     /* ── Réglages pilotés par le joueur ─────────────────────── */
     prix: K.PRIX_INIT,

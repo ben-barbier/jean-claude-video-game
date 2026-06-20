@@ -238,7 +238,7 @@ var UI = (function () {
     txt('stat-loc-livrees', big(g.locLivrees));
     txt('stat-loc-stock', big(g.locStock));
     txt('stat-prod', f(ENGINE.prodBruteParS(g) + g.prodManuelleParS, 1));
-    txt('stat-ventes', f(Math.min(ENGINE.demandeParS(g), g.locStock), 1));
+    txt('stat-ventes', f(g.ventesParS, 1));
 
     // Prompt du terminal : user@main avant l'IA, jean-claude@bac-a-sable après.
     txt('journal-host', g.jcInstalled ? 'jean-claude@bac-a-sable' : 'user@main');
