@@ -9,29 +9,6 @@
   if (!G) { G = nouvelEtat(); nouvellePartie = true; }
   window.G = G; // pratique pour déboguer dans la console
 
-  // Sur mobile, le terminal (Journal) est remonté en tête de page ; sur desktop il reste
-  // dans la 3e colonne. On réagit aux changements de largeur/orientation.
-  (function () {
-    var journal = document.getElementById('journal-fieldset');
-    if (!journal) { return; }
-    var colonneDesktop = journal.parentNode; // 3e colonne (position d'origine)
-    var mq = window.matchMedia('(max-width: 820px)');
-    function placer() {
-      if (mq.matches) {
-        if (journal.parentNode !== document.body) {
-          document.body.insertBefore(journal, document.body.firstChild);
-          journal.classList.add('mobile-top');
-        }
-      } else if (journal.parentNode !== colonneDesktop) {
-        colonneDesktop.appendChild(journal);
-        journal.classList.remove('mobile-top');
-      }
-    }
-    placer();
-    if (mq.addEventListener) { mq.addEventListener('change', placer); }
-    else if (mq.addListener) { mq.addListener(placer); }
-  })();
-
   // Applique une action du joueur puis rafraîchit l'affichage immédiatement.
   function rendreApresAction(fn) { fn(G); UI.render(); }
 

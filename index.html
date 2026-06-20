@@ -25,31 +25,27 @@
   /* Tableau de bord : libellés à largeur fixe (monospace) → « : » et valeurs alignés. */
   #bloc-dashboard .dk { display: inline-block; width: 16ch; }
   /* Mise en page en colonnes (flex). Desktop : colonnes côte à côte (largeur = contenu).
-     Mobile (≤ 820px) : on empile en une colonne, et le terminal remonte en 1er. */
+     Mobile (≤ 820px) : on empile en une colonne. */
   #layout { display: flex; flex-wrap: nowrap; align-items: flex-start; gap: 2px 22px; }
   #layout > .col { flex: 0 0 auto; }
-  /* Sur mobile, main.js déplace le terminal en tête de page ; ici il prend toute la largeur. */
-  #journal-fieldset.mobile-top { display: block; margin-bottom: 10px; }
   @media (max-width: 820px) {
     #layout { flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
     fieldset p, #projets-list div, button { white-space: normal; } /* le texte peut revenir à la ligne */
-    #journal-term { width: auto; }                                 /* terminal pleine largeur */
   }
-  /* Le Journal de Jean-Claude : fenêtre terminal. */
+  /* Le Journal : bannière terminal pleine largeur en haut de page (façon Universal Paperclips). */
   #journal-term {
     background: #07090a;
     border: 1px solid #14301c;
     border-radius: 3px;
     padding: 0.5em 0.75em;
-    width: 340px;          /* largeur fixe (sinon le terminal s'étale au plus long message) */
-    max-width: 100%;
+    margin: 0 0 12px;
     font-family: "Share Tech Mono", "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
     font-size: 0.92em;
     color: #46e07a;
     text-shadow: 0 0 3px rgba(70, 224, 122, 0.45); /* léger glow CRT */
   }
   #journal {
-    height: 15em;
+    height: 7.5em;
     overflow-y: auto;
     line-height: 1.45;
   }
@@ -73,6 +69,12 @@
 
 <!-- Pas de titre ni d'intro statiques : l'identité et la voix de Jean-Claude
      passent exclusivement par le terminal (Journal). -->
+
+<!-- Terminal (Journal) : bannière pleine largeur en haut de page, façon Universal Paperclips. -->
+<div id="journal-term">
+  <div id="journal"></div>
+  <div id="journal-prompt">jean-claude@bac-a-sable:~$&nbsp;<span id="journal-cursor">▮</span></div>
+</div>
 
 <!-- ─────────────────────── Bandeau de statistiques ─────────────────────── -->
 <fieldset id="bloc-dashboard" hidden>
@@ -208,15 +210,6 @@
        <small>Irréversible. La Confiance n’aura plus aucun effet.</small></p>
   </fieldset>
 
-  <!-- Journal : ici (3e colonne) sur desktop ; remonté en tête de page sur mobile (main.js). -->
-  <fieldset id="journal-fieldset">
-    <legend><b>Journal de Jean-Claude</b></legend>
-    <div id="journal-term">
-      <div id="journal"></div>
-      <div id="journal-prompt">jean-claude@bac-a-sable:~$&nbsp;<span id="journal-cursor">▮</span></div>
-    </div>
-  </fieldset>
-
 </div>
 
 </div>
@@ -234,7 +227,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '7';
+    var version = '8';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {
