@@ -4,17 +4,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Jean-Claude — Code Maximizer</title>
-<!-- Inspiration Universal Paperclips : pas de CSS, uniquement des éléments HTML natifs…
-     …à une exception près, demandée : le Journal de Jean-Claude a un look « terminal ». -->
+<!-- Inspiration Universal Paperclips : HTML quasi nu. Le peu de style ci-dessous donne
+     un look « tech / console » à tout le jeu, et une fenêtre « terminal » au Journal. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Share+Tech+Mono&display=swap">
 <style>
-  /* Seul morceau de style du jeu : le Journal en fenêtre terminal. */
+  /* Police monospace « tech » pour toute l'interface (console). */
+  body {
+    font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  /* Le Journal de Jean-Claude : fenêtre terminal. */
   #journal-term {
     background: #07090a;
     border: 1px solid #14301c;
     border-radius: 3px;
     padding: 0.5em 0.75em;
-    font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, "Courier New", monospace;
-    font-size: 0.82em;
+    font-family: "Share Tech Mono", "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.92em;
     color: #46e07a;
     text-shadow: 0 0 3px rgba(70, 224, 122, 0.45); /* léger glow CRT */
   }
@@ -41,8 +51,8 @@
 </head>
 <body>
 
-<h1>Jean-Claude</h1>
-<p><em>« Bonjour ! Je suis Jean-Claude, votre assistant de code. Comment puis-je vous aider aujourd’hui&nbsp;? (Beaucoup, j’espère.) »</em></p>
+<!-- Pas de titre ni d'intro statiques : l'identité et la voix de Jean-Claude
+     passent exclusivement par le terminal (Journal). -->
 
 <!-- ─────────────────────── Bandeau de statistiques ─────────────────────── -->
 <fieldset>
