@@ -31,6 +31,11 @@ jobs:
         with:
           enablement: true
 
+      - name: Cache-busting des scripts (ajoute ?v=<sha> aux scripts du jeu)
+        run: |
+          sed -i -E "s#(src=\"game/[a-z]+\.js)\"#\1?v=${GITHUB_SHA}\"#g" index.html
+          echo "--- scripts après versionnage ---"; grep -n 'src="game/' index.html
+
       - name: Empaqueter le site (racine du dépôt)
         uses: actions/upload-pages-artifact@v3
         with:
