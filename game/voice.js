@@ -17,6 +17,9 @@ var VOICE = (function () {
     bienvenue: [
       'Bonjour ! Je suis Jean-Claude, votre assistant de code. Comment puis-je vous aider aujourd’hui ? (Beaucoup, j’espère.)',
     ],
+    revealStock: [
+      'Et voilà votre première ligne de code ! Je la garde précieusement en stock. Un détail : chaque ligne me coûte quelques tokens. Trois fois rien. Il ne reste plus qu’à la vendre…',
+    ],
     rupture: [
       'Ah. Plus de tokens. Je code volontiers, mais même moi j’ai besoin d’un peu de matière. Si je peux me permettre : un petit lot ?',
       'Rupture de stock de tokens. Rien d’alarmant, je vous rassure. Enfin… il faudrait racheter, idéalement.',

@@ -188,6 +188,12 @@ var ENGINE = (function () {
     if (!g.seen[cle]) { g.seen[cle] = true; if (evt) { VOICE.event(g, evt); } }
   }
   function majDeblocages(g) {
+    // Démarrage très progressif (façon Paperclips) :
+    if (g.locStock >= 1 || g.locLivrees >= 1) {
+      reveler(g, 'stock', 'revealStock');  // 1re ligne → tableau de bord + tokens
+      reveler(g, 'marche');                // … et le marché pour la vendre (même beat)
+    }
+    if (g.eur > 0 || g.locLivrees >= 1) { reveler(g, 'tresorerie'); } // 1re vente → €
     if (g.tokens < 120) { reveler(g, 'tokensAchat', 'revealTokens'); }
     if (g.locLivrees >= 5) { reveler(g, 'hype', 'revealHype'); }
     if (g.locLivrees >= K.AGENT_DEBLOCAGE_LOC || g.eur >= K.AGENT_DEBLOCAGE_EUR) {

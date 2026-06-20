@@ -139,15 +139,21 @@ var UI = (function () {
   function render() {
     if (!g) { return; }
 
-    // Tableau de bord
+    // Tableau de bord — révélé puis garni progressivement (façon Paperclips).
+    montre('bloc-dashboard', g.seen.stock);
+    montre('cell-stock', g.seen.stock);
+    montre('cell-eur', g.seen.tresorerie);
+    montre('cell-livrees', g.locLivrees >= 1);
+    montre('cell-ventes', g.locLivrees >= 1);
+    montre('cell-prod', (g.agents + g.megas) >= 1);
     txt('stat-eur', big(g.eur));
     txt('stat-loc-livrees', big(g.locLivrees));
     txt('stat-loc-stock', big(g.locStock));
     txt('stat-prod', f(ENGINE.prodBruteParS(g), 1));
-    txt('stat-ventes', f(Math.min(ENGINE.demandeParS(g), g.locStock > 0 ? Infinity : ENGINE.demandeParS(g)), 1));
+    txt('stat-ventes', f(Math.min(ENGINE.demandeParS(g), g.locStock), 1));
 
     // Production
-    txt('prod-clic-info', '(−' + f(ENGINE.coutTokenLigne(g), 2) + ' tokens)');
+    txt('prod-clic-info', g.seen.stock ? '(−' + f(ENGINE.coutTokenLigne(g), 2) + ' tokens)' : '');
     montre('bloc-agents', g.seen.agents);
     txt('agents-count', f(g.agents));
     txt('agents-debit', f(ENGINE.prodAgentsParS(g), 1));
@@ -161,6 +167,7 @@ var UI = (function () {
     actif('btn-mega', g.eur >= ENGINE.coutMega(g));
 
     // Tokens
+    montre('bloc-tokens', g.seen.stock);
     var tmax = Math.max(g.tokens, ENGINE.K.LOT_TOKENS);
     var tbar = $('tokens-bar'); if (tbar) { tbar.max = tmax; tbar.value = g.tokens; }
     txt('tokens-val', big(g.tokens));
@@ -170,6 +177,7 @@ var UI = (function () {
     actif('btn-lot', g.eur >= g.prixLot);
 
     // Marché & ventes
+    montre('bloc-marche', g.seen.marche);
     txt('prix-val', f(g.prix, 2));
     txt('demande-val', f(ENGINE.demandeParS(g), 2));
     txt('qualite-val', f(ENGINE.qualite(g) * 100, 0));

@@ -63,6 +63,9 @@ function nouvelEtat() {
 
     /* ── Déblocage progressif de l'interface (§4.4) ─────────── */
     seen: {
+      stock: false,        // 1re ligne écrite → tableau de bord + jauge de tokens
+      marche: false,       // … → panneau marché / vente
+      tresorerie: false,   // 1re vente → €
       tokensAchat: false,
       hype: false,
       agents: false,

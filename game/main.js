@@ -48,4 +48,19 @@
 
   // Reset discret (hors interface) : à taper dans la console du navigateur.
   window.resetJeanClaude = function () { SAVE.effacer(); window.location.reload(); };
+
+  // Double-ÉCHAP (< 800 ms) : proposer de réinitialiser la partie (retour première visite).
+  var dernierEchap = 0;
+  window.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' && e.keyCode !== 27) { return; }
+    var t = Date.now(); // horloge absolue : pas de faux positif au tout début de la page
+    if (t - dernierEchap < 800) {
+      dernierEchap = 0;
+      if (window.confirm('Réinitialiser la partie ? Toute progression sera perdue — vous repartirez de zéro, comme à votre première visite.')) {
+        window.resetJeanClaude();
+      }
+    } else {
+      dernierEchap = t;
+    }
+  });
 })();
