@@ -53,7 +53,10 @@ var UI = (function () {
     $('btn-agent').addEventListener('click', function () { rendreApresAction(ENGINE.acheterAgent); });
     $('btn-mega').addEventListener('click', function () { rendreApresAction(ENGINE.acheterMega); });
     $('btn-lot').addEventListener('click', function () {
-      rendreApresAction(function (s) { if (ENGINE.acheterLot(s)) { VOICE.event(s, 'achatLot'); } });
+      rendreApresAction(function (s) {
+        // Le remerciement n'apparaît qu'à la TOUTE PREMIÈRE recharge (lotsAchetes passe à 1).
+        if (ENGINE.acheterLot(s) && s.lotsAchetes === 1) { VOICE.event(s, 'achatLot'); }
+      });
     });
     $('btn-hype').addEventListener('click', function () { rendreApresAction(ENGINE.acheterHype); });
     $('btn-gpu').addEventListener('click', function () { rendreApresAction(function (s) { ENGINE.allouerConfiance(s, 'gpu'); }); });
