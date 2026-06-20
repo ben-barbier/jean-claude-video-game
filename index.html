@@ -219,11 +219,10 @@
      - En http(s) : on ajoute ?v=<version> pour forcer le navigateur à recharger
        les scripts après une mise à jour (sinon GitHub Pages les sert en cache ~10 min).
      - En file:// : pas de query (sinon le navigateur cherche un fichier « x.js?v=… »).
-     __BUILD__ est remplacé par le SHA du commit au déploiement (workflow Pages) ;
-     sinon il sert de version statique (à bumper en cas de besoin). -->
+     ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '__BUILD__';
+    var version = '2';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {

@@ -31,11 +31,6 @@ jobs:
         with:
           enablement: true
 
-      - name: Cache-busting (remplace __BUILD__ par le SHA du commit)
-        run: |
-          sed -i "s/__BUILD__/${GITHUB_SHA}/g" index.html
-          echo "--- version injectée ---"; grep -n "var version" index.html
-
       - name: Empaqueter le site (racine du dépôt)
         uses: actions/upload-pages-artifact@v3
         with:
