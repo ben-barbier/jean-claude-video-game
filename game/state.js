@@ -7,6 +7,7 @@ function nouvelEtat() {
     /* ── Ressources ─────────────────────────────────────────── */
     eur: K.EUR_INIT,
     tokens: K.TOKENS_INIT,
+    tokensMax: K.TOKENS_INIT, // plus grand stock de tokens jamais atteint (échelle de la jauge)
     locStock: 0,            // lignes produites non vendues
     locLivrees: 0,          // cumul vendu → score + paliers de Confiance
     confianceLibre: K.CONFIANCE_INIT,  // points à allouer
@@ -26,6 +27,8 @@ function nouvelEtat() {
     /* ── Rôle : on est un DEV qui, à terme, installe l'IA ───── */
     jcInstalled: false,    // Jean-Claude installé (débloque tokens, agents, etc.)
     lignesProduites: 0,    // cumul de lignes produites (déclencheur d'installation)
+    clicsAcc: 0,           // lignes écrites à la main depuis le dernier tick (→ débit manuel)
+    prodManuelleParS: 0,   // débit manuel lissé (clics), intégré à « Production »
 
     /* ── Réglages pilotés par le joueur ─────────────────────── */
     prix: K.PRIX_INIT,

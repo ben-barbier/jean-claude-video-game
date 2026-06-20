@@ -24,6 +24,8 @@
   button { white-space: nowrap; touch-action: manipulation; }
   /* Tableau de bord : libellés à largeur fixe (monospace) → « : » et valeurs alignés. */
   #bloc-dashboard .dk { display: inline-block; width: 16ch; }
+  /* La jauge de tokens occupe toute la largeur de son panneau. */
+  #tokens-bar { display: block; width: 100%; }
   /* Mise en page en colonnes (flex). Desktop : colonnes côte à côte (largeur = contenu).
      Mobile (≤ 820px) : on empile en une colonne. */
   #layout { display: flex; flex-wrap: nowrap; align-items: flex-start; gap: 2px 22px; }

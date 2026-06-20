@@ -157,10 +157,23 @@ var UI = (function () {
     montre('projets-vide', visibles.length === 0);
   }
 
-  /* ── Journal ────────────────────────────────────────────────── */
+  /* ── Journal (terminal) — effet « machine à écrire » ─────────────
+   * Les NOUVEAUX messages s'affichent caractère par caractère (vitesse
+   * d'une saisie rapide), avec une pause de 0,5 s à chaque fin de phrase
+   * (. ! ?) et à chaque changement de ligne. Au (re)chargement, l'historique
+   * persisté s'affiche d'un coup (on ne retape pas le passé). */
+  var TYPE_CHAR_MS = 23;     // ≈ 43 car./s : frappe rapide (1,5× plus vite qu'avant)
+  var TYPE_PAUSE_MS = 500;   // fin de phrase (. ! ?) et changement de ligne
+  var TYPE_FILE_MAX = 6;     // au-delà, on rattrape en affichant d'un coup (anti-retard)
+  var typeFile = [];         // messages en attente de frappe (FIFO)
+  var typeActif = false;
+  var typeGen = 0;           // jeton : invalide les frappes en cours après un reset
+
+  // Affichage INSTANTANÉ de tout le journal (lancement / rechargement / rattrapage).
   function rendreJournal() {
     var cont = $('journal');
     if (!cont || !g) { return; }
+    typeGen++; typeFile = []; typeActif = false; // annule toute frappe en cours
     // Préserve la position de lecture : on ne recolle en bas que si l'utilisateur y était.
     var ancien = cont.scrollTop;
     var enBas = (cont.scrollHeight - ancien - cont.clientHeight) < 28;
@@ -173,8 +186,39 @@ var UI = (function () {
     });
     cont.scrollTop = enBas ? cont.scrollHeight : ancien;
   }
-  // Le journal n'est redessiné qu'à l'arrivée d'un message (et non à chaque frame).
-  function onLog() { rendreJournal(); }
+
+  // Le journal n'est mis à jour qu'à l'arrivée d'un message : on tape le plus récent.
+  function onLog() {
+    if (!g || !g.journal.length) { return; }
+    if (typeFile.length >= TYPE_FILE_MAX) { rendreJournal(); return; } // trop de retard → rattrape
+    typeFile.push(g.journal[0].t);
+    if (!typeActif) { typerProchain(); }
+  }
+
+  function typerProchain() {
+    var cont = $('journal');
+    if (!cont || !typeFile.length) { typeActif = false; return; }
+    typeActif = true;
+    var texte = '› ' + typeFile.shift();
+    var p = document.createElement('p');
+    cont.appendChild(p);
+    while (cont.childNodes.length > 50) { cont.removeChild(cont.firstChild); }
+    taperCar(cont, p, texte, 0, typeGen);
+  }
+
+  function taperCar(cont, p, texte, i, gen) {
+    if (gen !== typeGen) { return; }   // un reset a eu lieu : on abandonne cette frappe
+    if (i >= texte.length) {           // ligne finie → pause « changement de ligne »
+      setTimeout(function () { if (gen === typeGen) { typerProchain(); } }, TYPE_PAUSE_MS);
+      return;
+    }
+    var enBas = (cont.scrollHeight - cont.scrollTop - cont.clientHeight) < 28;
+    p.textContent = texte.slice(0, i + 1);
+    if (enBas) { cont.scrollTop = cont.scrollHeight; }
+    var ch = texte.charAt(i);
+    var pause = (ch === '.' || ch === '!' || ch === '?' || ch === '\n');
+    setTimeout(function () { taperCar(cont, p, texte, i + 1, gen); }, pause ? TYPE_PAUSE_MS : TYPE_CHAR_MS);
+  }
 
   /* ── Rendu complet ──────────────────────────────────────────── */
   function render() {
@@ -186,11 +230,11 @@ var UI = (function () {
     montre('cell-eur', g.seen.tresorerie);
     montre('cell-livrees', g.seen.stock);
     montre('cell-ventes', g.seen.stock);
-    montre('cell-prod', (g.agents + g.megas) >= 1);
+    montre('cell-prod', g.seen.stock);
     txt('stat-eur', big(g.eur));
     txt('stat-loc-livrees', big(g.locLivrees));
     txt('stat-loc-stock', big(g.locStock));
-    txt('stat-prod', f(ENGINE.prodBruteParS(g), 1));
+    txt('stat-prod', f(ENGINE.prodBruteParS(g) + g.prodManuelleParS, 1));
     txt('stat-ventes', f(Math.min(ENGINE.demandeParS(g), g.locStock), 1));
 
     // Prompt du terminal : user@main avant l'IA, jean-claude@bac-a-sable après.
@@ -214,7 +258,7 @@ var UI = (function () {
 
     // Tokens
     montre('bloc-tokens', g.seen.tokens);
-    var tmax = Math.max(g.tokens, ENGINE.K.LOT_TOKENS);
+    var tmax = Math.max(g.tokensMax || ENGINE.K.LOT_TOKENS, g.tokens);
     var tbar = $('tokens-bar'); if (tbar) { tbar.max = tmax; tbar.value = g.tokens; }
     txt('tokens-val', big(g.tokens));
     montre('bloc-achat-lot', g.seen.tokensAchat);

@@ -157,11 +157,11 @@ var ENGINE = (function () {
       g.yomi += K.YOMI_PASSIF * g.mult.yomiGain * dt;
     }
 
-    /* 9. Prix des tokens : fluctue ~chaque seconde (random walk avec retour à la moyenne
-     *    vers la cible). On peut « acheter au creux » (façon prix du fil dans Paperclips). */
+    /* 9. Prix des tokens : fluctue toutes les LOT_PRIX_PERIODE secondes (random walk avec
+     *    retour à la moyenne vers la cible). On peut « acheter au creux » (façon Paperclips). */
     g.prixLotTimer += dt;
-    if (g.prixLotTimer >= 1) {
-      g.prixLotTimer -= 1;
+    if (g.prixLotTimer >= K.LOT_PRIX_PERIODE) {
+      g.prixLotTimer -= K.LOT_PRIX_PERIODE;
       var cible = prixLotCible(g);
       var choc = (Math.random() - 0.5) * 2 * K.LOT_VOL;
       g.prixLot += (cible - g.prixLot) * K.LOT_REVERSION + choc;
@@ -169,6 +169,11 @@ var ENGINE = (function () {
       g.prixLot = clamp(g.prixLot, b.bas, b.haut);
     }
 
+    // Débit de production manuelle (clics) lissé, pour l'afficher comme un taux LOC/s.
+    var tauxManuel = dt > 0 ? g.clicsAcc / dt : 0;
+    g.prodManuelleParS += (tauxManuel - g.prodManuelleParS) * 0.3;
+    g.clicsAcc = 0;
+    g.tokensMax = Math.max(g.tokensMax, g.tokens); // pic de tokens → échelle de la jauge
     majDeblocages(g);
   }
 
@@ -236,6 +241,7 @@ var ENGINE = (function () {
     if (g.deployed) { return; }
     g.locStock += 1;
     g.lignesProduites += 1;
+    g.clicsAcc += 1; // alimente le débit de production manuelle affiché
     var pb = prodBruteParS(g);
     g.dette += K.BASE_DETTE * K.SF_CLIC * factVelocite(pb)
       * g.mult.detteParLigne * g.mult.detteAccum;
