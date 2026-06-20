@@ -152,8 +152,8 @@ var UI = (function () {
     txt('stat-prod', f(ENGINE.prodBruteParS(g), 1));
     txt('stat-ventes', f(Math.min(ENGINE.demandeParS(g), g.locStock), 1));
 
-    // Production
-    txt('prod-clic-info', g.seen.stock ? '(−' + f(ENGINE.coutTokenLigne(g), 2) + ' tokens)' : '');
+    // Production (seul endroit où le coût en tokens par ligne est rappelé)
+    txt('prod-clic-info', g.seen.stock ? '(coût : ' + f(ENGINE.coutTokenLigne(g), 2) + ' token/ligne)' : '');
     montre('bloc-agents', g.seen.agents);
     txt('agents-count', f(g.agents));
     txt('agents-debit', f(ENGINE.prodAgentsParS(g), 1));
@@ -171,7 +171,6 @@ var UI = (function () {
     var tmax = Math.max(g.tokens, ENGINE.K.LOT_TOKENS);
     var tbar = $('tokens-bar'); if (tbar) { tbar.max = tmax; tbar.value = g.tokens; }
     txt('tokens-val', big(g.tokens));
-    txt('token-cout', f(ENGINE.coutTokenLigne(g), 2));
     montre('bloc-achat-lot', g.seen.tokensAchat);
     txt('lot-prix', f(g.prixLot, 2));
     actif('btn-lot', g.eur >= g.prixLot);

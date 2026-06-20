@@ -20,6 +20,8 @@
   /* Les lignes des panneaux et du tableau de bord tiennent sur une seule ligne. */
   fieldset p, #bloc-dashboard div, #projets-list div { white-space: nowrap; }
   button { white-space: nowrap; }
+  /* Tableau de bord : libellés à largeur fixe (monospace) → « : » et valeurs alignés. */
+  #bloc-dashboard .dk { display: inline-block; width: 16ch; }
   /* Le Journal de Jean-Claude : fenêtre terminal. */
   #journal-term {
     background: #07090a;
@@ -60,11 +62,11 @@
 <!-- ─────────────────────── Bandeau de statistiques ─────────────────────── -->
 <fieldset id="bloc-dashboard" hidden>
   <legend><b>Tableau de bord</b></legend>
-  <div id="cell-eur" hidden>Trésorerie&nbsp;: <span id="stat-eur">0</span>&nbsp;€</div>
-  <div id="cell-livrees" hidden>Lignes livrées&nbsp;: <span id="stat-loc-livrees">0</span></div>
-  <div id="cell-stock" hidden>Lignes en stock&nbsp;: <span id="stat-loc-stock">0</span></div>
-  <div id="cell-prod" hidden>Production&nbsp;: <span id="stat-prod">0</span>&nbsp;lignes/s</div>
-  <div id="cell-ventes" hidden>Ventes&nbsp;: <span id="stat-ventes">0</span>&nbsp;lignes/s</div>
+  <div id="cell-eur" hidden><span class="dk">Trésorerie</span>: <span id="stat-eur">0</span>&nbsp;€</div>
+  <div id="cell-livrees" hidden><span class="dk">Lignes livrées</span>: <span id="stat-loc-livrees">0</span></div>
+  <div id="cell-stock" hidden><span class="dk">Lignes en stock</span>: <span id="stat-loc-stock">0</span></div>
+  <div id="cell-prod" hidden><span class="dk">Production</span>: <span id="stat-prod">0</span>&nbsp;lignes/s</div>
+  <div id="cell-ventes" hidden><span class="dk">Ventes</span>: <span id="stat-ventes">0</span>&nbsp;lignes/s</div>
 </fieldset>
 
 <!-- ─────────────────────── Grille principale (mise en page sans CSS) ──────── -->
@@ -98,8 +100,7 @@
   <fieldset id="bloc-tokens" hidden>
     <legend><b>Tokens de génération</b></legend>
     <p><progress id="tokens-bar" value="0" max="1000"></progress><br>
-       <span id="tokens-val">0</span> tokens —
-       coût&nbsp;: <span id="token-cout">1</span> token/ligne</p>
+       <span id="tokens-val">0</span> tokens</p>
     <div id="bloc-achat-lot" hidden>
       <p><button id="btn-lot" type="button">Acheter un lot de 1000 tokens</button>
          — <span id="lot-prix">15</span>&nbsp;€
@@ -221,7 +222,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '2';
+    var version = '3';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {
