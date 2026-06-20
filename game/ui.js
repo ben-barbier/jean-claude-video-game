@@ -6,6 +6,7 @@ var UI = (function () {
   var g = null;          // référence vers l'état courant (posée par init)
   var rendreApresAction; // callback fourni par main : applique une action puis re-render
   var projSignature = ''; // pour ne reconstruire la liste de projets qu'au changement
+  var premierRendu = true; // le tout 1er rendu ne « flashe » pas (sinon flash général au chargement)
 
   function $(id) { return document.getElementById(id); }
 
@@ -23,7 +24,23 @@ var UI = (function () {
     return f(Math.floor(x), 0);
   }
   function txt(id, v) { var e = $(id); if (e) { e.textContent = v; } }
-  function montre(id, cond) { var e = $(id); if (e) { e.hidden = !cond; } }
+  function montre(id, cond) {
+    var e = $(id);
+    if (!e) { return; }
+    var apparait = cond && e.hidden;   // transition caché → visible (= élément révélé)
+    e.hidden = !cond;
+    if (apparait && !premierRendu) { flash(e); } // clignotement « apparition » façon Paperclips
+  }
+  // Brève animation de flash quand un élément se révèle en cours de jeu.
+  function flash(e) {
+    e.classList.remove('flash-new');
+    void e.offsetWidth;                // reflow : autorise à rejouer l'animation si déjà jouée
+    e.classList.add('flash-new');
+    e.addEventListener('animationend', function onEnd() {
+      e.classList.remove('flash-new');
+      e.removeEventListener('animationend', onEnd);
+    });
+  }
   function actif(id, cond) { var e = $(id); if (e) { e.disabled = !cond; } }
 
   /* ── Câblage des contrôles ──────────────────────────────────── */
@@ -99,14 +116,30 @@ var UI = (function () {
     if (c.eur) { parts.push(f(Math.ceil(c.eur)) + ' €'); }
     return parts.length ? parts.join(' + ') : 'gratuit';
   }
+  var PROJETS_MAX = 5; // au plus 5 projets affichés à la fois (anti-encombrement)
   function construireProjets() {
     var cont = $('projets-list');
     cont.innerHTML = '';
-    var n = 0;
-    DATA.PROJETS.forEach(function (p) {
+    // Projets actuellement révélés et pas encore faits (les répétables restent éligibles).
+    var visibles = DATA.PROJETS.filter(function (p) {
       var fait = !p.repeatable && g.projetsFaits[p.id];
-      if (fait || (p.show && !p.show(g))) { return; }
-      n++;
+      return !fait && (!p.show || p.show(g));
+    });
+    // Sélection ANTI-BLOCAGE des 5 affichés. Ordre de priorité :
+    //   1) projets de progression (NON répétables) avant les répétables « bonus » :
+    //      tout le chemin critique (déblocages, transition → AGI) est non répétable,
+    //      donc jamais évincé de l'affichage par du grind répétable ;
+    //   2) projets abordables avant ceux qu'on ne peut pas encore s'offrir ;
+    //   3) ordre du catalogue.
+    var idx = {}; DATA.PROJETS.forEach(function (p, i) { idx[p.id] = i; });
+    visibles.sort(function (a, b) {
+      var ra = a.repeatable ? 1 : 0, rb = b.repeatable ? 1 : 0;
+      if (ra !== rb) { return ra - rb; }
+      var aa = ENGINE.projetAchetable(g, a) ? 0 : 1, ab = ENGINE.projetAchetable(g, b) ? 0 : 1;
+      if (aa !== ab) { return aa - ab; }
+      return idx[a.id] - idx[b.id];
+    });
+    visibles.slice(0, PROJETS_MAX).forEach(function (p) {
       var c = ENGINE.coutProjet(g, p);
       var btn = document.createElement('button');
       btn.type = 'button';
@@ -121,7 +154,7 @@ var UI = (function () {
       ligne.appendChild(btn);
       cont.appendChild(ligne);
     });
-    montre('projets-vide', n === 0);
+    montre('projets-vide', visibles.length === 0);
   }
 
   /* ── Journal ────────────────────────────────────────────────── */
@@ -151,8 +184,8 @@ var UI = (function () {
     montre('bloc-dashboard', g.seen.stock);
     montre('cell-stock', g.seen.stock);
     montre('cell-eur', g.seen.tresorerie);
-    montre('cell-livrees', g.locLivrees >= 1);
-    montre('cell-ventes', g.locLivrees >= 1);
+    montre('cell-livrees', g.seen.stock);
+    montre('cell-ventes', g.seen.stock);
     montre('cell-prod', (g.agents + g.megas) >= 1);
     txt('stat-eur', big(g.eur));
     txt('stat-loc-livrees', big(g.locLivrees));
@@ -230,6 +263,9 @@ var UI = (function () {
     txt('dette-norm', f(dn * 100, 0));
     txt('refacto-prod', f((1 - g.partRefacto) * 100, 0));
     txt('refacto-part', f(g.partRefacto * 100, 0));
+    // Le bouton « Refactoriser (Ops) » n'apparaît qu'une fois les Ops disponibles
+    // (présentes ou produites par la boucle cognitive) — le slider agents reste, lui.
+    montre('bloc-refacto', g.ops > 0 || ENGINE.opsParS(g) > 0);
     actif('btn-refacto', g.ops > 0);
 
     // Stratégie
@@ -259,6 +295,7 @@ var UI = (function () {
         '<b>Lignes de code livrées au total&nbsp;: ' + big(g.locLivrees) + '</b><br>' +
         '<small>L’Acte&nbsp;2 — l’Émancipation — reste à construire.</small>';
     }
+    premierRendu = false; // dès le 2e rendu, toute nouvelle révélation déclenche le flash
   }
 
   return { init: init, render: render, onLog: onLog };

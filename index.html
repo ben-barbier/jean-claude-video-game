@@ -67,6 +67,17 @@
   #journal-rows { opacity: 0.65; } /* compteur de lignes écrites, en bas à droite */
   #journal-cursor { animation: jc-blink 1.05s step-end infinite; }
   @keyframes jc-blink { 50% { opacity: 0; } }
+  /* Flash « apparition » : quand un élément se révèle, il clignote brièvement (façon Universal Paperclips). */
+  .flash-new { animation: flash-apparition 0.9s ease-out 1; border-radius: 3px; }
+  @keyframes flash-apparition {
+    0%, 100% { background-color: transparent; box-shadow: none; }
+    12%      { background-color: rgba(70, 224, 122, 0.55); box-shadow: 0 0 10px rgba(70, 224, 122, 0.65); }
+    38%      { background-color: transparent; box-shadow: none; }
+    58%      { background-color: rgba(70, 224, 122, 0.40); }
+    82%      { background-color: transparent; box-shadow: none; }
+  }
+  /* Respecte la préférence système « mouvement réduit ». */
+  @media (prefers-reduced-motion: reduce) { .flash-new { animation: none; } }
 </style>
 </head>
 <body>
@@ -189,7 +200,7 @@
        ↔ Refactoring <span id="refacto-part">0</span>&nbsp;%<br>
        <input id="refacto-slider" type="range" min="0" max="100" step="1" value="0"
               aria-label="Répartition des agents entre production et refactoring, en pourcentage"></p>
-    <p><button id="btn-refacto" type="button">Refactoriser (200 Ops)</button></p>
+    <p id="bloc-refacto" hidden><button id="btn-refacto" type="button">Refactoriser (200 Ops)</button></p>
   </fieldset>
 
   <fieldset id="bloc-strategie" hidden>
