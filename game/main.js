@@ -43,11 +43,18 @@
   }
   requestAnimationFrame(frame);
 
-  // Sauvegarde de courtoisie à la fermeture.
-  window.addEventListener('beforeunload', function () { SAVE.sauver(G); });
+  // Sauvegarde de courtoisie à la fermeture — SAUF pendant une réinitialisation
+  // (sinon le reload re-sauverait G juste après l'avoir effacé : reset annulé).
+  var reinitEnCours = false;
+  window.addEventListener('beforeunload', function () { if (!reinitEnCours) { SAVE.sauver(G); } });
 
-  // Reset discret (hors interface) : à taper dans la console du navigateur.
-  window.resetJeanClaude = function () { SAVE.effacer(); window.location.reload(); };
+  // Reset (console ou double-ÉCHAP) : on coupe l'autosave et la sauvegarde de fermeture.
+  window.resetJeanClaude = function () {
+    reinitEnCours = true;
+    depuisSave = -1e9; // neutralise l'autosave périodique d'ici au reload
+    SAVE.effacer();
+    window.location.reload();
+  };
 
   // Double-ÉCHAP (< 800 ms) : proposer de réinitialiser la partie (retour première visite).
   var dernierEchap = 0;
