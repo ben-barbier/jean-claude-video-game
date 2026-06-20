@@ -218,7 +218,7 @@ var ENGINE = (function () {
 
     // ── Phase « IA » (Jean-Claude installé) ───────────────────────────────
     reveler(g, 'tokens');                    // budget de génération de l'IA
-    reveler(g, 'agents', 'revealAgents');    // les auto-codeurs = agents de l'IA
+    reveler(g, 'agents', 'revealAgents');    // agents : production automatisée par l'IA
     if (g.locLivrees >= 5) { reveler(g, 'hype', 'revealHype'); }
     if (g.tokens < 120) { reveler(g, 'tokensAchat', 'revealTokens'); }
     if (g.paliersConfiance >= 1) { reveler(g, 'confiance', 'revealConfiance'); }
@@ -229,7 +229,7 @@ var ENGINE = (function () {
   /* ── Actions du joueur ──────────────────────────────────────── */
 
   // Écrire une ligne À LA MAIN : c'est VOTRE travail de dev → GRATUIT (aucun token).
-  // Seule la génération par l'IA (auto-codeurs) consomme des tokens.
+  // Seule la génération par l'IA (agents) consomme des tokens.
   function ecrireLigne(g) {
     if (g.deployed) { return; }
     g.locStock += 1;
@@ -240,7 +240,7 @@ var ENGINE = (function () {
     majDeblocages(g);
   }
 
-  // Installer Jean-Claude (l'assistant IA) : débloque les tokens, les auto-codeurs, etc.
+  // Installer Jean-Claude (l'assistant IA) : débloque les tokens, les agents, etc.
   function installerJC(g) {
     if (g.jcInstalled || g.deployed) { return false; }
     if (g.lignesProduites < K.JC_INSTALL_SEUIL) { return false; }
@@ -253,7 +253,7 @@ var ENGINE = (function () {
   }
 
   function acheterAgent(g) {
-    if (!g.jcInstalled) { return false; } // les auto-codeurs sont des agents de l'IA
+    if (!g.jcInstalled) { return false; } // les agents sont déployés par l'IA (installation requise)
     var c = coutAgent(g);
     if (g.eur < c) { return false; }
     g.eur -= c; g.agents += 1; return true;

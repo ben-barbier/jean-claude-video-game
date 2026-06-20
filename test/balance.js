@@ -41,7 +41,7 @@ function step(ctx, G, clicksPerSec, journal) {
     G._acc = (G._acc || 0) + manualRate * K.DT;
     while (G._acc >= 1) { ENGINE.ecrireLigne(G); G._acc -= 1; journal.clics++; } // gratuit
   }
-  // Installer Jean-Claude dès que possible (débloque tokens / auto-codeurs / …).
+  // Installer Jean-Claude dès que possible (débloque tokens / agents / …).
   if (!G.jcInstalled && G.lignesProduites >= K.JC_INSTALL_SEUIL) { ENGINE.installerJC(G); }
   // 2. Prix optimal : viser une demande un peu au-dessus de la production pour écouler.
   const Pauto = ENGINE.prodBruteParS(G);

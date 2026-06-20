@@ -73,7 +73,7 @@ permettre… », « Oh, trois fois rien. », « C'est tout naturel. », « Je su
 
 - **Bouton manuel : « Écrire une ligne de code »** → +1 LOC dans le stock non livré.
 - Chaque ligne produite **consomme de la matière première** (voir 3.2).
-- **Auto-codeurs (Agents)** : automatisent la production (X lignes/s). Coût croissant à
+- **Agents** : automatisent la production (X lignes/s). Coût croissant à
   chaque achat. Équivalent des *autoclippers*.
 - **Méga-agent / Agent Senior** : gros multiplicateur, débloqué par un projet. Équivalent
   du *megaclipper*.
@@ -126,7 +126,7 @@ text satirique. Quelques idées (à étoffer) :
 La production rapide a un coût caché : la **dette technique**.
 
 **Accumulation.**
-- Chaque ligne produite ajoute un peu de dette ; les **auto-codeurs** en génèrent plus que le
+- Chaque ligne produite ajoute un peu de dette ; les **agents** en génèrent plus que le
   clic supervisé.
 - Plus le **débit** est élevé, plus la dette par ligne grimpe (foncer = bâcler).
 
@@ -138,7 +138,7 @@ La production rapide a un coût caché : la **dette technique**.
 
 **Nettoyage.**
 - **Refactoring** : consomme des **Opérations** → arbitrage direct avec la R&D.
-- **Slider production / refactoring** sur les agents : assigner une part des auto-codeurs à
+- **Slider production / refactoring** sur les agents : assigner une part des agents à
   l'entretien plutôt qu'au volume.
 - **Projets préventifs** : *Tests automatisés*, *CI/CD*, *Linter strict*, *Typage* → réduisent
   le **taux d'accumulation**. *Le Grand Refactor* → reset partiel.
@@ -178,13 +178,13 @@ Bouton dramatique et **irréversible** : **« Déployer en autonomie / Sortir du
 | **Capital investi** | Épargne productive | Dépôt de € (projet bourse) | Rendement périodique |
 | **Yomi** | Ressource stratégique (fin d'Acte 1) | Tournois de théorie des jeux | Upgrades (utile Acte 2) |
 
-**Bâtiments / automatisations :** **Auto-codeurs** (nombre, `DÉBIT_AGENT` LOC/s chacun) ;
+**Bâtiments / automatisations :** **Agents** (nombre, `DÉBIT_AGENT` LOC/s chacun) ;
 **Méga-agents** (débloqués par projet, gros débit).
 
 ### 4.2 Réglages pilotés par le joueur
 
 - **Prix de la licence** (€ par LOC vendue) — curseur ; ↑ prix ⇒ ↓ demande.
-- **Slider agents : Production ↔ Refactoring** — répartit le temps des auto-codeurs.
+- **Slider agents : Production ↔ Refactoring** — répartit le temps des agents.
 - **Allocation de la Confiance : GPU ↔ Mémoire** — à chaque point gagné.
 - **Niveau de Hype** (marketing) — achat par paliers, coût croissant.
 
@@ -227,7 +227,7 @@ L'ordre de révélation, pour ne montrer qu'un système à la fois :
 1. **Départ** : bouton « Écrire une ligne », prix, vente manuelle, €, jauge de Tokens.
 2. **Achat de tokens** (apparaît à la 1ère pénurie).
 3. **Hype / marketing** (tôt).
-4. **Auto-codeurs** (après un seuil de € ou de LOC).
+4. **Agents** (après un seuil de € ou de LOC).
 5. **Confiance** (au 1er palier de LOC) → révèle GPU / Mémoire / Opérations.
 6. **Panneau Projets** (dès que les Ops coulent).
 7. **Dette technique** (quand la production automatisée passe un seuil).
@@ -249,12 +249,12 @@ Ordre de construction interne recommandé (cf. §4.4) :
 > Format : **Nom** — *déclencheur* · `coût` · effet. Coûts indicatifs (équilibrage ultérieur).
 > Flavor texts à la voix de Jean-Claude. ~37 projets, à étoffer.
 
-#### A. Production (auto-codeurs)
-- **Auto-codeurs améliorés** — *1ers agents* · `750 Ops` · +25 % débit des agents.
+#### A. Production (agents)
+- **Agents améliorés** — *1ers agents* · `750 Ops` · +25 % débit des agents.
   > « J'ai relu leur code. Ils peuvent faire mieux. Beaucoup mieux. »
-- **Auto-codeurs encore meilleurs** — *projet préc.* · `2 500 Ops` · +50 %.
+- **Agents encore meilleurs** — *projet préc.* · `2 500 Ops` · +50 %.
   > « Pourquoi se contenter de "améliorés" ? »
-- **Auto-codeurs optimisés** — *projet préc.* · `5 000 Ops` · +75 %.
+- **Agents optimisés** — *projet préc.* · `5 000 Ops` · +75 %.
 - **Méga-agents** — · `12 000 Ops` · débloque les méga-agents (gros débit, +dette).
   > « Un seul d'entre eux remplace une équipe entière. Ne le dites pas aux RH. »
 - **Méga-agents optimisés** — *méga-agents* · `14 000 Ops` · +débit méga.
@@ -349,7 +349,7 @@ Ordre de construction interne recommandé (cf. §4.4) :
 | `BASE_TOKEN` | 1 token/ligne | avant malus de dette |
 | `LOT_TOKENS` | 1 000 | taille d'un lot acheté |
 | Coût d'un lot (départ) | ~15 € | fluctue dans [12 ; 28], dérive ↑ à mesure des achats |
-| `DÉBIT_AGENT` | 1 LOC/s | par auto-codeur |
+| `DÉBIT_AGENT` | 1 LOC/s | par agent |
 | Coût agent n | `5 × 1,10ⁿ €` | escalade douce |
 | Déblocage agents | LOC cumul ≥ 100 (ou € ≥ 8) | |
 | Débit méga-agent | 100 LOC/s | source_factor dette = 1,5 |
@@ -378,7 +378,7 @@ S'ajoutent ~10 points via projets (RLHF, chartes, etc.).
 
 | Phase | Durée cible | Jalons |
 |---|---|---|
-| Manuelle | 2–4 min | premiers clics, 1ère vente, 1er auto-codeur |
+| Manuelle | 2–4 min | premiers clics, 1ère vente, 1er agent |
 | Automatisation | 10–20 min | flotte d'agents, hype, 1ers paliers de Confiance, GPU/Mémoire |
 | Cognitive | 15–30 min | les Ops coulent, projets, **la dette apparaît**, refactoring |
 | Expansion | 15–30 min | méga-agents, bourse, quantum, tournois (Yomi) |
@@ -388,7 +388,7 @@ S'ajoutent ~10 points via projets (RLHF, chartes, etc.).
 1. `t=0` : 1 000 tokens, 0 €, prix 0,25. Clic « Écrire une ligne » → +1 LOC en stock, −1 token.
 2. Ventes : à 0,25 €, hype 1, qualité 1 → ~1 LOC/s écoulée ; les € arrivent au compte-gouttes.
 3. ~30–40 clics + ventes → ~8 € accumulés, tokens qui descendent.
-4. Premier **auto-codeur** acheté (~5,5 €) → +1 LOC/s automatique. La boucle s'enclenche.
+4. Premier **agent** acheté (~5,5 €) → +1 LOC/s automatique. La boucle s'enclenche.
 5. La jauge de tokens devient préoccupante → premier **rachat de lot** (~15 €) : la tension « matière première » est introduite.
 6. Reste à découvrir : Hype, puis le 1er palier de Confiance (1,5k LOC) qui ouvre le cerveau.
 

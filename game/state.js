@@ -24,7 +24,7 @@ function nouvelEtat() {
     megas: 0,
 
     /* ── Rôle : on est un DEV qui, à terme, installe l'IA ───── */
-    jcInstalled: false,    // Jean-Claude installé (débloque tokens, auto-codeurs, etc.)
+    jcInstalled: false,    // Jean-Claude installé (débloque tokens, agents, etc.)
     lignesProduites: 0,    // cumul de lignes produites (déclencheur d'installation)
 
     /* ── Réglages pilotés par le joueur ─────────────────────── */

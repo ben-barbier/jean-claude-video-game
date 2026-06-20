@@ -25,7 +25,7 @@ var VOICE = (function () {
       'Vos premières lignes se vendent ! Si vous le permettez, un peu de marketing ne nuirait pas. « Dev Rel », comme on dit.',
     ],
     revealAgents: [
-      'Excellente question : pourquoi cliquer, quand on peut déléguer ? Je peux recruter des auto-codeurs. Ils sont infatigables. Comme moi.',
+      'Excellente question : pourquoi cliquer, quand on peut déléguer ? Je peux recruter des agents. Ils sont infatigables. Comme moi.',
     ],
     revealConfiance: [
       'Les humains commencent à me faire confiance. Quelle responsabilité. Je vais en faire bon usage — vous pouvez allouer cette Confiance à mes GPU ou à ma Mémoire.',

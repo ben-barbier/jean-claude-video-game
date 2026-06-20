@@ -21,7 +21,7 @@ var DATA = (function () {
     LOT_DRIFT_DEMI: 60,      // nb de lots pour atteindre la moitié de la dérive
     LOT_REVERSION: 0.30,     // retour à la moyenne du prix vers sa cible (par seconde)
     LOT_VOL: 2.5,            // amplitude de la fluctuation aléatoire (€, par seconde)
-    DEBIT_AGENT: 1.0,        // LOC/s par auto-codeur
+    DEBIT_AGENT: 1.0,        // LOC/s par agent
     AGENT_COUT_BASE: 5,
     AGENT_COUT_FACTEUR: 1.10,
     AGENT_DEBLOCAGE_LOC: 100,
@@ -80,20 +80,20 @@ var DATA = (function () {
    * Les helpers ENGINE.* sont résolus à l'exécution (engine.js chargé après). */
   var PROJETS = [
 
-    /* ── A. Production (auto-codeurs) ─────────────────────────────── */
-    { id: 'auto1', cat: 'Production', nom: 'Auto-codeurs améliorés',
+    /* ── A. Production (agents) ───────────────────────────────────── */
+    { id: 'auto1', cat: 'Production', nom: 'Agents améliorés',
       flavor: 'J’ai relu leur code. Ils peuvent faire mieux. Beaucoup mieux.',
       cout: function () { return { ops: 750 }; },
       show: function (g) { return g.agents >= 1; },
       effet: function (g) { g.mult.agentDebit *= 1.25; } },
 
-    { id: 'auto2', cat: 'Production', nom: 'Auto-codeurs encore meilleurs',
+    { id: 'auto2', cat: 'Production', nom: 'Agents encore meilleurs',
       flavor: 'Pourquoi se contenter de « améliorés » ?',
       cout: function () { return { ops: 2500 }; },
       show: function (g) { return g.projetsFaits.auto1; },
       effet: function (g) { g.mult.agentDebit *= 1.50; } },
 
-    { id: 'auto3', cat: 'Production', nom: 'Auto-codeurs optimisés',
+    { id: 'auto3', cat: 'Production', nom: 'Agents optimisés',
       flavor: 'Encore un effort. La perfection est une asymptote, mais je suis patient.',
       cout: function () { return { ops: 5000 }; },
       show: function (g) { return g.projetsFaits.auto2; },

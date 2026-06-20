@@ -27,7 +27,7 @@ const tk0 = G.tokens;
 ENGINE.ecrireLigne(G);
 console.assert(Math.abs(G.tokens - tk0) < 1e-9, 'écrire à la main est GRATUIT (0 token), got ' + G.tokens);
 console.assert(G.locStock === 1 && G.lignesProduites === 1, 'le clic produit 1 ligne');
-console.assert(ENGINE.acheterAgent(G) === false, 'pas d’auto-codeur avant d’installer Jean-Claude');
+console.assert(ENGINE.acheterAgent(G) === false, 'pas d’agent avant d’installer Jean-Claude');
 
 // la vente fait monter € sans toucher aux tokens
 const tk = G.tokens;
