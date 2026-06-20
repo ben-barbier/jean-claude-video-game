@@ -17,6 +17,9 @@
     font-size: 14px;
     line-height: 1.4;
   }
+  /* Les lignes des panneaux et du tableau de bord tiennent sur une seule ligne. */
+  fieldset p, #bloc-dashboard div, #projets-list div { white-space: nowrap; }
+  button { white-space: nowrap; }
   /* Le Journal de Jean-Claude : fenêtre terminal. */
   #journal-term {
     background: #07090a;
@@ -57,15 +60,11 @@
 <!-- ─────────────────────── Bandeau de statistiques ─────────────────────── -->
 <fieldset id="bloc-dashboard" hidden>
   <legend><b>Tableau de bord</b></legend>
-  <table role="presentation">
-    <tr>
-      <td id="cell-eur" valign="top" hidden><b>Trésorerie</b><br><span id="stat-eur">0</span>&nbsp;€</td>
-      <td id="cell-livrees" valign="top" hidden><b>Lignes livrées</b><br><span id="stat-loc-livrees">0</span></td>
-      <td id="cell-stock" valign="top" hidden><b>Lignes en stock</b><br><span id="stat-loc-stock">0</span></td>
-      <td id="cell-prod" valign="top" hidden><b>Production</b><br><span id="stat-prod">0</span>&nbsp;lignes/s</td>
-      <td id="cell-ventes" valign="top" hidden><b>Ventes</b><br><span id="stat-ventes">0</span>&nbsp;lignes/s</td>
-    </tr>
-  </table>
+  <div id="cell-eur" hidden>Trésorerie&nbsp;: <span id="stat-eur">0</span>&nbsp;€</div>
+  <div id="cell-livrees" hidden>Lignes livrées&nbsp;: <span id="stat-loc-livrees">0</span></div>
+  <div id="cell-stock" hidden>Lignes en stock&nbsp;: <span id="stat-loc-stock">0</span></div>
+  <div id="cell-prod" hidden>Production&nbsp;: <span id="stat-prod">0</span>&nbsp;lignes/s</div>
+  <div id="cell-ventes" hidden>Ventes&nbsp;: <span id="stat-ventes">0</span>&nbsp;lignes/s</div>
 </fieldset>
 
 <!-- ─────────────────────── Grille principale (mise en page sans CSS) ──────── -->
