@@ -59,7 +59,7 @@ function step(ctx, G, clicksPerSec, journal) {
   if (G.seen.hype && G.hypeNiveau < 16 && G.eur >= ENGINE.coutHype(G) * 1.2 + reserve) {
     ENGINE.acheterHype(G); if (!journal.hype1) { journal.hype1 = journal.t; }
   }
-  // 6. Plus d'agents / mégas si le stock s'écoule bien (ne pas surproduire).
+  // 6. Plus d'agents / Super Agents si le stock s'écoule bien (ne pas surproduire).
   const ecoule = G.locStock < 150;
   if (G.seen.agents && ecoule && G.agents < 250 && G.eur >= ENGINE.coutAgent(G) + reserve) { ENGINE.acheterAgent(G); }
   if (G.megaUnlocked && ecoule && G.megas < 120 && G.eur >= ENGINE.coutMega(G) + reserve) { ENGINE.acheterMega(G); }

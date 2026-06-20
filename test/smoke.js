@@ -117,7 +117,7 @@ for (let i = 0; i < TICKS; i++) {
   if (G.seen.projets) { jalon('projets', t); }
   if (G.seen.dette) { jalon('dette révélée', t); }
   if (G.creaUnlocked) { jalon('créativité', t); }
-  if (G.megaUnlocked) { jalon('méga-agents', t); }
+  if (G.megaUnlocked) { jalon('Super Agents', t); }
   if (G.bourseUnlocked) { jalon('bourse', t); }
   if (G.quantumUnlocked) { jalon('quantique', t); }
   if (G.tournoisUnlocked) { jalon('tournois (Yomi)', t); }
@@ -140,7 +140,7 @@ Object.keys(milestones).forEach(function (k) {
 console.log('\n=== État final ===');
 console.log('  €              ', Math.round(G.eur).toLocaleString('fr-FR'));
 console.log('  LOC livrées    ', Math.round(G.locLivrees).toLocaleString('fr-FR'));
-console.log('  agents/mégas   ', G.agents, '/', G.megas);
+console.log('  agents/super   ', G.agents, '/', G.megas);
 console.log('  GPU/Mém        ', G.gpu, '/', G.mem);
 console.log('  Ops/plafond    ', Math.round(G.ops), '/', ENGINE.opsPlafond(G));
 console.log('  Créativité     ', Math.round(G.creativite));

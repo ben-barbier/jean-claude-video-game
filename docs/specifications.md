@@ -75,7 +75,7 @@ permettre… », « Oh, trois fois rien. », « C'est tout naturel. », « Je su
 - Chaque ligne produite **consomme de la matière première** (voir 3.2).
 - **Agents** : automatisent la production (X lignes/s). Coût croissant à
   chaque achat. Équivalent des *autoclippers*.
-- **Méga-agent / Agent Senior** : gros multiplicateur, débloqué par un projet. Équivalent
+- **Super Agent** : gros multiplicateur, débloqué par un projet. Équivalent
   du *megaclipper*.
 
 ### 3.2 Matière première : les Tokens
@@ -179,7 +179,7 @@ Bouton dramatique et **irréversible** : **« Déployer en autonomie / Sortir du
 | **Yomi** | Ressource stratégique (fin d'Acte 1) | Tournois de théorie des jeux | Upgrades (utile Acte 2) |
 
 **Bâtiments / automatisations :** **Agents** (nombre, `DÉBIT_AGENT` LOC/s chacun) ;
-**Méga-agents** (débloqués par projet, gros débit).
+**Super Agents** (débloqués par projet, gros débit).
 
 ### 4.2 Réglages pilotés par le joueur
 
@@ -205,7 +205,7 @@ Bouton dramatique et **irréversible** : **« Déployer en autonomie / Sortir du
 - Accumulation : dette += `prod_brute` × `dette_par_ligne`.
   - `dette_par_ligne` = `BASE_DETTE` × source_factor × (1 + `K_VÉLOCITÉ` × prod_brute/`SEUIL`)
     × ∏(réductions projets préventifs).
-  - source_factor : clic manuel ≈ 0,2 ; agent standard = 1 ; méga-agent ≈ 1,5 (rapide mais sale).
+  - source_factor : clic manuel ≈ 0,2 ; agent standard = 1 ; Super Agent ≈ 1,5 (rapide mais sale).
 - Réduction : dette −= (Ops de refacto × `TAUX_REFACTO`) + (`N_agents` × `part_refactoring` × `TAUX_AGENT_REFACTO`).
 - `dette_norm` = dette normalisée (vs taille de la base) → pilote les malus par paliers.
 
@@ -232,7 +232,7 @@ L'ordre de révélation, pour ne montrer qu'un système à la fois :
 6. **Panneau Projets** (dès que les Ops coulent).
 7. **Dette technique** (quand la production automatisée passe un seuil).
 8. **Refactoring + slider** (avec la dette).
-9. **Bourse**, **calcul quantique**, **méga-agents**, **tournois (Yomi)** — via projets, milieu/fin d'acte.
+9. **Bourse**, **calcul quantique**, **Super Agents**, **tournois (Yomi)** — via projets, milieu/fin d'acte.
 10. **Découverte de l'AGI** + bouton **« Déployer en autonomie »** → Acte 2.
 
 ### 4.5 Périmètre du MVP = l'Acte 1 complet
@@ -242,7 +242,7 @@ Ordre de construction interne recommandé (cf. §4.4) :
 
 - **Tranche 1 (boucle jouable)** : étapes 1-4 → produire, gérer les tokens, vendre, automatiser.
 - **Tranche 2 (cœur)** : étapes 5-8 → Confiance, cognitif, projets, dette/refactoring.
-- **Tranche 3 (complet)** : étape 9 (bourse, quantum, méga, Yomi) + 10 (transition vers l'Acte 2).
+- **Tranche 3 (complet)** : étape 9 (bourse, quantum, Super Agents, Yomi) + 10 (transition vers l'Acte 2).
 
 ### 4.6 Catalogue des projets de R&D (premier jet)
 
@@ -255,9 +255,9 @@ Ordre de construction interne recommandé (cf. §4.4) :
 - **Agents encore meilleurs** — *projet préc.* · `2 500 Ops` · +50 %.
   > « Pourquoi se contenter de "améliorés" ? »
 - **Agents optimisés** — *projet préc.* · `5 000 Ops` · +75 %.
-- **Méga-agents** — · `12 000 Ops` · débloque les méga-agents (gros débit, +dette).
+- **Super Agents** — · `12 000 Ops` · débloque les Super Agents (gros débit, +dette).
   > « Un seul d'entre eux remplace une équipe entière. Ne le dites pas aux RH. »
-- **Méga-agents optimisés** — *méga-agents* · `14 000 Ops` · +débit méga.
+- **Super Agents optimisés** — *Super Agents* · `14 000 Ops` · +débit Super Agents.
 
 #### B. Tokens & efficacité
 - **Prompt engineering avancé** — · `1 750 Ops` · −25 % coût token/ligne.
@@ -352,14 +352,14 @@ Ordre de construction interne recommandé (cf. §4.4) :
 | `DÉBIT_AGENT` | 1 LOC/s | par agent |
 | Coût agent n | `5 × 1,10ⁿ €` | escalade douce |
 | Déblocage agents | LOC cumul ≥ 100 (ou € ≥ 8) | |
-| Débit méga-agent | 100 LOC/s | source_factor dette = 1,5 |
-| Coût méga-agent n | `1 000 × 1,07ⁿ €` | |
+| Débit Super Agent | 100 LOC/s | source_factor dette = 1,5 |
+| Coût Super Agent n | `1 000 × 1,07ⁿ €` | |
 | Confiance initiale | 2 | à allouer GPU / Mémoire |
 | `OPS_PAR_GPU` | 10 Ops/s | par GPU |
 | `TAILLE_MÉM` | 1 000 Ops | plafond d'Ops par Mémoire |
 | `TAUX_OVERFLOW` | 0,5 Créa/s × N_GPU | quand Ops = plafond |
 | `BASE_DETTE` | 0,10 dette/ligne | × source_factor |
-| source_factor | clic 0,2 · agent 1,0 · méga 1,5 | rapide = sale |
+| source_factor | clic 0,2 · agent 1,0 · Super Agent 1,5 | rapide = sale |
 | `K_VÉLOCITÉ` | 1 / 50 (par LOC/s) | foncer = bâcler |
 | dette_norm | `dette / (dette + 500)` | mesure saturante 0 → 1 |
 | `K_QUALITÉ` | 0,5 | malus demande (qualité ≥ 0,5) |
@@ -381,7 +381,7 @@ S'ajoutent ~10 points via projets (RLHF, chartes, etc.).
 | Manuelle | 2–4 min | premiers clics, 1ère vente, 1er agent |
 | Automatisation | 10–20 min | flotte d'agents, hype, 1ers paliers de Confiance, GPU/Mémoire |
 | Cognitive | 15–30 min | les Ops coulent, projets, **la dette apparaît**, refactoring |
-| Expansion | 15–30 min | méga-agents, bourse, quantum, tournois (Yomi) |
+| Expansion | 15–30 min | Super Agents, bourse, quantum, tournois (Yomi) |
 | Bascule | — | *Découverte de l'AGI* → **Déployer en autonomie** |
 
 **Déroulé des 60 premières secondes (test de ressenti)**

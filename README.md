@@ -55,7 +55,7 @@ soft-lock. Principaux réglages par rapport aux valeurs brutes du §4.7 :
 
 - **Démarrage** : `BASE_DEMANDE` 1→2 et `HYPE_COUT_BASE` 100→30 (casse le mur de trésorerie initial).
 - **Tokens** : la dérive du prix des lots est désormais **bornée** (`LOT_DRIFT_*`) — sinon les
-  tokens devenaient impayables à l'échelle des méga-agents (soft-lock).
+  tokens devenaient impayables à l'échelle des Super Agents (soft-lock).
 - **Dette** : `dette_norm` croît avec la taille de la base (`DETTE_PAR_LOC`, fidèle au texte
   « vs taille de la base »), et le facteur de vélocité « foncer = bâcler » est **borné**
   (`VELOCITE_*`) au lieu d'exploser à haut débit. Les incidents ne grillent plus les

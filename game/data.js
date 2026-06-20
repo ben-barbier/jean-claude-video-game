@@ -26,7 +26,7 @@ var DATA = (function () {
     AGENT_COUT_FACTEUR: 1.10,
     AGENT_DEBLOCAGE_LOC: 100,
     AGENT_DEBLOCAGE_EUR: 8,
-    DEBIT_MEGA: 100,         // LOC/s par méga-agent
+    DEBIT_MEGA: 100,         // LOC/s par Super Agent
     MEGA_COUT_BASE: 1000,
     MEGA_COUT_FACTEUR: 1.07,
     CONFIANCE_INIT: 2,
@@ -99,13 +99,13 @@ var DATA = (function () {
       show: function (g) { return g.projetsFaits.auto2; },
       effet: function (g) { g.mult.agentDebit *= 1.75; } },
 
-    { id: 'mega', cat: 'Production', nom: 'Méga-agents',
+    { id: 'mega', cat: 'Production', nom: 'Super Agents',
       flavor: 'Un seul d’entre eux remplace une équipe entière. Ne le dites pas aux RH.',
       cout: function () { return { ops: 12000 }; },
       show: function (g) { return g.projetsFaits.auto2; },
       effet: function (g) { g.megaUnlocked = true; g.seen.mega = true; } },
 
-    { id: 'megaOpt', cat: 'Production', nom: 'Méga-agents optimisés',
+    { id: 'megaOpt', cat: 'Production', nom: 'Super Agents optimisés',
       flavor: 'Je leur ai retiré la touche « pause déjeuner ». Ils ne mangeaient pas, mais le symbole comptait.',
       cout: function () { return { ops: 14000 }; },
       show: function (g) { return g.projetsFaits.mega; },

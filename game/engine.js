@@ -267,7 +267,7 @@ var ENGINE = (function () {
   }
 
   /* Prix « cible » d'un lot : dérive ↑ avec les achats mais SATURE (sinon les tokens
-   * deviennent impayables à l'échelle des méga-agents → soft-lock). Le prix affiché
+   * deviennent impayables à l'échelle des Super Agents → soft-lock). Le prix affiché
    * (g.prixLot) gravite autour de cette cible et fluctue dans le temps (cf. tick). */
   function prixLotCible(g) {
     var derive = K.LOT_DRIFT_MAX * g.lotsAchetes / (g.lotsAchetes + K.LOT_DRIFT_DEMI);
