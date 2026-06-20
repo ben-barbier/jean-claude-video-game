@@ -6,7 +6,12 @@ var ENGINE = (function () {
   function clamp(x, lo, hi) { return Math.max(lo, Math.min(hi, x)); }
 
   /* ── Grandeurs dérivées ─────────────────────────────────────── */
-  function detteNorm(g) { return g.dette / (g.dette + K.DETTE_DEMI); }
+  // Dette normalisée « vs taille de la base » : une base de code mature tolère plus de
+  // dette absolue (sinon, à l'échelle, la dette sature en permanence → incidents en boucle).
+  function detteNorm(g) {
+    var base = K.DETTE_DEMI + K.DETTE_PAR_LOC * g.locLivrees;
+    return g.dette / (g.dette + base);
+  }
 
   function coutTokenLigne(g) {
     return K.BASE_TOKEN * (1 + K.K_DETTE * detteNorm(g)) * g.mult.tokenCost;
@@ -38,6 +43,9 @@ var ENGINE = (function () {
     return g.megaUnlocked ? g.megas * K.DEBIT_MEGA * g.mult.megaDebit * multProd(g) : 0;
   }
   function prodBruteParS(g) { return prodAgentsParS(g) + prodMegaParS(g); }
+
+  // Facteur « foncer = bâcler » borné : 1 (lent) → 1+VELOCITE_MAX (très rapide).
+  function factVelocite(pb) { return 1 + K.VELOCITE_MAX * pb / (pb + K.VELOCITE_SEUIL); }
 
   function opsParS(g) { return g.gpu * K.OPS_PAR_GPU * g.mult.quantum; }
   function opsPlafond(g) { return g.mem * K.TAILLE_MEM; }
@@ -87,7 +95,7 @@ var ENGINE = (function () {
       g.locStock += prodTotal;
 
       var pb = prodBruteParS(g);
-      var velocite = 1 + K.K_VELOCITE * pb;
+      var velocite = factVelocite(pb);
       var detteAjout = (prodA * K.SF_AGENT + prodM * K.SF_MEGA)
         * K.BASE_DETTE * velocite * g.mult.detteParLigne * g.mult.detteAccum;
       g.dette += detteAjout;
@@ -116,11 +124,12 @@ var ENGINE = (function () {
     if (g.gpu > 0) {
       g.ops += opsParS(g) * dt;
       var plafond = opsPlafond(g);
-      if (g.ops >= plafond) {
-        g.ops = plafond;
-        if (g.creaUnlocked) {
-          g.creativite += K.TAUX_OVERFLOW * g.gpu * dt; // overflow → Créativité
-        }
+      var capped = g.ops >= plafond;
+      if (capped) { g.ops = plafond; }
+      if (g.creaUnlocked) {
+        // Filet passif (toujours) + bonus d'overflow quand le contexte est plein.
+        g.creativite += K.CREA_PASSIVE * g.gpu * dt;
+        if (capped) { g.creativite += K.TAUX_OVERFLOW * g.gpu * dt; }
       }
     }
 
@@ -161,8 +170,16 @@ var ENGINE = (function () {
     }
   }
 
+  // Un incident ne mord que la Confiance NON allouée : il ne « grille » jamais les
+  // GPU/Mémoire déjà investis (sinon la boucle cognitive s'effondre à l'échelle).
+  // Sans confiance libre à perdre, il se solde par un remboursement client.
   function incident(g) {
-    perdreConfiance(g, 1);
+    if (g.confianceLibre > 0) {
+      g.confianceLibre -= 1;
+      g.confianceTotale = Math.max(0, g.confianceTotale - 1);
+    } else {
+      g.eur = Math.max(0, g.eur - g.eur * 0.05);
+    }
     VOICE.event(g, 'incident');
   }
 
@@ -193,7 +210,7 @@ var ENGINE = (function () {
     g.tokens -= ctl;
     g.locStock += 1;
     var pb = prodBruteParS(g);
-    g.dette += K.BASE_DETTE * K.SF_CLIC * (1 + K.K_VELOCITE * pb)
+    g.dette += K.BASE_DETTE * K.SF_CLIC * factVelocite(pb)
       * g.mult.detteParLigne * g.mult.detteAccum;
     majDeblocages(g);
   }
@@ -211,12 +228,13 @@ var ENGINE = (function () {
     g.eur -= c; g.megas += 1; return true;
   }
 
-  /* Prix d'un lot : fluctue dans [MIN ; MAX], dérive ↑ avec le nb d'achats. */
+  /* Prix d'un lot : fluctue, dérive ↑ avec les achats mais SATURE (sinon les tokens
+   * deviennent impayables à l'échelle des méga-agents → soft-lock). */
   function prixLotCourant(g) {
-    var derive = g.lotsAchetes * K.LOT_DERIVE;
+    var derive = K.LOT_DRIFT_MAX * g.lotsAchetes / (g.lotsAchetes + K.LOT_DRIFT_DEMI);
     var bruit = (Math.random() - 0.5) * 6; // ±3 €
     var p = (K.LOT_PRIX_BASE + derive + bruit) * g.mult.lotPrix;
-    return clamp(p, K.LOT_PRIX_MIN, K.LOT_PRIX_MAX * (1 + g.lotsAchetes * 0.05));
+    return clamp(p, K.LOT_PRIX_MIN, (K.LOT_PRIX_BASE + K.LOT_DRIFT_MAX + 4) * g.mult.lotPrix);
   }
   function acheterLot(g) {
     var c = g.prixLot;

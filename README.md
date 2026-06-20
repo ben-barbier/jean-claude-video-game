@@ -41,10 +41,27 @@ navigateur.
 ```sh
 node test/smoke.js        # 120 min de jeu simulé : garde-fou runtime / NaN / déblocages
 node test/progression.js  # parcourt tout le graphe de R&D : les 38 projets + bascule Acte 2
+node test/save.js         # aller-retour de sauvegarde : anti-exploit + robustesse aux corruptions
+node test/balance.js      # joueur compétent simulé : rythme + complétude (jusqu'au déploiement)
+node test/balance.js detail   # déroulé détaillé d'une partie (jalons, projets, état final)
 ```
 
 ## Équilibrage
 
-Les valeurs de `DATA.K` (dans `game/data.js`) reprennent les constantes de référence du
-§4.7 et sont **toutes ajustables en playtest** — c'est le levier principal pour régler le
-rythme. Voir les notes de la spec et les jalons affichés par `test/smoke.js`.
+Les valeurs de `DATA.K` (dans `game/data.js`) partent des constantes de référence du §4.7,
+**ajustées en simulation** (`test/balance.js`) pour que la partie soit jouable de bout en
+bout : une partie complète mène au déploiement en ~70 min (cible spec 45-90 min), sans
+soft-lock. Principaux réglages par rapport aux valeurs brutes du §4.7 :
+
+- **Démarrage** : `BASE_DEMANDE` 1→2 et `HYPE_COUT_BASE` 100→30 (casse le mur de trésorerie initial).
+- **Tokens** : la dérive du prix des lots est désormais **bornée** (`LOT_DRIFT_*`) — sinon les
+  tokens devenaient impayables à l'échelle des méga-agents (soft-lock).
+- **Dette** : `dette_norm` croît avec la taille de la base (`DETTE_PAR_LOC`, fidèle au texte
+  « vs taille de la base »), et le facteur de vélocité « foncer = bâcler » est **borné**
+  (`VELOCITE_*`) au lieu d'exploser à haut débit. Les incidents ne grillent plus les
+  GPU/Mémoire investis.
+- **Cerveau** : `TAILLE_MEM` 1000→2000 (rend les gros projets atteignables) et un filet passif
+  de Créativité (`CREA_PASSIVE`) en plus du bonus d'overflow, pour débloquer les projets gated
+  par la Créa.
+
+Tout reste **tunable** : `test/balance.js` mesure l'effet de chaque constante.

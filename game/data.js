@@ -12,13 +12,13 @@ var DATA = (function () {
     PRIX_MAX: 2.00,
     PRIX_REF: 0.25,
     ELASTICITE: 1.1,
-    BASE_DEMANDE: 1.0,        // LOC/s à prix=réf, hype niv.1, qualité 1
+    BASE_DEMANDE: 2.0,        // LOC/s à prix=réf, hype niv.1, qualité 1 (équilibré : amorce le marché)
     BASE_TOKEN: 1.0,         // token/ligne avant malus de dette
     LOT_TOKENS: 1000,
     LOT_PRIX_BASE: 15,
     LOT_PRIX_MIN: 12,
-    LOT_PRIX_MAX: 28,
-    LOT_DERIVE: 0.45,        // dérive ↑ du prix moyen par lot acheté
+    LOT_DRIFT_MAX: 20,       // dérive ↑ maximale du prix d'un lot (bornée/saturante)
+    LOT_DRIFT_DEMI: 60,      // nb de lots pour atteindre la moitié de la dérive
     DEBIT_AGENT: 1.0,        // LOC/s par auto-codeur
     AGENT_COUT_BASE: 5,
     AGENT_COUT_FACTEUR: 1.10,
@@ -28,15 +28,18 @@ var DATA = (function () {
     MEGA_COUT_BASE: 1000,
     MEGA_COUT_FACTEUR: 1.07,
     CONFIANCE_INIT: 2,
-    OPS_PAR_GPU: 10,         // Ops/s par GPU
-    TAILLE_MEM: 1000,        // plafond d'Ops par Mémoire
-    TAUX_OVERFLOW: 0.5,      // Créa/s × N_GPU quand Ops au plafond
+    OPS_PAR_GPU: 12,         // Ops/s par GPU
+    TAILLE_MEM: 2000,        // plafond d'Ops par Mémoire (équilibré : rend les gros projets atteignables)
+    TAUX_OVERFLOW: 1.0,      // Créa/s × N_GPU en bonus quand Ops au plafond (idées émergentes)
+    CREA_PASSIVE: 0.05,      // Créa/s × N_GPU en filet passif (la créa suit la capacité cognitive)
     BASE_DETTE: 0.10,        // dette/ligne × source_factor
     SF_CLIC: 0.2,
     SF_AGENT: 1.0,
     SF_MEGA: 1.5,
-    K_VELOCITE: 1 / 50,      // foncer = bâcler (par LOC/s)
-    DETTE_DEMI: 500,         // dette_norm = dette/(dette+DETTE_DEMI)
+    VELOCITE_MAX: 2,         // foncer = bâcler, mais BORNÉ : dette ×(1→3) selon le débit
+    VELOCITE_SEUIL: 50,      // débit (LOC/s) à mi-pénalité (×2)
+    DETTE_DEMI: 500,         // seuil de base de la normalisation de la dette
+    DETTE_PAR_LOC: 0.08,     // … qui croît avec la taille de la base (« vs taille de la base »)
     K_QUALITE: 0.5,          // malus de demande
     Q_MIN: 0.5,
     K_DETTE: 1.5,            // malus coût token (×1 → ×2,5 à saturation)
@@ -45,7 +48,7 @@ var DATA = (function () {
     TAUX_REFACTO: 0.5,       // dette retirée par Op dépensée (refacto manuel)
     TAUX_AGENT_REFACTO: 0.3, // dette/s par agent affecté au refacto
     REFACTO_LOT_OPS: 200,    // Ops dépensées par clic « Refactoriser »
-    HYPE_COUT_BASE: 100,     // ×2^(n-1)
+    HYPE_COUT_BASE: 30,      // ×2^(n-1) (équilibré : 1re Hype abordable, casse le mur de trésorerie)
     HYPE_MULT_BASE: 1.5,     // ^(n-1)
     CONFIANCE_PALIER: 1500,  // round(1500 × 2^k) → 1,5k / 3k / 6k …
     BURST_MULT: 3.0,         // multiplicateur de demande pendant la démo virale
