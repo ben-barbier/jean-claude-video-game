@@ -32,11 +32,17 @@ function step(ctx, G, clicksPerSec, journal) {
   const { ENGINE, DATA } = ctx; const K = DATA.K;
   // 1. Amorçage au clic tant qu'on n'a pas démarré l'automatisation.
   let manualRate = 0;
-  if (G.agents < 2) {
+  // Clic gratuit : amorçage avant l'IA, ET secours si on est à sec de tokens (un vrai
+  // joueur cliquerait pour se sortir d'un blocage — le clic ne coûte rien).
+  const aSec = G.jcInstalled && G.tokens < ENGINE.coutTokenLigne(G)
+    && G.eur < G.prixLot && G.locStock < 3;
+  if (G.agents < 2 || aSec) {
     manualRate = clicksPerSec;
     G._acc = (G._acc || 0) + manualRate * K.DT;
-    while (G._acc >= 1 && G.tokens >= ENGINE.coutTokenLigne(G)) { ENGINE.ecrireLigne(G); G._acc -= 1; journal.clics++; }
+    while (G._acc >= 1) { ENGINE.ecrireLigne(G); G._acc -= 1; journal.clics++; } // gratuit
   }
+  // Installer Jean-Claude dès que possible (débloque tokens / auto-codeurs / …).
+  if (!G.jcInstalled && G.lignesProduites >= K.JC_INSTALL_SEUIL) { ENGINE.installerJC(G); }
   // 2. Prix optimal : viser une demande un peu au-dessus de la production pour écouler.
   const Pauto = ENGINE.prodBruteParS(G);
   const cible = Math.max(0.6, (Pauto + manualRate) * 1.15);
@@ -46,7 +52,7 @@ function step(ctx, G, clicksPerSec, journal) {
   const conso = Pauto * ENGINE.coutTokenLigne(G);
   const runway = conso > 0 ? G.tokens / conso : Infinity;
   if (G.seen.tokensAchat && runway < 45 && G.eur >= G.prixLot) { ENGINE.acheterLot(G); }
-  const reserve = G.seen.tokensAchat ? G.prixLot * 2.5 : 0;
+  const reserve = G.jcInstalled ? G.prixLot * 2.5 : 0; // garde du cash pour les tokens dès l'IA
   // 4. Premier agent : amorce l'automatisation.
   if (G.seen.agents && G.agents === 0 && G.eur >= ENGINE.coutAgent(G) + reserve) { ENGINE.acheterAgent(G); }
   // 5. Hype : moteur de croissance (démultiplie la demande), dès que c'est abordable.

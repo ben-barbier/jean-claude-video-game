@@ -32,6 +32,7 @@ var UI = (function () {
     rendreApresAction = doAction;
 
     $('btn-ecrire').addEventListener('click', function () { rendreApresAction(ENGINE.ecrireLigne); });
+    $('btn-install-jc').addEventListener('click', function () { rendreApresAction(ENGINE.installerJC); });
     $('btn-agent').addEventListener('click', function () { rendreApresAction(ENGINE.acheterAgent); });
     $('btn-mega').addEventListener('click', function () { rendreApresAction(ENGINE.acheterMega); });
     $('btn-lot').addEventListener('click', function () {
@@ -159,8 +160,12 @@ var UI = (function () {
     txt('stat-prod', f(ENGINE.prodBruteParS(g), 1));
     txt('stat-ventes', f(Math.min(ENGINE.demandeParS(g), g.locStock), 1));
 
-    // Production (seul endroit où le coût en tokens par ligne est rappelé)
-    txt('prod-clic-info', g.seen.stock ? '(coût : ' + f(ENGINE.coutTokenLigne(g), 2) + ' token/ligne)' : '');
+    // Prompt du terminal : user@main avant l'IA, jean-claude@bac-a-sable après.
+    txt('journal-host', g.jcInstalled ? 'jean-claude@bac-a-sable' : 'user@main');
+
+    // Production : écrire à la main est GRATUIT (votre travail de dev).
+    txt('prod-clic-info', g.seen.stock ? '(à la main — gratuit)' : '');
+    montre('bloc-install-jc', g.seen.jcDispo && !g.jcInstalled);
     montre('bloc-agents', g.seen.agents);
     txt('agents-count', f(g.agents));
     txt('agents-cout', big(ENGINE.coutAgent(g)));
@@ -172,7 +177,7 @@ var UI = (function () {
     actif('btn-mega', g.eur >= ENGINE.coutMega(g));
 
     // Tokens
-    montre('bloc-tokens', g.seen.stock);
+    montre('bloc-tokens', g.seen.tokens);
     var tmax = Math.max(g.tokens, ENGINE.K.LOT_TOKENS);
     var tbar = $('tokens-bar'); if (tbar) { tbar.max = tmax; tbar.value = g.tokens; }
     txt('tokens-val', big(g.tokens));

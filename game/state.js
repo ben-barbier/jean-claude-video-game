@@ -23,6 +23,10 @@ function nouvelEtat() {
     agents: 0,
     megas: 0,
 
+    /* ── Rôle : on est un DEV qui, à terme, installe l'IA ───── */
+    jcInstalled: false,    // Jean-Claude installé (débloque tokens, auto-codeurs, etc.)
+    lignesProduites: 0,    // cumul de lignes produites (déclencheur d'installation)
+
     /* ── Réglages pilotés par le joueur ─────────────────────── */
     prix: K.PRIX_INIT,
     partRefacto: 0,        // 0 → 1 : part des agents affectée au refactoring
@@ -64,9 +68,11 @@ function nouvelEtat() {
 
     /* ── Déblocage progressif de l'interface (§4.4) ─────────── */
     seen: {
-      stock: false,        // 1re ligne écrite → tableau de bord + jauge de tokens
+      stock: false,        // 1re ligne écrite → tableau de bord
       marche: false,       // … → panneau marché / vente
       tresorerie: false,   // 1re vente → €
+      jcDispo: false,      // 20 lignes → bouton « Installer Jean-Claude »
+      tokens: false,       // JC installé → jauge de tokens (budget de l'IA)
       tokensAchat: false,
       hype: false,
       agents: false,

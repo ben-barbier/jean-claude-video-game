@@ -73,7 +73,7 @@
 <!-- Terminal (Journal) : bannière pleine largeur en haut de page, façon Universal Paperclips. -->
 <div id="journal-term">
   <div id="journal"></div>
-  <div id="journal-prompt">jean-claude@bac-a-sable:~$&nbsp;<span id="journal-cursor">▮</span></div>
+  <div id="journal-prompt"><span id="journal-host">user@main</span>:~$&nbsp;<span id="journal-cursor">▮</span></div>
 </div>
 
 <!-- ─────────────────────── Bandeau de statistiques ─────────────────────── -->
@@ -96,6 +96,12 @@
     <legend><b>Production</b></legend>
     <p><button id="btn-ecrire" type="button">Écrire une ligne de code</button>
        <span id="prod-clic-info"></span></p>
+
+    <div id="bloc-install-jc" hidden>
+      <hr>
+      <p><button id="btn-install-jc" type="button">Installer Jean-Claude</button>
+         <small>— assistant de code IA</small></p>
+    </div>
 
     <div id="bloc-agents" hidden>
       <hr>
@@ -226,7 +232,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '9';
+    var version = '10';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {

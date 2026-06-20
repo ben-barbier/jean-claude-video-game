@@ -93,6 +93,7 @@ var ENGINE = (function () {
       }
       g.tokens = Math.max(0, g.tokens - tokensReq);
       g.locStock += prodTotal;
+      g.lignesProduites += prodTotal;
 
       var pb = prodBruteParS(g);
       var velocite = factVelocite(pb);
@@ -112,8 +113,9 @@ var ENGINE = (function () {
     if (g.burstTimer > 0) { g.burstTimer = Math.max(0, g.burstTimer - dt); }
     if (g.prodBurstTimer > 0) { g.prodBurstTimer = Math.max(0, g.prodBurstTimer - dt); }
 
-    /* 3. Paliers de Confiance (sur les LOC livrées cumulées). */
-    while (g.locLivrees >= prochainPalierConfiance(g)) {
+    /* 3. Paliers de Confiance (sur les LOC livrées cumulées) — seulement une fois
+     *    Jean-Claude installé (la « confiance » est celle accordée à l'IA). */
+    while (g.jcInstalled && g.locLivrees >= prochainPalierConfiance(g)) {
       g.paliersConfiance += 1;
       g.confianceLibre += 1;
       g.confianceTotale += 1;
@@ -200,17 +202,24 @@ var ENGINE = (function () {
     if (!g.seen[cle]) { g.seen[cle] = true; if (evt) { VOICE.event(g, evt); } }
   }
   function majDeblocages(g) {
-    // Démarrage très progressif (façon Paperclips) :
-    if (g.locStock >= 1 || g.locLivrees >= 1) {
-      reveler(g, 'stock', 'revealStock');  // 1re ligne → tableau de bord + tokens
-      reveler(g, 'marche');                // … et le marché pour la vendre (même beat)
+    // ── Phase « dev en solo » (avant l'installation de l'IA) ──────────────
+    if (g.lignesProduites >= 1) {
+      reveler(g, 'stock', 'premiereLigne'); // 1re ligne → tableau de bord
+      reveler(g, 'marche');                 // … et le marché pour la vendre
     }
     if (g.eur > 0 || g.locLivrees >= 1) { reveler(g, 'tresorerie'); } // 1re vente → €
-    if (g.tokens < 120) { reveler(g, 'tokensAchat', 'revealTokens'); }
-    if (g.locLivrees >= 5) { reveler(g, 'hype', 'revealHype'); }
-    if (g.locLivrees >= K.AGENT_DEBLOCAGE_LOC || g.eur >= K.AGENT_DEBLOCAGE_EUR) {
-      reveler(g, 'agents', 'revealAgents');
+
+    if (!g.jcInstalled) {
+      // À 20 lignes écrites : on peut installer Jean-Claude.
+      if (g.lignesProduites >= K.JC_INSTALL_SEUIL) { reveler(g, 'jcDispo', 'jcDispo'); }
+      return; // tout le reste n'apparaît qu'une fois Jean-Claude installé
     }
+
+    // ── Phase « IA » (Jean-Claude installé) ───────────────────────────────
+    reveler(g, 'tokens');                    // budget de génération de l'IA
+    reveler(g, 'agents', 'revealAgents');    // les auto-codeurs = agents de l'IA
+    if (g.locLivrees >= 5) { reveler(g, 'hype', 'revealHype'); }
+    if (g.tokens < 120) { reveler(g, 'tokensAchat', 'revealTokens'); }
     if (g.paliersConfiance >= 1) { reveler(g, 'confiance', 'revealConfiance'); }
     if (g.gpu >= 1 || g.ops > 0) { reveler(g, 'projets', 'revealProjets'); }
     if (prodBruteParS(g) >= 5 && g.dette > 20) { reveler(g, 'dette', 'revealDette'); }
@@ -218,22 +227,30 @@ var ENGINE = (function () {
 
   /* ── Actions du joueur ──────────────────────────────────────── */
 
+  // Écrire une ligne À LA MAIN : c'est VOTRE travail de dev → GRATUIT (aucun token).
+  // Seule la génération par l'IA (auto-codeurs) consomme des tokens.
   function ecrireLigne(g) {
     if (g.deployed) { return; }
-    var ctl = coutTokenLigne(g);
-    if (g.tokens < ctl) {
-      if (!g.ruptureSignalee) { VOICE.event(g, 'rupture'); g.ruptureSignalee = true; }
-      return;
-    }
-    g.tokens -= ctl;
     g.locStock += 1;
+    g.lignesProduites += 1;
     var pb = prodBruteParS(g);
     g.dette += K.BASE_DETTE * K.SF_CLIC * factVelocite(pb)
       * g.mult.detteParLigne * g.mult.detteAccum;
     majDeblocages(g);
   }
 
+  // Installer Jean-Claude (l'assistant IA) : débloque les tokens, les auto-codeurs, etc.
+  function installerJC(g) {
+    if (g.jcInstalled || g.deployed) { return false; }
+    if (g.lignesProduites < K.JC_INSTALL_SEUIL) { return false; }
+    g.jcInstalled = true;
+    VOICE.event(g, 'install');
+    majDeblocages(g);
+    return true;
+  }
+
   function acheterAgent(g) {
+    if (!g.jcInstalled) { return false; } // les auto-codeurs sont des agents de l'IA
     var c = coutAgent(g);
     if (g.eur < c) { return false; }
     g.eur -= c; g.agents += 1; return true;
@@ -352,7 +369,8 @@ var ENGINE = (function () {
     coutAgent: coutAgent, coutMega: coutMega, coutHype: coutHype,
     prochainPalierConfiance: prochainPalierConfiance, coutProjet: coutProjet,
     tick: tick, majDeblocages: majDeblocages,
-    ecrireLigne: ecrireLigne, acheterAgent: acheterAgent, acheterMega: acheterMega,
+    ecrireLigne: ecrireLigne, installerJC: installerJC,
+    acheterAgent: acheterAgent, acheterMega: acheterMega,
     acheterLot: acheterLot, acheterHype: acheterHype, allouerConfiance: allouerConfiance,
     refactoriser: refactoriser, deposerBourse: deposerBourse, retirerBourse: retirerBourse,
     jouerTournoi: jouerTournoi, acheterProjet: acheterProjet, projetAchetable: projetAchetable,

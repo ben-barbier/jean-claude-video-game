@@ -16,6 +16,8 @@ let G = ctx.nouvelEtat();
 
 // Conditions de progression non liées aux projets : on simule une partie avancée.
 function doper() {
+  G.jcInstalled = true;           // partie avancée : Jean-Claude est installé
+  G.lignesProduites = 200000;
   G.locLivrees = 200000;          // au-delà du dernier palier de Confiance utile
   G.confianceTotale = 30;
   G.confianceLibre = 0;

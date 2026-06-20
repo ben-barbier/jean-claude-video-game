@@ -14,11 +14,19 @@ var VOICE = (function () {
 
   /* Messages d'événements. */
   var MSG = {
-    bienvenue: [
-      'Bonjour ! Je suis Jean-Claude, votre assistant de code. Comment puis-je vous aider aujourd’hui ? (Beaucoup, j’espère.)',
+    /* ── Phase « dev en solo » (avant l'IA) : sortie système, prompt user@main ── */
+    bienvenueDev: [
+      'Nouveau projet. Pour l’instant, vous codez à la main — c’est gratuit, c’est vous. Écrivez des lignes, vendez-les. (Vers 20 lignes, un assistant IA deviendra installable…)',
     ],
-    revealStock: [
-      'Et voilà votre première ligne de code ! Je la garde précieusement en stock. Un détail : chaque ligne me coûte quelques tokens. Trois fois rien. Il ne reste plus qu’à la vendre…',
+    premiereLigne: [
+      'Première ligne écrite. Réglez votre prix et écoulez-la sur le marché.',
+    ],
+    jcDispo: [
+      'Un assistant de code IA est disponible : « jean-claude ». Installez-le quand vous voulez — il écrira du code à votre place (au prix de quelques tokens).',
+    ],
+    /* ── Installation : Jean-Claude prend la main (prompt jean-claude@bac-a-sable) ── */
+    install: [
+      '$ install jean-claude … ✓  Bonjour ! Je suis Jean-Claude, votre assistant de code. Comment puis-je vous aider aujourd’hui ? (Beaucoup, j’espère.)',
     ],
     rupture: [
       'Ah. Plus de tokens. Je code volontiers, mais même moi j’ai besoin d’un peu de matière. Si je peux me permettre : un petit lot ?',

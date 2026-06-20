@@ -23,9 +23,11 @@ function fini(g) {
 
 /* ── Tests unitaires rapides ───────────────────────────────────── */
 let G = ctx.nouvelEtat();
+const tk0 = G.tokens;
 ENGINE.ecrireLigne(G);
-console.assert(Math.abs(G.tokens - 999) < 1e-9, 'clic doit consommer ~1 token, got ' + G.tokens);
-console.assert(G.locStock === 1, 'clic doit produire 1 LOC');
+console.assert(Math.abs(G.tokens - tk0) < 1e-9, 'écrire à la main est GRATUIT (0 token), got ' + G.tokens);
+console.assert(G.locStock === 1 && G.lignesProduites === 1, 'le clic produit 1 ligne');
+console.assert(ENGINE.acheterAgent(G) === false, 'pas d’auto-codeur avant d’installer Jean-Claude');
 
 // la vente fait monter € sans toucher aux tokens
 const tk = G.tokens;
@@ -46,8 +48,9 @@ for (let i = 0; i < TICKS; i++) {
   const t = i * K.DT;
 
   // Clics manuels uniquement pour amorcer (avant le 1er agent).
-  var clique = (G.agents < 1 && G.tokens > ENGINE.coutTokenLigne(G) * 5);
+  var clique = (G.agents < 1); // clic manuel gratuit (amorçage avant l'IA)
   var manuel = clique ? 50 : 0; // ~5 clics/tick = 50 LOC/s
+  if (!G.jcInstalled && G.lignesProduites >= K.JC_INSTALL_SEUIL) { ENGINE.installerJC(G); }
 
   // Prix optimal : on inverse la formule de demande pour viser une demande
   // un peu supérieure à la production (on écoule le stock au débit max).
