@@ -257,8 +257,14 @@ var UI = (function () {
 
   function renderAgents() {
     montre('bloc-agents', g.seen.agents);
+    // 0 agent → la ligne n'affiche QUE le bouton « Recruter un agent ».
+    // ≥1 agent → « Agents : N [+1] — P € » (le bouton devient « +1 »).
+    var aDesAgents = g.agents >= 1;
+    montre('agents-recap', aDesAgents);
+    montre('agents-cout-wrap', aDesAgents);
     txt('agents-count', f(g.agents));
     txt('agents-cout', big(ENGINE.coutAgent(g)));
+    txt('btn-agent', aDesAgents ? '+1' : 'Recruter un agent');
     actif('btn-agent', g.eur >= ENGINE.coutAgent(g));
 
     montre('bloc-mega', g.megaUnlocked);
