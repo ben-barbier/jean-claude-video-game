@@ -70,14 +70,20 @@ var ENGINE = (function () {
   function factVelocite(pb) { return 1 + saturation(pb, K.VELOCITE_MAX, K.VELOCITE_SEUIL); }
 
   function opsParS(g) { return g.gpu * K.OPS_PAR_GPU * g.mult.quantum; }
-  function opsPlafond(g) { return g.mem * K.TAILLE_MEM; }
+  // Plafond d'Ops = surtout la Mémoire allouée, MAIS avec un socle indexé sur la Confiance
+  // totale : une allocation déséquilibrée (tout en GPU, mem laissée à 1) ne peut JAMAIS figer
+  // définitivement la boucle cognitive (anti soft-lock du « processor trap »). En jeu équilibré
+  // (mem ≈ Confiance/2) le socle (Confiance/2,5) ne mord pas → aucun effet sur le rythme nominal ;
+  // même une allocation tout-GPU reste FLUIDE et complétable (jeu indulgent : aucune allocation
+  // ne brique la partie). La Mémoire garde un léger avantage (plafond plus haut que le socle).
+  function opsPlafond(g) { return Math.max(g.mem, Math.floor(g.confianceTotale / 2.5)) * K.TAILLE_MEM; }
 
   /* ── Coûts d'achat ──────────────────────────────────────────── */
   // Coût du n-ième agent (n = g.agents+1) : 1er à 5×1,10 ≈ 5,50 € (cf. déroulé §4.7).
   function coutAgent(g) { return coutCroissant(K.AGENT_COUT_BASE, K.AGENT_COUT_FACTEUR, g.agents + 1); }
   function coutMega(g) { return coutCroissant(K.MEGA_COUT_BASE, K.MEGA_COUT_FACTEUR, g.megas); }
   function coutHype(g) { return coutCroissant(K.HYPE_COUT_BASE, 2, g.hypeNiveau - 1); }
-  function prochainPalierConfiance(g) { return Math.round(K.CONFIANCE_PALIER * Math.pow(2, g.paliersConfiance)); }
+  function prochainPalierConfiance(g) { return Math.round(K.CONFIANCE_PALIER * Math.pow(K.CONFIANCE_PALIER_FACTEUR, g.paliersConfiance)); }
 
   /* Coût effectif d'un projet (applique la réduction projetCout sur les Ops/Créa). */
   function coutProjet(g, p) {

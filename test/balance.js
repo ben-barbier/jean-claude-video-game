@@ -23,7 +23,7 @@ let lastG = null; // dernier état simulé (pour diagnostic)
 const PRIO = [
   'debloquerCrea', 'rentabilite', 'promptEng', 'linter', 'tests', 'cacheGen', 'compression', 'typage', 'cicd', 'distillation',
   'auto1', 'pitch', 'auto2', 'rlhf', 'jingle', 'charte', 'auto3', 'comite', 'quantum', 'trading',
-  'mega', 'megaOpt', 'modelisation', 'autoTournoi', 'theorieEsprit', 'negoTarifs', 'faim', 'openSource',
+  'mega', 'megaOpt', 'memoireLT', 'modelisation', 'autoTournoi', 'theorieEsprit', 'negoTarifs', 'faim', 'climat', 'openSource',
   'serieA', 'serieB', 'serieC', 'podcast', 'volition', 'agi',
 ];
 
@@ -55,8 +55,9 @@ function step(ctx, G, clicksPerSec, journal) {
   const reserve = G.jcInstalled ? G.prixLot * 2.5 : 0; // garde du cash pour les tokens dès l'IA
   // 4. Premier agent : amorce l'automatisation.
   if (G.seen.agents && G.agents === 0 && G.eur >= ENGINE.coutAgent(G) + reserve) { ENGINE.acheterAgent(G); }
-  // 5. Hype : moteur de croissance (démultiplie la demande), dès que c'est abordable.
-  if (G.seen.hype && G.hypeNiveau < 16 && G.eur >= ENGINE.coutHype(G) * 1.2 + reserve) {
+  // 5. Hype : MEILLEUR ROI early (démultiplie la demande) → un joueur compétent l'achète
+  //    dès qu'il peut, en gardant juste un lot de tokens de marge (pas toute la réserve).
+  if (G.seen.hype && G.hypeNiveau < 16 && G.eur >= ENGINE.coutHype(G) * 1.2 + (G.jcInstalled ? G.prixLot : 0)) {
     ENGINE.acheterHype(G); if (!journal.hype1) { journal.hype1 = journal.t; }
   }
   // 6. Plus d'agents / Super Agents si le stock s'écoule bien (ne pas surproduire).
@@ -163,17 +164,18 @@ if (process.argv[2] === 'detail') {
 /* ── Table comparative de configs ──────────────────────────────── */
 // Les constantes équilibrées sont désormais les defaults de data.js : on teste donc
 // le jeu TEL QU'IL EST LIVRÉ (override vide), et on compare quelques variantes.
-const EARLY = {};
-function cfg(extra) { return Object.assign({}, EARLY, extra); }
+// Le levier clé du pacing est la croissance des paliers de Confiance (CONFIANCE_PALIER_FACTEUR).
+// On compare la config livrée (φ≈1.6) à des variantes, dont l'ANCIENNE (2.0 = doublement) qui
+// recréait le « désert médian » de ~40 min.
 const CONFIGS = {
-  'base':         cfg({}),
-  'dpl0.05':      cfg({ DETTE_PAR_LOC: 0.05 }),
-  'dpl0.12':      cfg({ DETTE_PAR_LOC: 0.12 }),
-  'gpu15':        cfg({ OPS_PAR_GPU: 15 }),
-  'mem2_5k_g15':  cfg({ TAILLE_MEM: 2500, OPS_PAR_GPU: 15 }),
-  'palier1200':   cfg({ CONFIANCE_PALIER: 1200 }),
+  'base (φ≈1.6)':     {},
+  'fact 1.5':         { CONFIANCE_PALIER_FACTEUR: 1.5 },
+  'fact 1.7':         { CONFIANCE_PALIER_FACTEUR: 1.7 },
+  'fact 2.0 (avant)': { CONFIANCE_PALIER_FACTEUR: 2.0 },
+  'pal 2000':         { CONFIANCE_PALIER: 2000 },
+  'gpu15':            { OPS_PAR_GPU: 15 },
 };
-console.log('Cibles spec (§4.7) : agent ~2-4m · cognitif ~10-20m · expansion ~15-30m · deploy total ~45-90m\n');
+console.log('Cibles (§4.7, calées sur Paperclips) : agent ~1-2m · cognitif ~5m · expansion ~15-23m · deploy ~25-30m · 0 trou >2min (cf. cadence.js)\n');
 const cols = ['agent1', 'cognitif', 'mega', 'quantum', 'tournois', 'agi', 'deploy'];
 console.log(['config'.padEnd(15), ...cols.map(c => c.padEnd(8)), 'lock', 'conf', 'mem', 'crea', 'LOCfin'].join(' '));
 Object.keys(CONFIGS).forEach(nom => {

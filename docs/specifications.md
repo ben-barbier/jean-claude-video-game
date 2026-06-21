@@ -345,7 +345,7 @@ Ordre de construction interne recommandé (cf. §4.4) :
 | Prix initial | 0,25 € | réglable 0,01 → 2,00 |
 | `PRIX_REF` | 0,25 € | prix de référence de la demande |
 | `ÉLASTICITÉ` | 1,1 | sensibilité demande ↔ prix |
-| `BASE_DEMANDE` | 1,0 LOC/s | à prix=réf, hype niv.1, qualité 1 |
+| `BASE_DEMANDE` | 2,0 LOC/s | à prix=réf, hype niv.1, qualité 1 (équilibré) |
 | `BASE_TOKEN` | 1 token/ligne | avant malus de dette |
 | `LOT_TOKENS` | 1 000 | taille d'un lot acheté |
 | Coût d'un lot (départ) | ~15 € | fluctue dans [12 ; 28], dérive ↑ à mesure des achats |
@@ -355,34 +355,54 @@ Ordre de construction interne recommandé (cf. §4.4) :
 | Débit Super Agent | 100 LOC/s | source_factor dette = 1,5 |
 | Coût Super Agent n | `1 000 × 1,07ⁿ €` | |
 | Confiance initiale | 2 | à allouer GPU / Mémoire |
-| `OPS_PAR_GPU` | 10 Ops/s | par GPU |
-| `TAILLE_MÉM` | 1 000 Ops | plafond d'Ops par Mémoire |
-| `TAUX_OVERFLOW` | 0,5 Créa/s × N_GPU | quand Ops = plafond |
+| `OPS_PAR_GPU` | 12 Ops/s | par GPU |
+| `TAILLE_MÉM` | 1 000 Ops | plafond d'Ops par Mémoire (+ socle `Confiance/2,5`) |
+| `TAUX_OVERFLOW` | 1,0 Créa/s × N_GPU | quand Ops = plafond |
 | `BASE_DETTE` | 0,10 dette/ligne | × source_factor |
 | source_factor | clic 0,2 · agent 1,0 · Super Agent 1,5 | rapide = sale |
 | `K_VÉLOCITÉ` | 1 / 50 (par LOC/s) | foncer = bâcler |
-| dette_norm | `dette / (dette + 500)` | mesure saturante 0 → 1 |
+| dette_norm | `dette / (dette + 500 + 0,08×LOC_livrées)` | saturante 0 → 1, « vs taille de la base » |
 | `K_QUALITÉ` | 0,5 | malus demande (qualité ≥ 0,5) |
 | `K_DETTE` | 1,5 | malus coût token (×1 → ×2,5 à saturation) |
 | Seuil incidents | dette_norm > 0,8 | events aléatoires −Confiance |
 | `TAUX_REFACTO` (Ops) | 0,5 dette / Op dépensée | refactoring manuel |
 | `TAUX_AGENT_REFACTO` | 0,3 dette/s | par agent affecté au refacto |
-| Hype — coût niv. n | `100 × 2ⁿ⁻¹ €` | |
+| Hype — coût niv. n | `30 × 2ⁿ⁻¹ €` | 1re hype abordable tôt (meilleur ROI) |
 | Hype — mult niv. n | `1,5ⁿ⁻¹` | multiplicateur de demande |
 
 **Paliers de Confiance.** +1 Confiance à chaque seuil de LOC cumulées :
-`round(1500 × 2ᵏ)` → **1,5k / 3k / 6k / 12k / 24k / 48k / 96k / 192k…**
-S'ajoutent ~10 points via projets (RLHF, chartes, etc.).
+`round(1500 × φᵏ)` avec `φ ≈ 1,6` (`CONFIANCE_PALIER_FACTEUR`)
+→ **1,5k / 2,4k / 3,8k / 6,1k / 9,8k / 15,7k / 25k / 40k…**
 
-**Cibles de rythme (Acte 1 ≈ 45–90 min)**
+> **Leçon de Universal Paperclips (ré-équilibrage).** Paperclips distribue le *Trust* selon
+> une suite de **Fibonacci ×1000** (3k, 5k, 8k, 13k, 21k…), dont le ratio entre paliers tend
+> vers le **nombre d'or φ ≈ 1,618**, et non vers 2. Notre version d'origine utilisait `× 2ᵏ`
+> (doublement) : les écarts entre paliers **doublaient**, créant un « désert » de ~40 min en
+> fin d'Acte 1 où plus rien ne se débloquait (grind pur de LOC). Passer à `× 1,6ᵏ` rend la
+> cadence régulière jusqu'à la fin (un palier toutes les ~30 s–1 min 30).
+>
+> Paperclips alimente aussi le *Trust* par **deux canaux** : les paliers de production **et**
+> des projets qui en donnent par paquets croissants (*Cure for Cancer* +10, *World Peace* +12…).
+> On a transcrit ce principe avec deux projets de la phase finale :
+> `memoireLT` (2ᵉ source de **Mémoire** directe → plafond d'Ops) et `climat` (+4 **Confiance**
+> d'un coup) — ils comblent l'échelle de coûts entre `megaOpt` (14k Ops) et `volition` (20k Ops)
+> et suppriment le grind de fin.
+
+S'ajoutent ~12 points de Confiance via projets (RLHF, chartes, comité, faim, climat, volition…).
+
+**Cibles de rythme (Acte 1 ≈ 25–30 min, calé sur l'Acte 1 de Paperclips ~15–25 min)**
+
+L'invariant de *fun* (cf. Paperclips) prime sur la durée : **jamais plus de ~2 min sans un
+nouvel achat/déblocage à portée**. Mesuré par `test/cadence.js` (trou max < 2 min, trou moyen
+~30–35 s sur toute la partie).
 
 | Phase | Durée cible | Jalons |
 |---|---|---|
-| Manuelle | 2–4 min | premiers clics, 1ère vente, 1er agent |
-| Automatisation | 10–20 min | flotte d'agents, hype, 1ers paliers de Confiance, GPU/Mémoire |
-| Cognitive | 15–30 min | les Ops coulent, projets, **la dette apparaît**, refactoring |
-| Expansion | 15–30 min | Super Agents, bourse, quantum, tournois (Yomi) |
-| Bascule | — | *Découverte de l'AGI* → **Déployer en autonomie** |
+| Manuelle | 1–2 min | premiers clics, 1ère vente, installation de Jean-Claude, 1er agent |
+| Automatisation | 3–10 min | flotte d'agents, **hype achetée tôt** (meilleur ROI), 1ers paliers, GPU/Mémoire |
+| Cognitive | 5–17 min | les Ops coulent, projets, **la dette apparaît**, refactoring, créativité |
+| Expansion | 15–23 min | Super Agents, bourse, quantum, tournois (Yomi), mémoire long terme |
+| Transition | 23–26 min | climat (+Confiance), **volition**, *Découverte de l'AGI* → **Déployer** |
 
 **Déroulé des 60 premières secondes (test de ressenti)**
 1. `t=0` : 1 000 tokens, 0 €, prix 0,25. Clic « Écrire une ligne » → +1 LOC en stock, −1 token.

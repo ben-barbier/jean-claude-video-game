@@ -55,14 +55,23 @@ bun run bench:detail      # déroulé détaillé d'une partie (jalons, projets, 
 | `test/progression.test.js` | Tout le graphe de R&D (les projets + bascule Acte 2). |
 | `test/save.test.js` | Aller-retour de sauvegarde : anti-exploit + robustesse aux corruptions. |
 | `test/balance.js` | Banc d'équilibrage (joueur compétent simulé), lancé via `bun run bench`. |
+| `test/cadence.js` | Sonde de *pacing* : horodate chaque déblocage, mesure le trou max entre deux (`node test/cadence.js`). |
 
 ## Équilibrage
 
-Les valeurs de `DATA.K` (dans `game/data.js`) partent des constantes de référence du §4.7,
-**ajustées en simulation** (`test/balance.js`) pour que la partie soit jouable de bout en
-bout : une partie complète mène au déploiement en ~70 min (cible spec 45-90 min), sans
-soft-lock. Principaux réglages par rapport aux valeurs brutes du §4.7 :
+Les valeurs de `DATA.K` (dans `game/data.js`) sont **ajustées en simulation** pour que la
+partie soit jouable de bout en bout, **sans temps mort**. La cadence est mesurée par deux
+outils : `test/balance.js` (rythme des grands jalons) et `test/cadence.js` (trou maximal entre
+deux déblocages — l'indicateur de *fun* à la Universal Paperclips). Cible : déploiement en
+**~25–30 min**, **jamais plus de ~2 min sans nouvel achat/déblocage** (trou moyen ~30 s).
 
+Principaux réglages :
+
+- **Pacing « à la Paperclips »** *(cf. §4.7)* : les paliers de Confiance suivent `round(1500 × 1,6ᵏ)`
+  (ratio ≈ nombre d'or φ, comme le *Trust* en Fibonacci de Paperclips) au lieu de `× 2ᵏ`. Le
+  doublement faisait **exploser** les écarts en fin de partie (« désert » de ~40 min). Deux
+  projets finaux (`memoireLT`, `climat`) ajoutent un 2ᵉ canal de Mémoire/Confiance pour combler
+  l'échelle de coûts et supprimer le grind. `agi` ramené 30k→22k Ops (banquable au plafond réel).
 - **Démarrage** : `BASE_DEMANDE` 1→2 et `HYPE_COUT_BASE` 100→30 (casse le mur de trésorerie initial).
 - **Tokens** : la dérive du prix des lots est désormais **bornée** (`LOT_DRIFT_*`) — sinon les
   tokens devenaient impayables à l'échelle des Super Agents (soft-lock).
@@ -70,8 +79,11 @@ soft-lock. Principaux réglages par rapport aux valeurs brutes du §4.7 :
   « vs taille de la base »), et le facteur de vélocité « foncer = bâcler » est **borné**
   (`VELOCITE_*`) au lieu d'exploser à haut débit. Les incidents ne grillent plus les
   GPU/Mémoire investis.
-- **Cerveau** : `TAILLE_MEM` 1000→2000 (rend les gros projets atteignables) et un filet passif
-  de Créativité (`CREA_PASSIVE`) en plus du bonus d'overflow, pour débloquer les projets gated
-  par la Créa.
+- **Cerveau** : le plafond d'Ops (`TAILLE_MEM` = 1000 par Mémoire) monte via les paliers de
+  Confiance **et** le projet `memoireLT` (2ᵉ source de Mémoire). Un **socle** indexé sur la
+  Confiance totale (`opsPlafond = max(mem, Confiance/2,5) × 1000`) empêche qu'une allocation
+  tout-en-GPU ne fige définitivement la boucle cognitive (« processor trap » → jeu indulgent).
+  La Créativité n'émerge qu'aux Ops **au plafond** (`TAUX_OVERFLOW` × N_GPU, tout-ou-rien).
 
-Tout reste **tunable** : `test/balance.js` mesure l'effet de chaque constante.
+Tout reste **tunable** : `test/balance.js` (rythme) et `test/cadence.js` (trou max) mesurent
+l'effet de chaque constante.

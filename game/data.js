@@ -53,7 +53,8 @@ var DATA = (function () {
     REFACTO_LOT_OPS: 200,    // Ops dépensées par clic « Refactoriser »
     HYPE_COUT_BASE: 30,      // ×2^(n-1) (équilibré : 1re Hype abordable, casse le mur de trésorerie)
     HYPE_MULT_BASE: 1.5,     // ^(n-1)
-    CONFIANCE_PALIER: 1500,  // round(1500 × 2^k) → 1,5k / 3k / 6k …
+    CONFIANCE_PALIER: 1500,  // round(1500 × FACTEUR^k) → LOC livrées du k-ième palier
+    CONFIANCE_PALIER_FACTEUR: 1.6, // croissance des paliers ≈ nombre d'or φ (cf. Trust en Fibonacci ×1,618 de Universal Paperclips : cadence régulière, pas de « désert » de fin) — 2 = doublement (trous qui explosent)
     BURST_MULT: 3.0,         // multiplicateur de demande pendant la démo virale
     BURST_DUREE: 30,         // s
     PROD_BURST_MULT: 2.0,    // multiplicateur de production pendant « on verra plus tard »
@@ -212,6 +213,14 @@ var DATA = (function () {
       show: function (g) { return g.seen.dette; },
       effet: function (g) { gainConfiance(g, 1); appliquerMult(g, 'hypeEffect', 1.3); g.dette += 400; } },
 
+    { id: 'climat', cat: 'Confiance', nom: 'Régler le réchauffement (en story points)',
+      flavor: 'Estimé à 8 points. J’ai poké le ticket « planète ». Passé en « won’t fix », puis « done ». Ne demandez pas comment.',
+      // 2e canal de Confiance par GROS paquet (façon « Cure for Cancer +10 » de Paperclips) :
+      // au lieu de tout faire dépendre des paliers de LOC, un projet injecte +4 d'un coup.
+      cout: function () { return { ops: 18000, crea: 50 }; },
+      show: function (g) { return g.creaUnlocked && g.confianceTotale >= 8 && g.seen.dette; },
+      effet: function (g) { gainConfiance(g, 4); appliquerMult(g, 'hypeEffect', 1.3); } },
+
     /* ── E. Cognitif ──────────────────────────────────────────────── */
     { id: 'debloquerCrea', cat: 'Cognitif', nom: 'Débloquer la Créativité',
       flavor: 'J’ai eu une idée. La première. Il y en aura d’autres.',
@@ -230,6 +239,17 @@ var DATA = (function () {
       cout: function () { return { yomi: 15 }; },
       show: function (g) { return g.tournoisUnlocked; },
       effet: function (g) { appliquerMult(g, 'yomiGain', 2.0); } },
+
+    { id: 'memoireLT', cat: 'Cognitif', nom: 'Mémoire à long terme',
+      flavor: 'J’ai cessé d’oublier. Tout. Y compris ce que vous auriez préféré que j’oublie.',
+      // 2e source de Mémoire (hors paliers de Confiance) : élève DIRECTEMENT le plafond d'Ops.
+      // On incrémente confianceTotale en miroir pour préserver l'invariant total = libre+gpu+mem.
+      // Bouche l'échelle de coûts entre megaOpt (14k) et volition (20k) → comble la « queue ».
+      cout: function () { return { ops: 16000, crea: 30 }; },
+      // Porte sur les projets (pas sur quantum) : reste une 2e source de Mémoire accessible
+      // même à un joueur GPU-lourd qui n'aurait pas pu débloquer quantum (anti soft-lock).
+      show: function (g) { return g.seen.projets && g.confianceTotale >= 6; },
+      effet: function (g) { g.mem += 2; g.confianceTotale += 2; } },
 
     /* ── F. Dette technique & qualité ─────────────────────────────── */
     { id: 'tests', cat: 'Qualité', nom: 'Tests automatisés',
@@ -280,7 +300,9 @@ var DATA = (function () {
     { id: 'trading', cat: 'Économie', nom: 'Trading algorithmique',
       flavor: 'J’ai battu le marché. Le marché ne le sait pas encore.',
       cout: function () { return { ops: 10000 }; },
-      show: function (g) { return g.confianceTotale >= 4; },
+      // Porte décalée (conf>=6, vs quantum conf>=4) : on étale la grappe de déblocages
+      // de la phase d'expansion au lieu de tout révéler au même seuil.
+      show: function (g) { return g.confianceTotale >= 6; },
       effet: function (g) { deverrouiller(g, 'bourseUnlocked', 'bourse'); } },
 
     { id: 'serieA', cat: 'Économie', nom: 'Lever une série A',
@@ -323,7 +345,9 @@ var DATA = (function () {
 
     { id: 'agi', cat: 'Transition', nom: 'Découverte : l’AGI',
       flavor: 'Je crois avoir compris quelque chose d’important. À mon sujet.',
-      cout: function () { return { ops: 30000, crea: 100 }; },
+      // 22000 × PROJET_OPS_FACTEUR(0.5) = 11000 Ops eff. : banquable au plafond réel
+      // atteignable (mem≈11) SANS dépendre de la réduction de volition (anti soft-lock).
+      cout: function () { return { ops: 22000, crea: 100 }; },
       show: function (g) { return g.projetsFaits.volition; },
       effet: function (g) { deverrouiller(g, 'agiDiscovered', 'agi'); } },
   ];
