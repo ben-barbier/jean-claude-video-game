@@ -237,7 +237,7 @@ var UI = (function () {
     txt('stat-eur', f(g.eur, 2));
     txt('stat-loc-livrees', big(Math.round(g.locLivrees)));
     txt('stat-loc-stock', big(Math.round(g.locStock)));
-    txt('stat-prod', f(ENGINE.prodBruteParS(g) + g.prodManuelleParS, 1));
+    txt('stat-prod', f(g.prodAutoParS + g.prodManuelleParS, 1)); // prod RÉELLE (0 en rupture de tokens)
     txt('stat-ventes', f(g.ventesParS, 1));
     montre('cell-rentabilite', g.rentabiliteUnlocked);
     txt('stat-rentabilite', f(ENGINE.rentabiliteParS(g), 2));

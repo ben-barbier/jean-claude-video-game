@@ -29,6 +29,7 @@ function nouvelEtat() {
     lignesProduites: 0,    // cumul de lignes produites (déclencheur d'installation)
     clicsAcc: 0,           // lignes écrites à la main depuis le dernier tick (→ débit manuel)
     prodManuelleParS: 0,   // débit manuel lissé (clics), intégré à « Production »
+    prodAutoParS: 0,       // débit de prod AUTO réel lissé (token-limité) → 0 en rupture de tokens
     ventesParS: 0,         // débit de ventes réel lissé (affichage « Ventes »)
     demandeAcc: 0,         // demande fractionnaire accumulée : on ne vend que des lignes ENTIÈRES
                            // (demande 0,5/s → 1 vente toutes les 2 s)

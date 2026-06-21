@@ -141,6 +141,9 @@ var ENGINE = (function () {
         * K.BASE_DETTE * velocite * g.mult.detteParLigne * g.mult.detteAccum;
       g.dette += detteAjout;
     }
+    // Débit de production AUTO RÉELLEMENT réalisé (token-limité), pour l'affichage : il tombe
+    // à 0 en rupture de tokens, même si le débit NOMINAL (prodBruteParS) reste positif.
+    g.prodAutoParS = lissageEMA(g.prodAutoParS, dt > 0 ? prodTotal / dt : 0, K.EXP_SMOOTH);
   }
 
   // 2. Vente + débit de ventes lissé. On n'écoule QUE des lignes ENTIÈRES : la demande
