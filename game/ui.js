@@ -52,12 +52,18 @@ var UI = (function () {
     $('btn-install-jc').addEventListener('click', function () { rendreApresAction(ENGINE.installerJC); });
     $('btn-agent').addEventListener('click', function () { rendreApresAction(ENGINE.acheterAgent); });
     $('btn-mega').addEventListener('click', function () { rendreApresAction(ENGINE.acheterMega); });
-    $('btn-lot').addEventListener('click', function () {
+    // Achat de tokens en masse : +1K / +10K / +100K (1 / 10 / 100 lots).
+    function acheterLots(n) {
       rendreApresAction(function (s) {
-        // Le remerciement n'apparaît qu'à la TOUTE PREMIÈRE recharge (lotsAchetes passe à 1).
-        if (ENGINE.acheterLot(s) && s.lotsAchetes === 1) { VOICE.event(s, 'achatLot'); }
+        var avant = s.lotsAchetes;
+        ENGINE.acheterLots(s, n);
+        // Le remerciement n'apparaît qu'à la TOUTE PREMIÈRE recharge (lotsAchetes passe de 0 à >0).
+        if (avant === 0 && s.lotsAchetes > 0) { VOICE.event(s, 'achatLot'); }
       });
-    });
+    }
+    $('btn-lot-1').addEventListener('click', function () { acheterLots(1); });
+    $('btn-lot-10').addEventListener('click', function () { acheterLots(10); });
+    $('btn-lot-100').addEventListener('click', function () { acheterLots(100); });
     $('btn-hype').addEventListener('click', function () { rendreApresAction(ENGINE.acheterHype); });
     $('btn-gpu').addEventListener('click', function () { rendreApresAction(function (s) { ENGINE.allouerConfiance(s, 'gpu'); }); });
     $('btn-mem').addEventListener('click', function () { rendreApresAction(function (s) { ENGINE.allouerConfiance(s, 'mem'); }); });
@@ -301,7 +307,9 @@ var UI = (function () {
     txt('tokens-val', big(g.tokens));
     montre('bloc-achat-lot', g.seen.tokensAchat);
     txt('lot-prix', f(g.prixLot, 2));
-    actif('btn-lot', g.eur >= g.prixLot);
+    actif('btn-lot-1', g.eur >= g.prixLot);
+    actif('btn-lot-10', g.eur >= 10 * g.prixLot);
+    actif('btn-lot-100', g.eur >= 100 * g.prixLot);
   }
 
   function renderMarche() {

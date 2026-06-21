@@ -187,8 +187,10 @@
     <p id="ligne-tokens">Token&nbsp;: <progress id="tokens-bar" value="0" max="1000"></progress>
        <span id="tokens-val">0</span></p>
     <div id="bloc-achat-lot" hidden>
-      <p><button id="btn-lot" type="button">Acheter un lot de 1000 tokens</button>
-         — <span id="lot-prix">15</span>&nbsp;€</p>
+      <p>Acheter des tokens (<span id="lot-prix">15</span>&nbsp;€ / 1K)&nbsp;:
+         <button id="btn-lot-1" type="button">+1K</button>
+         <button id="btn-lot-10" type="button">+10K</button>
+         <button id="btn-lot-100" type="button">+100K</button></p>
     </div>
   </fieldset>
 
@@ -295,7 +297,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '28';
+    var version = '29';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {

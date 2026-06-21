@@ -384,6 +384,17 @@ var ENGINE = (function () {
     g.lotsAchetes += 1; // fait monter la cible : le prix dérivera ↑ dans les secondes qui suivent
     return true;
   }
+  // Achat GROUPÉ de n lots (boutons +1K / +10K / +100K) : évite de cliquer sans fin à l'échelle.
+  // Le prix par lot (g.prixLot) est figé entre deux fluctuations → la fournée paie n × prixLot.
+  // Tout ou rien : on n'achète que si on peut se payer les n lots (le bouton est sinon désactivé).
+  function acheterLots(g, n) {
+    var c = n * g.prixLot;
+    if (n <= 0 || g.eur < c) { return 0; }
+    g.eur -= c;
+    g.tokens += n * K.LOT_TOKENS;
+    g.lotsAchetes += n; // dérive la cible d'autant (achat en masse = prix futur plus haut)
+    return n;
+  }
 
   function acheterHype(g) {
     var c = coutHype(g);
@@ -473,7 +484,7 @@ var ENGINE = (function () {
     tick: tick, majDeblocages: majDeblocages,
     ecrireLigne: ecrireLigne, installerJC: installerJC,
     acheterAgent: acheterAgent, acheterMega: acheterMega,
-    acheterLot: acheterLot, acheterHype: acheterHype, allouerConfiance: allouerConfiance,
+    acheterLot: acheterLot, acheterLots: acheterLots, acheterHype: acheterHype, allouerConfiance: allouerConfiance,
     refactoriser: refactoriser, deposerBourse: deposerBourse, retirerBourse: retirerBourse,
     jouerTournoi: jouerTournoi, acheterProjet: acheterProjet, projetAchetable: projetAchetable,
     deployer: deployer, prixLotCible: prixLotCible,
