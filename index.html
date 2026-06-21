@@ -46,10 +46,11 @@
   /* « Token : [====] 1234 » sur une ligne ; la jauge occupe tout l'espace libre. */
   #ligne-tokens { display: flex; align-items: center; gap: 0.6ch; }
   #tokens-bar { flex: 1; min-width: 0; }
-  /* Mise en page en colonnes (flex). Desktop : colonnes côte à côte (largeur = contenu).
-     Mobile (≤ 820px) : on empile en une colonne. */
-  #layout { display: flex; flex-wrap: nowrap; align-items: flex-start; gap: 2px 22px; }
-  #layout > .col { flex: 0 0 auto; }
+  /* Mise en page en colonnes (flex). Desktop : colonnes côte à côte (largeur = contenu) ;
+     si la fenêtre est trop étroite, les colonnes passent à la ligne (reflow) AU LIEU de
+     provoquer un scroll horizontal. Mobile (≤ 820px) : on empile en une colonne. */
+  #layout { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px 22px; }
+  #layout > .col { flex: 0 0 auto; max-width: 100%; }
   @media (max-width: 820px) {
     #layout { flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
     fieldset p, #projets-list div, button { white-space: normal; } /* le texte peut revenir à la ligne */
