@@ -139,18 +139,39 @@ var UI = (function () {
     });
     visibles.slice(0, PROJETS_MAX).forEach(function (p) {
       var c = ENGINE.coutProjet(g, p);
+      var achetable = ENGINE.projetAchetable(g, p);
+      var rep = p.repeatable && g.projetsAchats[p.id] ? ' (×' + g.projetsAchats[p.id] + ')' : '';
+
+      // Carte de projet : ce sont les projets qui font avancer l'histoire → on les met en avant.
       var btn = document.createElement('button');
       btn.type = 'button';
-      var rep = p.repeatable && g.projetsAchats[p.id] ? ' (×' + g.projetsAchats[p.id] + ')' : '';
-      btn.textContent = p.nom + rep + ' — ' + libelleCout(c);
+      btn.className = 'projet' + (achetable ? ' projet-ok' : '');
+      btn.disabled = !achetable;
       btn.title = p.flavor;
-      btn.disabled = !ENGINE.projetAchetable(g, p);
+
+      var titre = document.createElement('div');
+      titre.className = 'projet-titre';
+      var nom = document.createElement('span');
+      nom.className = 'projet-nom';
+      nom.textContent = p.nom + rep;
+      var cout = document.createElement('span');
+      cout.className = 'projet-cout';
+      cout.textContent = ' — ' + libelleCout(c);
+      titre.appendChild(nom);
+      titre.appendChild(cout);
+
+      // La « voix » de Jean-Claude affichée en clair : la narration, désormais perceptible
+      // (et plus seulement reléguée au tooltip, invisible sur mobile).
+      var flavor = document.createElement('div');
+      flavor.className = 'projet-flavor';
+      flavor.textContent = p.flavor;
+
+      btn.appendChild(titre);
+      btn.appendChild(flavor);
       btn.addEventListener('click', function () {
         rendreApresAction(function (s) { ENGINE.acheterProjet(s, p.id); });
       });
-      var ligne = document.createElement('div');
-      ligne.appendChild(btn);
-      cont.appendChild(ligne);
+      cont.appendChild(btn);
     });
     montre('projets-vide', visibles.length === 0);
   }

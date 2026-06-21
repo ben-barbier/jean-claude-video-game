@@ -105,6 +105,33 @@
   }
   /* Respecte la préférence système « mouvement réduit ». */
   @media (prefers-reduced-motion: reduce) { .flash-new { animation: none; } }
+  /* ── Projets de R&D : ce sont eux qui font avancer l'histoire → on les met en avant ── */
+  #bloc-projets { border: 1px solid #46e07a; border-radius: 5px; }
+  #bloc-projets > legend { color: #1f8a4c; }
+  #projets-list button.projet, #projets-list button.projet div { white-space: normal; }
+  button.projet {
+    display: block;
+    width: 100%;
+    text-align: left;
+    margin: 6px 0;
+    padding: 7px 10px;
+    border: 1px solid #c7cdd2;
+    border-left: 3px solid #9bb8a6;
+    border-radius: 4px;
+    background: #f6fbf8;
+    cursor: pointer;
+  }
+  button.projet .projet-nom { font-weight: bold; }
+  button.projet .projet-cout { opacity: 0.75; }
+  button.projet .projet-flavor { margin-top: 3px; font-style: italic; font-size: 0.85em; opacity: 0.72; }
+  /* Projet réalisable MAINTENANT → il ressort nettement (accent vif + halo) ; sinon estompé. */
+  button.projet.projet-ok {
+    border-left-color: #46e07a;
+    background: rgba(70, 224, 122, 0.14);
+    box-shadow: 0 0 8px rgba(70, 224, 122, 0.3);
+  }
+  button.projet.projet-ok:hover { background: rgba(70, 224, 122, 0.22); }
+  button.projet:disabled { opacity: 0.5; cursor: default; }
 </style>
 </head>
 <body>
@@ -270,7 +297,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '26';
+    var version = '27';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {
