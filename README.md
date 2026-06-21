@@ -34,17 +34,27 @@ Aucun framework. Scripts chargés dans l'ordre par `index.html` :
 | `game/main.js` | Amorçage + boucle `requestAnimationFrame` à pas fixe + autosave. |
 
 `data.js`, `voice.js`, `state.js` et `engine.js` sont **sans DOM** et donc testables hors
-navigateur.
+navigateur. Les tests sont écrits pour le runner natif de [Bun](https://bun.sh) (`bun:test`)
+et chargent les modules via un harnais commun (`test/harness.js`, contexte `vm` isolé).
 
 ## Tests
 
 ```sh
-node test/smoke.js        # 120 min de jeu simulé : garde-fou runtime / NaN / déblocages
-node test/progression.js  # parcourt tout le graphe de R&D : les 38 projets + bascule Acte 2
-node test/save.js         # aller-retour de sauvegarde : anti-exploit + robustesse aux corruptions
-node test/balance.js      # joueur compétent simulé : rythme + complétude (jusqu'au déploiement)
-node test/balance.js detail   # déroulé détaillé d'une partie (jalons, projets, état final)
+bun test                  # lance tous les tests unitaires (test/*.test.js)
+bun test test/save.test.js   # un seul fichier
+bun test --watch          # en continu
+
+bun run bench             # banc d'équilibrage : rythme + complétude (jusqu'au déploiement)
+bun run bench:detail      # déroulé détaillé d'une partie (jalons, projets, état final)
 ```
+
+| Fichier | Couverture |
+| --- | --- |
+| `test/install.test.js` | Déblocage progressif : Tokens/Agents cachés tant que Jean-Claude n'est pas installé. |
+| `test/smoke.test.js` | Invariants de base + 120 min simulées : garde-fou runtime / NaN. |
+| `test/progression.test.js` | Tout le graphe de R&D (les projets + bascule Acte 2). |
+| `test/save.test.js` | Aller-retour de sauvegarde : anti-exploit + robustesse aux corruptions. |
+| `test/balance.js` | Banc d'équilibrage (joueur compétent simulé), lancé via `bun run bench`. |
 
 ## Équilibrage
 

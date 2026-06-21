@@ -1,0 +1,12 @@
+{
+  "name": "jean-claude-video-game",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Jean-Claude — Code Maximizer : jeu incrémental en HTML/JS vanilla (sans build).",
+  "scripts": {
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "bench": "bun run test/balance.js",
+    "bench:detail": "bun run test/balance.js detail"
+  }
+}
