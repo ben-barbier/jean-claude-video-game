@@ -22,6 +22,19 @@
   /* Les lignes des panneaux et du tableau de bord tiennent sur une seule ligne. */
   fieldset p, #bloc-dashboard div, #projets-list div { white-space: nowrap; }
   button { white-space: nowrap; touch-action: manipulation; }
+  /* Action primaire du début de partie : volontairement gros pour inciter au clic. */
+  #btn-ecrire {
+    font-size: 1.5em;
+    font-weight: bold;
+    padding: 0.55em 1.5em;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  #btn-ecrire:hover:not(:disabled) {
+    background: rgba(70, 224, 122, 0.18);
+    box-shadow: 0 0 8px rgba(70, 224, 122, 0.4);
+  }
+  #btn-ecrire:active:not(:disabled) { transform: translateY(1px); }
   /* Tableau de bord : libellés à largeur fixe (monospace) → « : » et valeurs alignés. */
   #bloc-dashboard .dk { display: inline-block; width: 16ch; }
   /* « Token : [====] 1234 » sur une ligne ; la jauge occupe tout l'espace libre. */
