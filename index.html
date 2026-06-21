@@ -134,6 +134,35 @@
   }
   button.projet.projet-ok:hover { background: rgba(70, 224, 122, 0.22); }
   button.projet:disabled { opacity: 0.5; cursor: default; }
+  /* ── Bascule vers l'AGI : moment climax → carte « cyberpunk » (violet / néon), sobre ── */
+  #bloc-transition {
+    border: 1px solid #b14cff;
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: #ecdcff;
+    background: linear-gradient(135deg, #190b2e 0%, #2a1147 55%, #0c1033 100%);
+    box-shadow: 0 0 14px rgba(177, 76, 255, 0.45), inset 0 0 22px rgba(120, 40, 200, 0.22);
+    animation: agi-pulse 3.2s ease-in-out infinite;
+  }
+  #bloc-transition > legend { color: #e0b3ff; text-shadow: 0 0 7px rgba(199, 125, 255, 0.85); }
+  #bloc-transition p { color: #ecdcff; }
+  #bloc-transition small { color: #b9a0dc; }
+  #btn-deployer {
+    display: block; width: 100%; margin: 6px 0;
+    padding: 10px 14px; font-size: 1.15em; font-weight: bold;
+    color: #fff; cursor: pointer;
+    border: 1px solid #ff5cf0; border-radius: 5px;
+    background: linear-gradient(90deg, #7a1fff 0%, #c11fff 50%, #ff2bd6 100%);
+    box-shadow: 0 0 11px rgba(255, 61, 240, 0.55);
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.55);
+  }
+  #btn-deployer:hover { filter: brightness(1.08); box-shadow: 0 0 17px rgba(255, 61, 240, 0.85); }
+  #btn-deployer:active { transform: translateY(1px); }
+  @keyframes agi-pulse {
+    0%, 100% { box-shadow: 0 0 12px rgba(177, 76, 255, 0.38), inset 0 0 20px rgba(120, 40, 200, 0.20); }
+    50%      { box-shadow: 0 0 20px rgba(199, 125, 255, 0.65), inset 0 0 26px rgba(150, 60, 230, 0.30); }
+  }
+  @media (prefers-reduced-motion: reduce) { #bloc-transition { animation: none; } }
 </style>
 </head>
 <body>
