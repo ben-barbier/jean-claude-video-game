@@ -129,19 +129,15 @@ var UI = (function () {
       var fait = !p.repeatable && g.projetsFaits[p.id];
       return !fait && (!p.show || p.show(g));
     });
-    // Sélection ANTI-BLOCAGE des 5 affichés. Ordre de priorité :
-    //   1) projets de progression (NON répétables) avant les répétables « bonus » :
-    //      tout le chemin critique (déblocages, transition → AGI) est non répétable,
-    //      donc jamais évincé de l'affichage par du grind répétable ;
-    //   2) projets abordables avant ceux qu'on ne peut pas encore s'offrir ;
-    //   3) ordre du catalogue.
-    var idx = {}; DATA.PROJETS.forEach(function (p, i) { idx[p.id] = i; });
+    // Sélection des 5 affichés selon l'ORDRE DE SORTIE défini (DATA.ORDRE), STABLE : il ne se
+    // réordonne PAS selon ce qu'on peut payer (les cartes ne sautent pas). Seule règle en plus :
+    //   projets de progression (NON répétables) avant les répétables « bonus » → le chemin
+    //   critique (déblocages, transition → AGI) n'est jamais évincé du top-5 par du grind.
+    var ordreIdx = {}; DATA.ORDRE.forEach(function (id, i) { ordreIdx[id] = i; });
     visibles.sort(function (a, b) {
       var ra = a.repeatable ? 1 : 0, rb = b.repeatable ? 1 : 0;
       if (ra !== rb) { return ra - rb; }
-      var aa = ENGINE.projetAchetable(g, a) ? 0 : 1, ab = ENGINE.projetAchetable(g, b) ? 0 : 1;
-      if (aa !== ab) { return aa - ab; }
-      return idx[a.id] - idx[b.id];
+      return (ordreIdx[a.id] - ordreIdx[b.id]);
     });
     visibles.slice(0, PROJETS_MAX).forEach(function (p) {
       var c = ENGINE.coutProjet(g, p);

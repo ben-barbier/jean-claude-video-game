@@ -413,10 +413,33 @@ var DATA = (function () {
     agi: 'Débloque la bascule finale (déploiement)',
   };
 
+  /* ORDRE DE SORTIE des projets (source unique de vérité pour l'affichage). Pensé pour le
+   * rythme : bases peu chères d'abord, Confiance bon marché TÔT (pas reléguée en fin), montée
+   * en puissance au milieu, climax coûteux à la fin (séries, climat, volition, AGI). L'IHM suit
+   * cet ordre tel quel (il ne se réordonne PAS selon ce qu'on peut payer) ; seuls les projets
+   * répétables passent après les non-répétables (anti-blocage). Un test vérifie qu'il liste
+   * exactement les 40 projets. Modifier CET ordre = modifier l'ordre vu par le joueur. */
+  var ORDRE = [
+    // ── Démarrage : bases peu chères, juste après l'installation de l'IA ──
+    'auto1', 'rentabilite', 'debloquerCrea', 'promptEng', 'linter', 'tests',
+    // ── Confiance précoce (éthique « bon marché ») : remontée tôt, plus en fin de partie ──
+    'rlhf', 'charte',
+    // ── Montée en puissance : production, tokens, qualité, hype ──
+    'auto2', 'cacheGen', 'compression', 'cicd', 'typage', 'comite',
+    'pitch', 'jingle', 'podcast', 'negoTarifs', 'auto3', 'distillation',
+    // ── Expansion : cognitif, économie, stratégie, Super Agents ──
+    'quantum', 'faim', 'trading', 'mega', 'megaOpt',
+    'modelisation', 'theorieEsprit', 'autoTournoi', 'memoireLT', 'openSource',
+    // ── Capitalisation & climax (coûteux / structurants) en fin ──
+    'serieA', 'serieB', 'serieC', 'climat', 'volition', 'agi',
+    // ── Répétables (grind/bonus) : toujours après les projets de progression ──
+    'corrigerBug', 'demoVirale', 'grandRefactor', 'onVerraPlusTard',
+  ];
+
   var byId = {};
   PROJETS.forEach(function (p) { byId[p.id] = p; p.impact = IMPACTS[p.id] || ''; });
 
-  return { K: K, PROJETS: PROJETS, byId: byId, coutRepete: coutRepete };
+  return { K: K, PROJETS: PROJETS, byId: byId, ORDRE: ORDRE, coutRepete: coutRepete };
 })();
 
 if (typeof module !== 'undefined' && module.exports) { module.exports = DATA; }
