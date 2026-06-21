@@ -344,7 +344,7 @@ Ordre de construction interne recommandé (cf. §4.4) :
 | Tokens initiaux | 1 000 | ~1 000 premières lignes |
 | Prix initial | 0,25 € | réglable 0,01 → 2,00 |
 | `PRIX_REF` | 0,25 € | prix de référence de la demande |
-| `ÉLASTICITÉ` | 1,1 | sensibilité demande ↔ prix |
+| `ÉLASTICITÉ` | 2,0 | sensibilité demande ↔ prix — **nettement > 1** pour que le prix soit un vrai levier (revenu durable ∝ prix^(1−ÉLASTICITÉ) en régime limité-demande → un optimum NET à la frontière demande = production, façon Paperclips ; à 1,1 le prix était quasi inerte). Cf. `test/price-impact.js` / `test/price-elasticite.test.js`. |
 | `BASE_DEMANDE` | 2,0 LOC/s | à prix=réf, hype niv.1, qualité 1 (équilibré) |
 | `BASE_TOKEN` | 1 token/ligne | avant malus de dette |
 | `LOT_TOKENS` | 1 000 | taille d'un lot acheté |
@@ -371,15 +371,19 @@ Ordre de construction interne recommandé (cf. §4.4) :
 | Hype — mult niv. n | `1,5ⁿ⁻¹` | multiplicateur de demande |
 
 **Paliers de Confiance.** +1 Confiance à chaque seuil de LOC cumulées :
-`round(1500 × φᵏ)` avec `φ ≈ 1,6` (`CONFIANCE_PALIER_FACTEUR`)
-→ **1,5k / 2,4k / 3,8k / 6,1k / 9,8k / 15,7k / 25k / 40k…**
+`round(1500 × FACTEURᵏ)` avec `FACTEUR = 1,8` (`CONFIANCE_PALIER_FACTEUR`)
+→ **1,5k / 2,7k / 4,9k / 8,7k / 15,7k / 28k / 51k…**
 
 > **Leçon de Universal Paperclips (ré-équilibrage).** Paperclips distribue le *Trust* selon
 > une suite de **Fibonacci ×1000** (3k, 5k, 8k, 13k, 21k…), dont le ratio entre paliers tend
 > vers le **nombre d'or φ ≈ 1,618**, et non vers 2. Notre version d'origine utilisait `× 2ᵏ`
 > (doublement) : les écarts entre paliers **doublaient**, créant un « désert » de ~40 min en
-> fin d'Acte 1 où plus rien ne se débloquait (grind pur de LOC). Passer à `× 1,6ᵏ` rend la
-> cadence régulière jusqu'à la fin (un palier toutes les ~30 s–1 min 30).
+> fin d'Acte 1 où plus rien ne se débloquait (grind pur de LOC). On est d'abord passé à `× 1,6ᵏ`
+> (≈ φ), puis recalé à **`× 1,8ᵏ`** quand l'élasticité a été portée à 2,0 : la fin de partie
+> rapportant alors bien plus (un prix mieux choisi est récompensé), des paliers un peu plus
+> espacés tardivement ramènent le « deploy » à ~25 min — sans toucher ni l'amorce (le 1er palier
+> reste à 1 500 LOC) ni la récompense-prix. La cadence reste régulière (un palier toutes
+> les ~30 s–1 min 30, **0 trou ≥ 2 min** dans `test/cadence.js`).
 >
 > Paperclips alimente aussi le *Trust* par **deux canaux** : les paliers de production **et**
 > des projets qui en donnent par paquets croissants (*Cure for Cancer* +10, *World Peace* +12…).

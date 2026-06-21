@@ -11,7 +11,13 @@ var DATA = (function () {
     PRIX_MIN: 0.01,
     PRIX_MAX: 2.00,
     PRIX_REF: 0.25,
-    ELASTICITE: 1.1,
+    // Élasticité « façon Paperclips » : nettement > 1 pour que le PRIX redevienne un vrai
+    // levier. Conséquence (revenu durable = min(demande, production) × prix) :
+    //   - régime limité-demande : revenu ∝ prix^(1−ELASTICITE) = prix^(−1) → sur-tarifer PUNIT ;
+    //   - régime limité-production : revenu = production × prix → sous-tarifer GÂCHE.
+    // → un optimum NET à la frontière demande = production (à 2.0, un mauvais prix coûte ×40
+    // en fin de partie, contre ×1,6 à 1.1 où le prix était inerte). Cf. test/price-impact.js.
+    ELASTICITE: 2.0,
     BASE_DEMANDE: 2.0,        // LOC/s à prix=réf, hype niv.1, qualité 1 (équilibré : amorce le marché)
     BASE_TOKEN: 1.0,         // token/ligne avant malus de dette
     LOT_TOKENS: 1000,
@@ -54,7 +60,7 @@ var DATA = (function () {
     HYPE_COUT_BASE: 30,      // ×2^(n-1) (équilibré : 1re Hype abordable, casse le mur de trésorerie)
     HYPE_MULT_BASE: 1.5,     // ^(n-1)
     CONFIANCE_PALIER: 1500,  // round(1500 × FACTEUR^k) → LOC livrées du k-ième palier
-    CONFIANCE_PALIER_FACTEUR: 1.6, // croissance des paliers ≈ nombre d'or φ (cf. Trust en Fibonacci ×1,618 de Universal Paperclips : cadence régulière, pas de « désert » de fin) — 2 = doublement (trous qui explosent)
+    CONFIANCE_PALIER_FACTEUR: 1.8, // croissance des paliers (cadence régulière façon « Trust en Fibonacci » de Universal Paperclips, pas de « désert » de fin) — 2 = doublement (trous qui explosent). Calé à 1,8 (vs φ≈1,6) pour absorber l'économie de fin plus riche depuis ELASTICITE=2.0 : ralentit UNIQUEMENT les paliers tardifs (le 1er reste à 1500 LOC) → deploy ~25min sans toucher ni l'amorce ni la récompense-prix. Cf. test/cadence.js.
     BURST_MULT: 3.0,         // multiplicateur de demande pendant la démo virale
     BURST_DUREE: 30,         // s
     PROD_BURST_MULT: 2.0,    // multiplicateur de production pendant « on verra plus tard »

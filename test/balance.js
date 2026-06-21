@@ -164,12 +164,13 @@ if (process.argv[2] === 'detail') {
 /* ── Table comparative de configs ──────────────────────────────── */
 // Les constantes équilibrées sont désormais les defaults de data.js : on teste donc
 // le jeu TEL QU'IL EST LIVRÉ (override vide), et on compare quelques variantes.
-// Le levier clé du pacing est la croissance des paliers de Confiance (CONFIANCE_PALIER_FACTEUR).
-// On compare la config livrée (φ≈1.6) à des variantes, dont l'ANCIENNE (2.0 = doublement) qui
-// recréait le « désert médian » de ~40 min.
+// Le levier clé du pacing est la croissance des paliers de Confiance (CONFIANCE_PALIER_FACTEUR),
+// désormais à 1,8 (relevé depuis φ≈1,6 pour absorber l'économie de fin plus riche apportée par
+// ELASTICITE=2,0). On compare la config livrée à des variantes, dont l'ANCIENNE (2.0 = doublement)
+// qui recréait le « désert médian » de ~40 min.
 const CONFIGS = {
-  'base (φ≈1.6)':     {},
-  'fact 1.5':         { CONFIANCE_PALIER_FACTEUR: 1.5 },
+  'base (1.8)':       {},
+  'fact 1.6 (φ)':     { CONFIANCE_PALIER_FACTEUR: 1.6 },
   'fact 1.7':         { CONFIANCE_PALIER_FACTEUR: 1.7 },
   'fact 2.0 (avant)': { CONFIANCE_PALIER_FACTEUR: 2.0 },
   'pal 2000':         { CONFIANCE_PALIER: 2000 },
