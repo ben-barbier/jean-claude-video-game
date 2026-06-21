@@ -322,9 +322,11 @@ var UI = (function () {
     txt('dette-norm', f(dn * 100, 0));
     txt('refacto-prod', f((1 - g.partRefacto) * 100, 0));
     txt('refacto-part', f(g.partRefacto * 100, 0));
-    // Le bouton « Refactoriser (Ops) » n'apparaît qu'une fois les Ops disponibles
-    // (présentes ou produites par la boucle cognitive) — le slider agents reste, lui.
-    montre('bloc-refacto', g.ops > 0 || ENGINE.opsParS(g) > 0);
+    // Le bouton « Refactoriser (200 Ops) » n'apparaît qu'une fois l'unité Ops VISIBLE à
+    // l'écran, c.-à-d. le panneau « Cerveau » révélé (seen.confiance) : sinon il référencerait
+    // des Ops que le joueur ne voit nulle part (les Ops coulent en sous-main dès gpu≥1).
+    // Le slider Production ↔ Refactoring, lui, reste affiché (il ne dépend pas des Ops).
+    montre('bloc-refacto', g.seen.confiance);
     actif('btn-refacto', g.ops > 0);
   }
 
