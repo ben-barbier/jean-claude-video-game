@@ -283,9 +283,14 @@ var UI = (function () {
     txt('btn-agent', aDesAgents ? '+1' : 'Recruter un agent');
     actif('btn-agent', g.eur >= ENGINE.coutAgent(g));
 
+    // Même logique pour les Super Agents : 0 → bouton seul ; ≥1 → « Super Agents : N [+1] — P € ».
     montre('bloc-mega', g.megaUnlocked);
+    var aDesMegas = g.megas >= 1;
+    montre('mega-recap', aDesMegas);
+    montre('mega-cout-wrap', aDesMegas);
     txt('mega-count', f(g.megas));
     txt('mega-cout', big(ENGINE.coutMega(g)));
+    txt('btn-mega', aDesMegas ? '+1' : 'Recruter un Super Agent');
     actif('btn-mega', g.eur >= ENGINE.coutMega(g));
   }
 
