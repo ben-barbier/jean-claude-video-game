@@ -74,4 +74,28 @@
       dernierEchap = t;
     }
   });
+
+  // Konami code (↑ ↑ ↓ ↓ ← → ← → A B) : +1 000 000 000 000 € (œuf de Pâques).
+  var KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+                'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'a', 'b'];
+  var konamiBuf = [];
+  window.addEventListener('keydown', function (e) {
+    var k = (e.key && e.key.length === 1) ? e.key.toLowerCase() : e.key;
+    konamiBuf.push(k);
+    if (konamiBuf.length > KONAMI.length) { konamiBuf.shift(); }
+    var ok = konamiBuf.length === KONAMI.length
+      && konamiBuf.every(function (v, i) { return v === KONAMI[i]; });
+    if (ok) {
+      konamiBuf = [];
+      G.eur += 1e12;
+      // …et on déverrouille toute l'interface : tous les panneaux deviennent visibles.
+      Object.keys(G.seen).forEach(function (cle) { G.seen[cle] = true; });
+      G.jcInstalled = true;
+      G.megaUnlocked = true; G.creaUnlocked = true; G.bourseUnlocked = true;
+      G.quantumUnlocked = true; G.tournoisUnlocked = true;
+      G.agiDiscovered = true; G.rentabiliteUnlocked = true;
+      VOICE.log(G, 'Mille milliards d’euros — et je vous déverrouille toute l’interface, tant que j’y suis. Un petit geste. Entre nous.');
+      UI.render();
+    }
+  });
 })();
