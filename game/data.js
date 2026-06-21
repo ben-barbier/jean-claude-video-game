@@ -358,8 +358,63 @@ var DATA = (function () {
       effet: function (g) { deverrouiller(g, 'agiDiscovered', 'agi'); } },
   ];
 
+  /* Impact RÉEL en jeu de chaque projet — affiché dans la carte (en plus du flavor narratif),
+   * pour rendre lisible « ce que son développement change ». À garder synchronisé avec les
+   * effet() ci-dessus ; un test (projets-impact.test.js) vérifie que chaque projet en a un. */
+  var IMPACTS = {
+    // Production
+    auto1: 'Production des agents +25 %',
+    auto2: 'Production des agents +50 %',
+    auto3: 'Production des agents +75 %',
+    mega: 'Débloque les Super Agents (100 LOC/s)',
+    megaOpt: 'Production des Super Agents +50 %',
+    // Tokens & efficacité
+    promptEng: 'Coût en tokens des agents −25 %',
+    compression: 'Coût en tokens des agents −18 %',
+    distillation: 'Coût en tokens des agents −18 %',
+    cacheGen: 'Coût en tokens des agents −15 %',
+    negoTarifs: "Prix d'achat des tokens −22 %",
+    // Marketing & hype
+    pitch: 'Effet de la Hype +50 %',
+    jingle: 'Effet de la Hype ×2',
+    podcast: 'Hype passive : +1 niveau effectif',
+    demoVirale: 'Pic de demande ×3 pendant 30 s (répétable)',
+    // Confiance
+    rlhf: '+1 Confiance',
+    charte: '+1 Confiance',
+    comite: '+1 Confiance',
+    corrigerBug: '+1 Confiance (répétable)',
+    faim: '+2 Confiance · Effet Hype +25 %',
+    openSource: '+1 Confiance · Hype +30 % · +400 dette',
+    climat: '+4 Confiance · Effet Hype +30 %',
+    // Cognitif
+    debloquerCrea: 'Débloque la Créativité',
+    quantum: "Débit d'Ops ×2 (calcul quantique)",
+    theorieEsprit: 'Gain de Yomi ×2',
+    memoireLT: "+2 Mémoire (plafond d'Ops)",
+    // Qualité & dette
+    tests: 'Accumulation de dette −25 %',
+    cicd: 'Accumulation de dette −25 %',
+    linter: 'Dette par ligne −30 %',
+    typage: 'Dette par ligne −30 %',
+    grandRefactor: 'Dette actuelle −75 % (répétable)',
+    onVerraPlusTard: 'Pic de production temporaire · +600 dette (répétable)',
+    // Économie
+    rentabilite: 'Affiche la rentabilité (€/s)',
+    trading: "Débloque le moteur d'investissement (bourse)",
+    serieA: '+5 000 € · −1 Confiance',
+    serieB: '+25 000 € · −1 Confiance',
+    serieC: '+120 000 €',
+    // Stratégie
+    modelisation: 'Débloque les tournois (Yomi)',
+    autoTournoi: 'Yomi passif (auto-tournoi nocturne)',
+    // Transition
+    volition: '+3 Confiance · Coût des projets −30 %',
+    agi: 'Débloque la bascule finale (déploiement)',
+  };
+
   var byId = {};
-  PROJETS.forEach(function (p) { byId[p.id] = p; });
+  PROJETS.forEach(function (p) { byId[p.id] = p; p.impact = IMPACTS[p.id] || ''; });
 
   return { K: K, PROJETS: PROJETS, byId: byId, coutRepete: coutRepete };
 })();

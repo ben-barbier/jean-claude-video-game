@@ -166,6 +166,11 @@ var UI = (function () {
       titre.appendChild(nom);
       titre.appendChild(cout);
 
+      // Impact RÉEL en jeu (ce que son développement change) — la raison de le développer.
+      var impact = document.createElement('div');
+      impact.className = 'projet-impact';
+      impact.textContent = '▸ ' + p.impact;
+
       // La « voix » de Jean-Claude affichée en clair : la narration, désormais perceptible
       // (et plus seulement reléguée au tooltip, invisible sur mobile).
       var flavor = document.createElement('div');
@@ -173,6 +178,7 @@ var UI = (function () {
       flavor.textContent = p.flavor;
 
       btn.appendChild(titre);
+      if (p.impact) { btn.appendChild(impact); }
       btn.appendChild(flavor);
       btn.addEventListener('click', function () {
         rendreApresAction(function (s) { ENGINE.acheterProjet(s, p.id); });

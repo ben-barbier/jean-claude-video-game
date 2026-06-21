@@ -123,6 +123,8 @@
   }
   button.projet .projet-nom { font-weight: bold; }
   button.projet .projet-cout { opacity: 0.75; }
+  /* Impact gameplay : la raison de développer le projet → bien lisible (accent vert). */
+  button.projet .projet-impact { margin-top: 3px; font-size: 0.88em; color: #1f8a4c; }
   button.projet .projet-flavor { margin-top: 3px; font-style: italic; font-size: 0.85em; opacity: 0.72; }
   /* Projet réalisable MAINTENANT → il ressort nettement (accent vif + halo) ; sinon estompé. */
   button.projet.projet-ok {
@@ -297,7 +299,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '29';
+    var version = '30';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {
