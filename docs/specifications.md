@@ -201,7 +201,10 @@ Bouton dramatique et **irréversible** : **« Déployer en autonomie / Sortir du
 **Vente**
 - `demande` = `BASE_DEMANDE` × mult_hype × (`PRIX_REF` / prix)^`ÉLASTICITÉ` × qualité.
 - `qualité` = clamp(1 − `K_QUALITÉ` × dette_norm, `Q_MIN`, 1).
-- `ventes` = min(`demande`, stock disponible) → € += ventes × prix ; stock −= ventes.
+- `ventes` = min(⌊demande_cumulée⌋, ⌊stock⌋) — **lignes ENTIÈRES uniquement** : on ne vend pas
+  0,9 ligne. La demande fractionnaire s'accumule (`demande_cumulée`), donc une demande de 0,5 ligne/s
+  fait une vente toutes les 2 s ; la demande non servie faute de stock ne fait pas de « backlog »
+  (au plus 1 acheteur retenu au-delà du stock entier). € += ventes × prix ; stock −= ventes.
 
 **Dette technique**
 - Accumulation : dette += `prod_brute` × `dette_par_ligne`.

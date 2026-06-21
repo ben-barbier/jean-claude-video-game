@@ -29,7 +29,8 @@ describe('Invariants de base', () => {
     const G = nouvelEtat();
     ENGINE.ecrireLigne(G);
     const tk = G.tokens;
-    ENGINE.tick(G, DATA.K.DT);
+    // On ne vend que des lignes ENTIÈRES : laisser la demande fractionnaire atteindre 1 ligne.
+    for (let i = 0; i < 20; i++) { ENGINE.tick(G, DATA.K.DT); } // ~2 s
     expect(G.eur).toBeGreaterThan(0);
     expect(G.tokens).toBeCloseTo(tk, 9);
   });

@@ -143,14 +143,20 @@ var ENGINE = (function () {
     }
   }
 
-  // 2. Vente + débit de ventes lissé.
+  // 2. Vente + débit de ventes lissé. On n'écoule QUE des lignes ENTIÈRES : la demande
+  //    fractionnaire s'accumule (demande 0,5/s → 1 vente toutes les 2 s). La demande non
+  //    servie faute de stock ne fait PAS de « backlog » (les clients repartent) : on retient
+  //    au plus 1 acheteur en attente au-delà du stock entier disponible.
   function tickVente(g, dt) {
-    var dem = demandeParS(g) * dt;
-    var ventes = Math.min(dem, g.locStock);
+    g.demandeAcc += demandeParS(g) * dt;
+    var dispo = Math.floor(g.locStock); // lignes entières réellement disponibles
+    if (g.demandeAcc > dispo + 1) { g.demandeAcc = dispo + 1; }
+    var ventes = Math.min(Math.floor(g.demandeAcc), dispo);
     if (ventes > 0) {
       g.eur += ventes * g.prix;
       g.locStock -= ventes;
       g.locLivrees += ventes;
+      g.demandeAcc -= ventes;
     }
     // Débit de ventes RÉEL (lissé) : reflète ce qui s'écoule vraiment, même quand le stock
     // est vendu aussi vite qu'il est produit (l'affichage ne tombe plus à 0 à tort).
