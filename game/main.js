@@ -14,6 +14,15 @@
   ENGINE.majDeblocages(G);
   UI.render();
 
+  // Le terminal est en position: fixed (toujours visible au scroll) → il sort du flux.
+  // On réserve sa hauteur sous lui (offset dynamique, robuste au resize) pour ne rien cacher.
+  function ajusterOffsetTerminal() {
+    var term = document.getElementById('journal-term');
+    if (term) { document.body.style.paddingTop = term.offsetHeight + 'px'; }
+  }
+  ajusterOffsetTerminal();
+  window.addEventListener('resize', ajusterOffsetTerminal);
+
   // Boucle à pas fixe (DT) avec accumulateur, pilotée par requestAnimationFrame.
   var last = (typeof performance !== 'undefined' ? performance.now() : Date.now());
   var acc = 0;
