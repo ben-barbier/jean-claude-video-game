@@ -69,13 +69,9 @@ var UI = (function () {
     $('btn-retrait').addEventListener('click', function () { rendreApresAction(function (s) { ENGINE.retirerBourse(s, 100); }); });
     $('btn-retrait-max').addEventListener('click', function () { rendreApresAction(function (s) { ENGINE.retirerBourse(s, s.capital); }); });
 
-    $('prix-slider').addEventListener('input', function (e) {
-      g.prix = ENGINE.clamp(parseFloat(e.target.value), ENGINE.K.PRIX_MIN, ENGINE.K.PRIX_MAX);
-      render();
-    });
+    // Le prix se règle uniquement aux boutons − / + (curseur retiré), pas par pas de 0,01 €.
     function ajusterPrix(d) {
       g.prix = ENGINE.clamp(Math.round((g.prix + d) * 100) / 100, ENGINE.K.PRIX_MIN, ENGINE.K.PRIX_MAX);
-      $('prix-slider').value = g.prix;
       render();
     }
     $('btn-prix-moins').addEventListener('click', function () { ajusterPrix(-0.01); });
@@ -94,8 +90,7 @@ var UI = (function () {
     // La sauvegarde est automatique et silencieuse (cf. main.js). Pour repartir de
     // zéro pendant le développement : window.resetJeanClaude() dans la console.
 
-    // valeurs initiales des curseurs
-    $('prix-slider').value = g.prix;
+    // valeur initiale du curseur de refactoring
     $('refacto-slider').value = Math.round(g.partRefacto * 100);
 
     // Affiche le journal une fois au lancement (mises à jour ensuite via onLog).

@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Jean-Claude — Code Maximizer</title>
 <!-- Inspiration Universal Paperclips : HTML quasi nu. Le peu de style ci-dessous donne
      un look « tech / console » à tout le jeu, et une fenêtre « terminal » au Journal. -->
@@ -16,8 +16,14 @@
     font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     font-size: 14px;
     line-height: 1.4;
-    /* Mobile : désactive le double-tap-to-zoom (on tape vite) en gardant le pinch-zoom. */
+    /* Mobile : on tape vite et souvent → on neutralise tout ce qui parasite les interactions :
+       zoom (double-tap ET pinch, cf. viewport user-scalable=no), sélection de texte
+       et menu contextuel iOS au maintien. */
     touch-action: manipulation;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
   }
   /* Les lignes des panneaux et du tableau de bord tiennent sur une seule ligne. */
   fieldset p, #bloc-dashboard div, #projets-list div { white-space: nowrap; }
@@ -163,10 +169,8 @@
 
   <fieldset id="bloc-marche" hidden>
     <legend><b>Marché &amp; ventes</b></legend>
-    <p>Prix de vente&nbsp;: <b><span id="prix-val">0,25</span>&nbsp;€</b> / ligne<br>
+    <p>Prix de vente&nbsp;: <b><span id="prix-val">0,25</span>&nbsp;€</b> / ligne
        <button id="btn-prix-moins" type="button" aria-label="Baisser le prix">−</button>
-       <input id="prix-slider" type="range" min="0.01" max="2" step="0.01" value="0.25"
-              aria-label="Prix de vente par ligne de code, en euros">
        <button id="btn-prix-plus" type="button" aria-label="Augmenter le prix">+</button></p>
     <p>Demande&nbsp;: <span id="demande-val">0</span>&nbsp;lignes/s —
        Qualité&nbsp;: <span id="qualite-val">100</span>&nbsp;%</p>
@@ -266,7 +270,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '25';
+    var version = '26';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {
