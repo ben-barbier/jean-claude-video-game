@@ -7,13 +7,6 @@
   var G = SAVE.charger() || nouvelEtat();
   window.G = G; // pratique pour déboguer dans la console
 
-  // Migration : une partie d'avant le pivot « dev → IA » a déjà Jean-Claude (agents,
-  // confiance, etc.) ⇒ on la considère « JC installé » (et le clic gratuit la débloque).
-  if (!G.jcInstalled && (G.agents > 0 || G.megas > 0 || G.gpu > 0 || G.seen.confiance ||
-      G.locLivrees >= DATA.K.JC_INSTALL_SEUIL)) {
-    G.jcInstalled = true;
-  }
-
   // Applique une action du joueur puis rafraîchit l'affichage immédiatement.
   function rendreApresAction(fn) { fn(G); UI.render(); }
 

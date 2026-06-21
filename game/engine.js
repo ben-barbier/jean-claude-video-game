@@ -155,8 +155,10 @@ var ENGINE = (function () {
   }
 
   // 4. Boucle cognitive (Ops produites, créativité au plafond).
+  //    Le « Cerveau » est celui de Jean-Claude : aucune Op tant qu'il n'est pas installé
+  //    (l'état neuf démarre pourtant avec 1 GPU/1 Mémoire, dotation du futur post-install).
   function tickCognition(g, dt) {
-    if (g.gpu > 0) {
+    if (g.jcInstalled && g.gpu > 0) {
       g.ops += opsParS(g) * dt;
       var plafond = opsPlafond(g);
       var capped = g.ops >= plafond;
