@@ -420,8 +420,8 @@ var DATA = (function () {
    * répétables passent après les non-répétables (anti-blocage). Un test vérifie qu'il liste
    * exactement les 40 projets. Modifier CET ordre = modifier l'ordre vu par le joueur. */
   var ORDRE = [
-    // ── Démarrage : bases peu chères, juste après l'installation de l'IA ──
-    'auto1', 'rentabilite', 'debloquerCrea', 'promptEng', 'linter', 'tests',
+    // ── Démarrage : le tableau de bord financier d'abord (lisibilité €/s), puis les bases ──
+    'rentabilite', 'auto1', 'debloquerCrea', 'promptEng', 'linter', 'tests',
     // ── Confiance précoce (éthique « bon marché ») : remontée tôt, plus en fin de partie ──
     'rlhf', 'charte',
     // ── Montée en puissance : production, tokens, qualité, hype ──
