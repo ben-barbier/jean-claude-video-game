@@ -323,9 +323,8 @@ var UI = (function () {
   function renderDette() {
     montre('bloc-dette', g.seen.dette);
     var dn = ENGINE.detteNorm(g);
-    var dm = $('dette-meter'); if (dm) { dm.value = dn; }
+    var dm = $('dette-meter'); if (dm) { dm.value = dn; } // la barre reflète la saturation (0→1)
     txt('dette-val', big(g.dette));
-    txt('dette-norm', f(dn * 100, 0));
     txt('refacto-prod', f((1 - g.partRefacto) * 100, 0));
     txt('refacto-part', f(g.partRefacto * 100, 0));
     // Le bouton « Refactoriser (200 Ops) » n'apparaît qu'une fois l'unité Ops VISIBLE à
