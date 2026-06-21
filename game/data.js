@@ -42,9 +42,8 @@ var DATA = (function () {
     PROJET_OPS_FACTEUR: 0.5, // coût en Ops des projets ÷2 (calé sur le plafond mémoire à 1000)
     TAUX_OVERFLOW: 1.0,      // Créa/s × N_GPU quand les Ops sont au plafond (la créativité n'émerge que là)
     BASE_DETTE: 0.10,        // dette/ligne × source_factor
-    SF_CLIC: 0.2,
-    SF_AGENT: 1.0,
-    SF_MEGA: 1.5,
+    SF_CLIC: 0.2,            // dette/ligne : clic manuel (code écrit à la main, soigné)
+    SF_AUTO: 1.0,           // dette/ligne : production auto (agents ET Super Agents, même qualité)
     VELOCITE_MAX: 2,         // foncer = bâcler, mais BORNÉ : dette ×(1→3) selon le débit
     VELOCITE_SEUIL: 50,      // débit (LOC/s) à mi-pénalité (×2)
     DETTE_DEMI: 500,         // seuil de base de la normalisation de la dette

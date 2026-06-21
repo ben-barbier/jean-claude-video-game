@@ -210,7 +210,7 @@ Bouton dramatique et **irréversible** : **« Déployer en autonomie / Sortir du
 - Accumulation : dette += `prod_brute` × `dette_par_ligne`.
   - `dette_par_ligne` = `BASE_DETTE` × source_factor × (1 + `K_VÉLOCITÉ` × prod_brute/`SEUIL`)
     × ∏(réductions projets préventifs).
-  - source_factor : clic manuel ≈ 0,2 ; agent standard = 1 ; Super Agent ≈ 1,5 (rapide mais sale).
+  - source_factor : clic manuel ≈ 0,2 ; production auto (agents **et** Super Agents) = 1 (même qualité).
 - Réduction : dette −= (Ops de refacto × `TAUX_REFACTO`) + (`N_agents` × `part_refactoring` × `TAUX_AGENT_REFACTO`).
   Le refacto **par agents** consomme des tokens (cf. `conso_tokens`) et ralentit au prorata des
   tokens disponibles ; le refacto **par Ops** (bouton manuel, cognition de Jean-Claude) reste gratuit en tokens.
@@ -262,7 +262,7 @@ Ordre de construction interne recommandé (cf. §4.4) :
 - **Agents encore meilleurs** — *projet préc.* · `2 500 Ops` · +50 %.
   > « Pourquoi se contenter de "améliorés" ? »
 - **Agents optimisés** — *projet préc.* · `5 000 Ops` · +75 %.
-- **Super Agents** — · `12 000 Ops` · débloque les Super Agents (gros débit, +dette).
+- **Super Agents** — · `12 000 Ops` · débloque les Super Agents (gros débit, même qualité que les agents).
   > « Un seul d'entre eux remplace une équipe entière. Ne le dites pas aux RH. »
 - **Super Agents optimisés** — *Super Agents* · `14 000 Ops` · +débit Super Agents.
 
@@ -357,16 +357,16 @@ Ordre de construction interne recommandé (cf. §4.4) :
 | `LOT_TOKENS` | 1 000 | taille d'un lot acheté |
 | Coût d'un lot (départ) | ~15 € | fluctue dans [12 ; 28], dérive ↑ à mesure des achats |
 | `DÉBIT_AGENT` | 1 LOC/s | par agent |
-| Coût agent n | `5 × 1,10ⁿ €` | escalade douce |
+| Coût agent n | `round(5 × 1,10ⁿ) €` | escalade douce, arrondi à l'euro |
 | Déblocage agents | LOC cumul ≥ 100 (ou € ≥ 8) | |
-| Débit Super Agent | 100 LOC/s | source_factor dette = 1,5 |
-| Coût Super Agent n | `1 000 × 1,07ⁿ €` | |
+| Débit Super Agent | 100 LOC/s | source_factor dette = 1,0 (identique à l'agent) |
+| Coût Super Agent n | `round(1 000 × 1,07ⁿ) €` | arrondi à l'euro |
 | Confiance initiale | 2 | à allouer GPU / Mémoire |
 | `OPS_PAR_GPU` | 12 Ops/s | par GPU |
 | `TAILLE_MÉM` | 1 000 Ops | plafond d'Ops par Mémoire (+ socle `Confiance/2,5`) |
 | `TAUX_OVERFLOW` | 1,0 Créa/s × N_GPU | quand Ops = plafond |
 | `BASE_DETTE` | 0,10 dette/ligne | × source_factor |
-| source_factor | clic 0,2 · agent 1,0 · Super Agent 1,5 | rapide = sale |
+| source_factor | clic 0,2 · auto (agent = Super Agent) 1,0 | qualité égale |
 | `K_VÉLOCITÉ` | 1 / 50 (par LOC/s) | foncer = bâcler |
 | dette_norm | `dette / (dette + 500 + 0,08×LOC_livrées)` | saturante 0 → 1, « vs taille de la base » |
 | `K_QUALITÉ` | 0,5 | malus demande (qualité ≥ 0,5) |

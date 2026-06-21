@@ -89,9 +89,10 @@ var ENGINE = (function () {
   function opsPlafond(g) { return Math.max(g.mem, Math.floor(g.confianceTotale / 2.5)) * K.TAILLE_MEM; }
 
   /* ── Coûts d'achat ──────────────────────────────────────────── */
-  // Coût du n-ième agent (n = g.agents+1) : 1er à 5×1,10 ≈ 5,50 € (cf. déroulé §4.7).
-  function coutAgent(g) { return coutCroissant(K.AGENT_COUT_BASE, K.AGENT_COUT_FACTEUR, g.agents + 1); }
-  function coutMega(g) { return coutCroissant(K.MEGA_COUT_BASE, K.MEGA_COUT_FACTEUR, g.megas); }
+  // Coûts d'achat arrondis à l'euro (pas de centimes). Agent : n = g.agents+1, 1er = round(5×1,10) = 6 €
+  // (cf. déroulé §4.7). Super Agent : n = g.megas, 1er = 1000 €.
+  function coutAgent(g) { return Math.round(coutCroissant(K.AGENT_COUT_BASE, K.AGENT_COUT_FACTEUR, g.agents + 1)); }
+  function coutMega(g) { return Math.round(coutCroissant(K.MEGA_COUT_BASE, K.MEGA_COUT_FACTEUR, g.megas)); }
   function coutHype(g) { return coutCroissant(K.HYPE_COUT_BASE, 2, g.hypeNiveau - 1); }
   function prochainPalierConfiance(g) { return Math.round(K.CONFIANCE_PALIER * Math.pow(K.CONFIANCE_PALIER_FACTEUR, g.paliersConfiance)); }
 
@@ -137,7 +138,9 @@ var ENGINE = (function () {
 
       var pb = prodBruteParS(g);
       var velocite = factVelocite(pb);
-      var detteAjout = (prodA * K.SF_AGENT + prodM * K.SF_MEGA)
+      // Agents et Super Agents génèrent désormais la même dette par ligne (même qualité de code) :
+      // un seul source_factor (SF_AUTO) pour toute la production automatique.
+      var detteAjout = prodTotal * K.SF_AUTO
         * K.BASE_DETTE * velocite * g.mult.detteParLigne * g.mult.detteAccum;
       g.dette += detteAjout;
     }
