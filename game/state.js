@@ -10,10 +10,10 @@ function nouvelEtat() {
     tokensMax: K.TOKENS_INIT, // plus grand stock de tokens jamais atteint (échelle de la jauge)
     locStock: 0,            // lignes produites non vendues
     locLivrees: 0,          // cumul vendu → score + paliers de Confiance
-    confianceLibre: K.CONFIANCE_INIT,  // points à allouer
-    confianceTotale: K.CONFIANCE_INIT, // cumul (libre + alloué) pour les déblocages
-    gpu: 0,
-    mem: 0,
+    confianceLibre: 0,                 // points à allouer (les 2 initiaux sont pré-alloués ci-dessous)
+    confianceTotale: K.CONFIANCE_INIT, // cumul (libre + alloué) ; invariant = libre + gpu + mem
+    gpu: 1,                            // démarre avec 1 processeur (CPU/GPU)…
+    mem: 1,                            // …et 1 mémoire (les 2 points de Confiance initiaux pré-alloués)
     ops: 0,
     creativite: 0,
     dette: 0,

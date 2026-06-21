@@ -84,7 +84,7 @@ var ENGINE = (function () {
     var c = p.cout(g);
     var red = g.mult.projetCout;
     return {
-      ops: (c.ops || 0) * red,
+      ops: (c.ops || 0) * red * K.PROJET_OPS_FACTEUR,
       crea: (c.crea || 0) * red,
       yomi: c.yomi || 0,
       eur: c.eur || 0,
@@ -288,7 +288,7 @@ var ENGINE = (function () {
     if (g.agents >= 5) { reveler(g, 'hype', 'revealHype'); }
     if (g.tokens < 120) { reveler(g, 'tokensAchat', 'revealTokens'); }
     if (g.paliersConfiance >= 1) { reveler(g, 'confiance', 'revealConfiance'); }
-    if (g.gpu >= 1 || g.ops > 0) { reveler(g, 'projets', 'revealProjets'); }
+    if (g.seen.confiance) { reveler(g, 'projets', 'revealProjets'); }
     if (prodBruteParS(g) >= 5 && g.dette > 20) { reveler(g, 'dette', 'revealDette'); }
   }
 

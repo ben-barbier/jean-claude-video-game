@@ -32,7 +32,8 @@ var DATA = (function () {
     MEGA_COUT_FACTEUR: 1.07,
     CONFIANCE_INIT: 2,
     OPS_PAR_GPU: 12,         // Ops/s par GPU
-    TAILLE_MEM: 2000,        // plafond d'Ops par Mémoire (équilibré : rend les gros projets atteignables)
+    TAILLE_MEM: 1000,        // plafond d'Ops par unité de Mémoire
+    PROJET_OPS_FACTEUR: 0.5, // coût en Ops des projets ÷2 (calé sur le plafond mémoire à 1000)
     TAUX_OVERFLOW: 1.0,      // Créa/s × N_GPU quand les Ops sont au plafond (la créativité n'émerge que là)
     BASE_DETTE: 0.10,        // dette/ligne × source_factor
     SF_CLIC: 0.2,
