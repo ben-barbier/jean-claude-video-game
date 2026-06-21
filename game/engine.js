@@ -57,12 +57,22 @@ var ENGINE = (function () {
   }
   function prodBruteParS(g) { return prodAgentsParS(g) + prodMegaParS(g); }
 
+  // Débit du refacto AUTO (agents affectés à l'entretien), en « lignes-équivalent » réécrites/s.
+  // Réécrire du code reste du code généré → ce travail CONSOMME des tokens, comme la production
+  // (cf. tickRefacto). N'est pas soumis au burst de production (multProd) : c'est de l'entretien.
+  function refactoCodingParS(g) {
+    return (g.partRefacto > 0 && g.dette > 0)
+      ? g.agents * g.partRefacto * K.DEBIT_AGENT * g.mult.agentDebit : 0;
+  }
+  // Tokens/s réclamés par TOUTE l'activité des agents : production + refactoring.
+  function consoTokensParS(g) { return (prodBruteParS(g) + refactoCodingParS(g)) * coutTokenLigne(g); }
+
   // Rentabilité nette affichée (€/s) : recette des ventes − coût des tokens consommés par
-  // la production automatique (l'écriture manuelle, gratuite, ne coûte pas de tokens).
+  // l'activité automatique des agents (coder ET refactoriser ; l'écriture manuelle reste gratuite).
   function rentabiliteParS(g) {
     var recette = g.ventesParS * g.prix;
     var prixParToken = K.LOT_TOKENS > 0 ? g.prixLot / K.LOT_TOKENS : 0;
-    var coutTokens = prodBruteParS(g) * coutTokenLigne(g) * prixParToken;
+    var coutTokens = consoTokensParS(g) * prixParToken;
     return recette - coutTokens;
   }
 
@@ -177,10 +187,15 @@ var ENGINE = (function () {
     }
   }
 
-  // 5. Refactoring automatique (agents affectés à l'entretien).
+  // 5. Refactoring automatique (agents affectés à l'entretien) : CONSOMME des tokens (les agents
+  //    réécrivent du code). À sec de tokens, le refacto ralentit d'autant (ratio de couverture).
   function tickRefacto(g, dt) {
     if (g.partRefacto > 0 && g.agents > 0 && g.dette > 0) {
-      g.dette = Math.max(0, g.dette - g.agents * g.partRefacto * K.TAUX_AGENT_REFACTO * dt);
+      var tokensReq = refactoCodingParS(g) * coutTokenLigne(g) * dt;
+      var ratio = 1;
+      if (tokensReq > g.tokens) { ratio = tokensReq > 0 ? g.tokens / tokensReq : 0; tokensReq = g.tokens; }
+      g.tokens = Math.max(0, g.tokens - tokensReq);
+      g.dette = Math.max(0, g.dette - g.agents * g.partRefacto * K.TAUX_AGENT_REFACTO * ratio * dt);
     }
   }
 
@@ -441,6 +456,7 @@ var ENGINE = (function () {
     detteNorm: detteNorm, coutTokenLigne: coutTokenLigne, qualite: qualite,
     multHype: multHype, demandeParS: demandeParS, rentabiliteParS: rentabiliteParS,
     prodAgentsParS: prodAgentsParS, prodMegaParS: prodMegaParS, prodBruteParS: prodBruteParS,
+    refactoCodingParS: refactoCodingParS, consoTokensParS: consoTokensParS,
     multProd: multProd, perdreConfiance: perdreConfiance,
     opsParS: opsParS, opsPlafond: opsPlafond,
     coutAgent: coutAgent, coutMega: coutMega, coutHype: coutHype,

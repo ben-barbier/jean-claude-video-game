@@ -44,7 +44,7 @@ function step(G, clicksPerSec, journal) {
   const cible = Math.max(0.6, (Pauto + manualRate) * 1.15);
   const mh = ENGINE.multHype(G), q = ENGINE.qualite(G), burst = G.burstTimer > 0 ? K.BURST_MULT : 1;
   G.prix = ENGINE.clamp(K.PRIX_REF * Math.pow(K.BASE_DEMANDE * mh * q * burst / cible, 1 / K.ELASTICITE), K.PRIX_MIN, K.PRIX_MAX);
-  const conso = Pauto * ENGINE.coutTokenLigne(G);
+  const conso = ENGINE.consoTokensParS(G); // production ET refacto auto consomment des tokens
   const runway = conso > 0 ? G.tokens / conso : Infinity;
   if (G.seen.tokensAchat && runway < 45 && G.eur >= G.prixLot) { ENGINE.acheterLot(G); }
   const reserve = G.jcInstalled ? G.prixLot * 2.5 : 0;

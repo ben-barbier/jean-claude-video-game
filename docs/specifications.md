@@ -192,9 +192,11 @@ Bouton dramatique et **irréversible** : **« Déployer en autonomie / Sortir du
 
 **Production**
 - `prod_brute` = clic manuel + (`N_agents` × `part_production` × `DÉBIT_AGENT` × multiplicateurs).
-- `conso_tokens` = `prod_brute` × `coût_token_ligne`.
+- `conso_tokens` = (`prod_brute` + `refacto_brut`) × `coût_token_ligne` — les agents consomment
+  des tokens pour **coder ET refactoriser** (réécrire du code reste du code généré).
+  `refacto_brut` = `N_agents` × `part_refactoring` × `DÉBIT_AGENT` × multiplicateurs.
 - `coût_token_ligne` = `BASE_TOKEN` × (1 + `K_DETTE` × dette_norm) × ∏(réductions projets).
-- Si `Tokens` = 0 → production réelle = 0 (rupture de stock).
+- Si `Tokens` = 0 → production réelle = 0 (rupture de stock), et le refacto auto s'arrête aussi.
 
 **Vente**
 - `demande` = `BASE_DEMANDE` × mult_hype × (`PRIX_REF` / prix)^`ÉLASTICITÉ` × qualité.
@@ -207,6 +209,8 @@ Bouton dramatique et **irréversible** : **« Déployer en autonomie / Sortir du
     × ∏(réductions projets préventifs).
   - source_factor : clic manuel ≈ 0,2 ; agent standard = 1 ; Super Agent ≈ 1,5 (rapide mais sale).
 - Réduction : dette −= (Ops de refacto × `TAUX_REFACTO`) + (`N_agents` × `part_refactoring` × `TAUX_AGENT_REFACTO`).
+  Le refacto **par agents** consomme des tokens (cf. `conso_tokens`) et ralentit au prorata des
+  tokens disponibles ; le refacto **par Ops** (bouton manuel, cognition de Jean-Claude) reste gratuit en tokens.
 - `dette_norm` = dette normalisée (vs taille de la base) → pilote les malus par paliers.
 
 **Confiance**

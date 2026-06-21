@@ -49,7 +49,8 @@ function step(ctx, G, clicksPerSec, journal) {
   const mh = ENGINE.multHype(G), q = ENGINE.qualite(G), burst = G.burstTimer > 0 ? K.BURST_MULT : 1;
   G.prix = ENGINE.clamp(K.PRIX_REF * Math.pow(K.BASE_DEMANDE * mh * q * burst / cible, 1 / K.ELASTICITE), K.PRIX_MIN, K.PRIX_MAX);
   // 3. Réserve de tokens : garder ~45 s d'autonomie, racheter des lots sous ce seuil.
-  const conso = Pauto * ENGINE.coutTokenLigne(G);
+  //    Conso = production ET refacto auto (les agents en refacto consomment aussi des tokens).
+  const conso = ENGINE.consoTokensParS(G);
   const runway = conso > 0 ? G.tokens / conso : Infinity;
   if (G.seen.tokensAchat && runway < 45 && G.eur >= G.prixLot) { ENGINE.acheterLot(G); }
   const reserve = G.jcInstalled ? G.prixLot * 2.5 : 0; // garde du cash pour les tokens dès l'IA
