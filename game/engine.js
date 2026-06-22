@@ -248,11 +248,8 @@ var ENGINE = (function () {
     }
   }
 
-  // Débits affichés (production manuelle lissée) + pic de tokens (échelle de la jauge).
-  function tickDebitsManuels(g, dt) {
-    var tauxManuel = dt > 0 ? g.clicsAcc / dt : 0;
-    g.prodManuelleParS = lissageEMA(g.prodManuelleParS, tauxManuel, K.EXP_SMOOTH);
-    g.clicsAcc = 0;
+  // Pic de tokens (échelle de la jauge). Les clics ne sont plus comptés comme un débit affiché.
+  function tickEchelleTokens(g, dt) {
     g.tokensMax = Math.max(g.tokensMax, g.tokens);
   }
 
@@ -267,7 +264,7 @@ var ENGINE = (function () {
     tickIncidents(g, dt);
     tickYomi(g, dt);
     tickPrixLot(g, dt);
-    tickDebitsManuels(g, dt);
+    tickEchelleTokens(g, dt);
     majDeblocages(g);
   }
 
@@ -335,7 +332,6 @@ var ENGINE = (function () {
     if (g.deployed) { return; }
     g.locStock += 1;
     g.lignesProduites += 1;
-    g.clicsAcc += 1; // alimente le débit de production manuelle affiché
     var pb = prodBruteParS(g);
     g.dette += K.BASE_DETTE * K.SF_CLIC * factVelocite(pb)
       * g.mult.detteParLigne * g.mult.detteAccum;

@@ -42,7 +42,7 @@
   }
   #btn-ecrire:active:not(:disabled) { transform: translateY(1px); }
   /* Tableau de bord : libellés à largeur fixe (monospace) → « : » et valeurs alignés. */
-  #bloc-dashboard .dk { display: inline-block; width: 16ch; }
+  #bloc-dashboard .dk { display: inline-block; width: 23ch; }
   /* « Token : [====] 1234 » sur une ligne ; la jauge occupe tout l'espace libre. */
   #ligne-tokens { display: flex; align-items: center; gap: 0.6ch; }
   #tokens-bar { flex: 1; min-width: 0; }
@@ -183,7 +183,7 @@
   <div id="cell-eur" hidden><span class="dk">Trésorerie</span>: <span id="stat-eur">0</span>&nbsp;€</div>
   <div id="cell-livrees" hidden><span class="dk">Lignes livrées</span>: <span id="stat-loc-livrees">0</span></div>
   <div id="cell-stock" hidden><span class="dk">Lignes en stock</span>: <span id="stat-loc-stock">0</span></div>
-  <div id="cell-prod" hidden><span class="dk">Production</span>: <span id="stat-prod">0</span>&nbsp;lignes/s</div>
+  <div id="cell-prod" hidden><span class="dk">Production automatisée</span>: <span id="stat-prod">0</span>&nbsp;lignes/s</div>
   <div id="cell-ventes" hidden><span class="dk">Ventes</span>: <span id="stat-ventes">0</span>&nbsp;lignes/s</div>
   <div id="cell-rentabilite" hidden><span class="dk">Rentabilité</span>: <span id="stat-rentabilite">0</span>&nbsp;€/s</div>
 </fieldset>
@@ -329,7 +329,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '33';
+    var version = '34';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {

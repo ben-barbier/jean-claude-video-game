@@ -257,11 +257,11 @@ var UI = (function () {
     montre('cell-eur', g.seen.tresorerie);
     montre('cell-livrees', g.seen.stock);
     montre('cell-ventes', g.seen.stock);
-    montre('cell-prod', g.seen.stock);
+    montre('cell-prod', g.seen.agents);
     txt('stat-eur', f(g.eur, 2));
     txt('stat-loc-livrees', big(Math.round(g.locLivrees)));
     txt('stat-loc-stock', big(Math.round(g.locStock)));
-    txt('stat-prod', f(g.prodAutoParS + g.prodManuelleParS, 0)); // prod RÉELLE (0 en rupture), en entier
+    txt('stat-prod', f(g.prodAutoParS, 0)); // prod AUTO réelle seule (0 en rupture), hors clics, en entier
     txt('stat-ventes', f(g.ventesParS, 0));
     montre('cell-rentabilite', g.rentabiliteUnlocked);
     txt('stat-rentabilite', f(ENGINE.rentabiliteParS(g), 2));

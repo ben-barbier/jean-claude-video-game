@@ -71,7 +71,7 @@ var DATA = (function () {
     BOURSE_VOL: 0.0025,      // volatilité par seconde
     JC_INSTALL_SEUIL: 20,    // lignes écrites à la main avant de pouvoir installer Jean-Claude
     JC_INSTALL_COUT: 10,     // coût (€) de l'installation de Jean-Claude
-    EXP_SMOOTH: 0.3,         // lissage exponentiel des débits affichés (ventes, prod manuelle)
+    EXP_SMOOTH: 0.3,         // lissage exponentiel des débits affichés (ventes, production automatisée)
     TICK_MS: 100,
     DT: 0.1,
   };
