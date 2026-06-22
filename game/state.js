@@ -17,7 +17,6 @@ function nouvelEtat() {
     ops: 0,
     creativite: 0,
     dette: 0,
-    yomi: 0,
     capital: 0,            // épargne placée en bourse
 
     /* ── Bâtiments / automatisations ────────────────────────── */
@@ -54,7 +53,6 @@ function nouvelEtat() {
       detteAccum: 1,       // taux d'accumulation (tests, CI/CD)
       detteParLigne: 1,    // dette par ligne (linter, typage)
       quantum: 1,          // boost d'Ops
-      yomiGain: 1,
       projetCout: 1,       // réduction du coût des projets
     },
 
@@ -64,11 +62,9 @@ function nouvelEtat() {
     bourseUnlocked: false,
     rentabiliteUnlocked: false, // projet « Tableau de bord financier » → affiche la rentabilité €/s
     quantumUnlocked: false,
-    tournoisUnlocked: false,
     agiDiscovered: false,
     deployed: false,       // Acte 2 enclenché (irréversible)
     podcast: false,        // hype passive
-    autoTournoi: false,    // Yomi passif
 
     /* ── Projets ────────────────────────────────────────────── */
     projetsFaits: {},      // id -> true
@@ -89,7 +85,6 @@ function nouvelEtat() {
       dette: false,
       bourse: false,
       mega: false,
-      tournois: false,
       agi: false,
       premierOverflow: false, // 1er débordement de contexte (1re Créativité) → réplique unique
     },

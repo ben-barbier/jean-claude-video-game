@@ -308,12 +308,6 @@
     <p id="bloc-refacto" hidden><button id="btn-refacto" type="button">Refactoriser (200 Ops)</button></p>
   </fieldset>
 
-  <fieldset id="bloc-strategie" hidden>
-    <legend><b>Stratégie — Théorie des jeux</b></legend>
-    <p><b>Yomi&nbsp;:</b> <span id="yomi-val">0</span></p>
-    <p><button id="btn-tournoi" type="button">Jouer un tournoi (500 Ops)</button></p>
-  </fieldset>
-
 </div>
 
 <!-- ===================== COLONNE 3 : méta ===================== -->
@@ -321,8 +315,7 @@
 
   <fieldset id="bloc-projets" hidden>
     <legend><b>Projets de R&amp;D</b></legend>
-    <p><small>Ops&nbsp;: <span id="proj-ops">0</span> · Créa&nbsp;: <span id="proj-crea">0</span>
-       · Yomi&nbsp;: <span id="proj-yomi">0</span></small></p>
+    <p><small>Ops&nbsp;: <span id="proj-ops">0</span> · Créa&nbsp;: <span id="proj-crea">0</span></small></p>
     <div id="projets-list"></div>
     <p id="projets-vide"><em>Rien à proposer pour l’instant.</em></p>
   </fieldset>
@@ -351,7 +344,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '40';
+    var version = '41';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {

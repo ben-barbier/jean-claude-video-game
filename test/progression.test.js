@@ -16,7 +16,7 @@ test('tout le graphe de déblocage s’exécute jusqu’à l’Acte 2', () => {
     G.confianceTotale = 30;
     G.confianceLibre = 0;
     G.gpu = 50; G.mem = 50;
-    G.ops = 1e9; G.creativite = 1e6; G.yomi = 1e6; G.eur = 1e9;
+    G.ops = 1e9; G.creativite = 1e6; G.eur = 1e9;
     G.agents = 10;                  // pour que auto1 (show: agents>=1) apparaisse
     G.paliersConfiance = 7;
     G.dette = 2000;                 // pour Le Grand Refactor (show: dette>800)

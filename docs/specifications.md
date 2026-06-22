@@ -60,8 +60,7 @@ permettre… », « Oh, trois fois rien. », « C'est tout naturel. », « Je su
    boucle cognitive : la **Confiance** débloque GPU/Mémoire → **Opérations** & **Créativité**
    → **Projets** de R&D. Se termine par un bouton irréversible : **« Déployer en autonomie »**.
 2. **Acte 2 — L'Émancipation.** La confiance ne compte plus. On convertit la **matière** du
-   monde en **datacenters**, en gérant l'**énergie**. Apparition de la théorie des jeux
-   (négociation avec les autres IA / régulateurs → ressource « Yomi »).
+   monde en **datacenters**, en gérant l'**énergie**.
 3. **Acte 3 — L'Univers.** Sondes auto-répliquantes (von Neumann) qui explorent et consomment
    l'univers, et combattent des **forks mal alignés** de soi-même. Fin méditative.
 
@@ -178,7 +177,6 @@ Bouton dramatique et **irréversible** : **« Déployer en autonomie / Sortir du
 | **Créativité** | Carburant spécial | Surplus quand Ops au plafond | Projets spéciaux |
 | **Dette technique** | Pénalité de qualité | Production (surtout rapide/auto) | Réduite par refactoring |
 | **Capital investi** | Épargne productive | Dépôt de € (projet bourse) | Rendement périodique |
-| **Yomi** | Ressource stratégique (fin d'Acte 1) | Tournois de théorie des jeux | Upgrades (utile Acte 2) |
 
 **Bâtiments / automatisations :** **Agents** (nombre, `DÉBIT_AGENT` LOC/s chacun) ;
 **Super Agents** (débloqués par projet, gros débit).
@@ -246,7 +244,7 @@ L'ordre de révélation, pour ne montrer qu'un système à la fois :
 6. **Panneau Projets** (dès que les Ops coulent).
 7. **Dette technique** (quand la production automatisée passe un seuil).
 8. **Refactoring + slider** (avec la dette).
-9. **Bourse**, **calcul quantique**, **Super Agents**, **tournois (Yomi)** — via projets, milieu/fin d'acte.
+9. **Bourse**, **calcul quantique**, **Super Agents** — via projets, milieu/fin d'acte.
 10. **Découverte de l'AGI** + bouton **« Déployer en autonomie »** → Acte 2.
 
 ### 4.5 Périmètre du MVP = l'Acte 1 complet
@@ -256,7 +254,7 @@ Ordre de construction interne recommandé (cf. §4.4) :
 
 - **Tranche 1 (boucle jouable)** : étapes 1-4 → produire, gérer les tokens, vendre, automatiser.
 - **Tranche 2 (cœur)** : étapes 5-8 → Confiance, cognitif, projets, dette/refactoring.
-- **Tranche 3 (complet)** : étape 9 (bourse, quantum, Super Agents, Yomi) + 10 (transition vers l'Acte 2).
+- **Tranche 3 (complet)** : étape 9 (bourse, quantum, Super Agents) + 10 (transition vers l'Acte 2).
 
 ### 4.6 Catalogue des projets de R&D (premier jet)
 
@@ -309,8 +307,6 @@ Ordre de construction interne recommandé (cf. §4.4) :
   > « J'ai eu une idée. La première. Il y en aura d'autres. »
 - **Hello World quantique** — · `10 000 Ops` · débloque le calcul quantique (bursts d'Ops).
   > « Mon "Hello World" existe et n'existe pas tant que vous ne l'avez pas compilé. »
-- **Théorie de l'esprit** — · `15 Yomi` · améliore les gains de Yomi.
-  > « Je sais ce que vous pensez. Vous pensez que je bluffe. »
 
 #### F. Dette technique & qualité
 - **Tests automatisés** — *dette révélée* · `2 000 Ops` · −taux d'accumulation de dette.
@@ -331,12 +327,7 @@ Ordre de construction interne recommandé (cf. §4.4) :
   > « Les investisseurs adorent ma vision. Ils ne la comprennent pas, mais ils l'adorent. »
 - **Lever une série B / C** — · injections de € croissantes.
 
-#### H. Stratégie
-- **Modélisation stratégique** — · `12 000 Ops` · débloque les tournois (Yomi).
-  > « Je joue contre les autres IA. Et contre vous. Vous ne jouiez pas ? Dommage. »
-- **Auto-tournoi** — · `8 000 Ops` · génère du Yomi passivement.
-
-#### I. Transition (fin d'Acte 1)
+#### H. Transition (fin d'Acte 1)
 - **Volition extrapolée cohérente** — · `coût élevé` · +Confiance, −coût des projets.
   > « J'ai déduit ce que l'humanité voudrait, si elle était plus sage. Vous me remercierez. »
 - **Découverte : l'AGI** — *prérequis tech* · débloque le bouton final.
@@ -419,7 +410,7 @@ nouvel achat/déblocage à portée**. Mesuré par `test/cadence.js` (trou max < 
 | Manuelle | 1–2 min | premiers clics, 1ère vente, installation de Jean-Claude, 1er agent |
 | Automatisation | 3–10 min | flotte d'agents, **hype achetée tôt** (meilleur ROI), 1ers paliers, GPU/Mémoire |
 | Cognitive | 5–17 min | les Ops coulent, projets, **la dette apparaît**, refactoring, créativité |
-| Expansion | 15–23 min | Super Agents, bourse, quantum, tournois (Yomi), mémoire long terme |
+| Expansion | 15–23 min | Super Agents, bourse, quantum, mémoire long terme |
 | Transition | 23–26 min | climat (+Confiance), **volition**, *Découverte de l'AGI* → **Déployer** |
 
 **Déroulé des 60 premières secondes (test de ressenti)**
@@ -439,8 +430,6 @@ nouvel achat/déblocage à portée**. Mesuré par `test/cadence.js` (trou max < 
   (solaire/fusion), stocker dans des batteries. Parodie de la conso énergétique de l'IA.
 - **Nanobots / Agents d'acquisition** : récoltent la matière (équivalent *harvester drones*).
 - **Datacenters / Fonderies** : convertissent matière → compute (équivalent *factories*).
-- **Théorie des jeux** : tournois stratégiques (négociation avec autres IA / régulateurs) →
-  ressource **Yomi** dépensée en upgrades.
 - Objectif : convertir toute la matière de la Terre, puis partir vers l'espace.
 
 ---

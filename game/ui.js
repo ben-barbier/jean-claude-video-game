@@ -77,7 +77,6 @@ var UI = (function () {
     $('btn-gpu').addEventListener('click', function () { rendreApresAction(function (s) { ENGINE.allouerConfiance(s, 'gpu'); }); });
     $('btn-mem').addEventListener('click', function () { rendreApresAction(function (s) { ENGINE.allouerConfiance(s, 'mem'); }); });
     $('btn-refacto').addEventListener('click', function () { rendreApresAction(ENGINE.refactoriser); });
-    $('btn-tournoi').addEventListener('click', function () { rendreApresAction(ENGINE.jouerTournoi); });
 
     BOURSE_PALIERS.forEach(function (p) {
       $('btn-depot-' + p.suffixe).addEventListener('click', function () {
@@ -128,7 +127,7 @@ var UI = (function () {
     return s;
   }
   function libelleCout(c) {
-    var champs = [['ops', 'Ops'], ['crea', 'Créa'], ['yomi', 'Yomi'], ['eur', '€']];
+    var champs = [['ops', 'Ops'], ['crea', 'Créa'], ['eur', '€']];
     var parts = [];
     champs.forEach(function (ch) {
       if (c[ch[0]]) { parts.push(f(Math.ceil(c[ch[0]])) + ' ' + ch[1]); }
@@ -391,17 +390,10 @@ var UI = (function () {
     actif('btn-refacto', g.ops > 0);
   }
 
-  function renderStrategie() {
-    montre('bloc-strategie', g.seen.tournois);
-    txt('yomi-val', f(g.yomi, 1));
-    actif('btn-tournoi', g.ops >= ENGINE.K.TOURNOI_COUT_OPS);
-  }
-
   function renderProjets() {
     montre('bloc-projets', g.seen.projets);
     txt('proj-ops', big(g.ops));
     txt('proj-crea', f(g.creativite, 0));
-    txt('proj-yomi', f(g.yomi, 0));
     if (g.seen.projets) {
       var sig = signatureProjets();
       if (sig !== projSignature) { projSignature = sig; construireProjets(); }
@@ -434,7 +426,6 @@ var UI = (function () {
     renderBourse();
     renderCerveau();
     renderDette();
-    renderStrategie();
     renderProjets();
     renderTransitionFin();
     premierRendu = false; // dès le 2e rendu, toute nouvelle révélation déclenche le flash

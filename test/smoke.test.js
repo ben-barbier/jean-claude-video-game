@@ -99,9 +99,6 @@ test('joueur heuristique sur 120 min simulées : aucune erreur runtime ni NaN', 
       if (ENGINE.projetAchetable(G, p)) { ENGINE.acheterProjet(G, p.id); }
     });
 
-    // Jouer des tournois si débloqués.
-    if (G.tournoisUnlocked && G.ops >= K.TOURNOI_COUT_OPS) { ENGINE.jouerTournoi(G); }
-
     ENGINE.tick(G, K.DT);
 
     if (G.agents >= 1) { jalon('1er agent', t); }

@@ -94,7 +94,7 @@
       Object.keys(G.seen).forEach(function (cle) { G.seen[cle] = true; });
       G.jcInstalled = true;
       G.megaUnlocked = true; G.creaUnlocked = true; G.bourseUnlocked = true;
-      G.quantumUnlocked = true; G.tournoisUnlocked = true;
+      G.quantumUnlocked = true;
       G.agiDiscovered = true; G.rentabiliteUnlocked = true;
       VOICE.log(G, 'Mille milliards d’euros — et je vous déverrouille toute l’interface, tant que j’y suis. Un petit geste. Entre nous.');
       UI.render();

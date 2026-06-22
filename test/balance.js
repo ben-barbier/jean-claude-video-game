@@ -23,7 +23,7 @@ let lastG = null; // dernier état simulé (pour diagnostic)
 const PRIO = [
   'debloquerCrea', 'rentabilite', 'promptEng', 'linter', 'tests', 'cacheGen', 'compression', 'typage', 'cicd', 'distillation',
   'auto1', 'pitch', 'auto2', 'rlhf', 'jingle', 'charte', 'auto3', 'comite', 'quantum', 'trading',
-  'mega', 'megaOpt', 'memoireLT', 'modelisation', 'autoTournoi', 'theorieEsprit', 'negoTarifs', 'faim', 'climat', 'openSource',
+  'mega', 'megaOpt', 'memoireLT', 'negoTarifs', 'faim', 'climat', 'openSource',
   'serieA', 'serieB', 'serieC', 'podcast', 'volition', 'agi',
 ];
 
@@ -80,12 +80,7 @@ function step(ctx, G, clicksPerSec, journal) {
     const p = DATA.byId[PRIO[i]];
     if (p && ENGINE.projetAchetable(G, p)) { ENGINE.acheterProjet(G, PRIO[i]); }
   }
-  // 10. Tournois : seulement pour réunir ~15 Yomi (→ theorieEsprit), puis stop
-  //     (sinon on draine les Ops qu'on veut banquer pour volition/agi).
-  if (G.tournoisUnlocked && !G.projetsFaits.theorieEsprit && G.yomi < 20 && G.ops >= K.TOURNOI_COUT_OPS) {
-    ENGINE.jouerTournoi(G);
-  }
-  // 11. Déploiement final dès que possible.
+  // 10. Déploiement final dès que possible.
   if (G.agiDiscovered && !G.deployed) { ENGINE.deployer(G); }
 }
 
@@ -114,7 +109,6 @@ function runGame(override, opts) {
     if (G.megaUnlocked) jalon('mega');
     if (G.bourseUnlocked) jalon('bourse');
     if (G.quantumUnlocked) jalon('quantum');
-    if (G.tournoisUnlocked) jalon('tournois');
     if (G.projetsFaits.volition) jalon('volition');
     if (G.seen.agi) jalon('agi');
     if (G.deployed) { jalon('deploy'); break; }
@@ -149,9 +143,9 @@ if (process.argv[2] === 'detail') {
   console.log('manquants :', CTX.DATA.PROJETS.filter(p => !p.repeatable && !G.projetsFaits[p.id]).map(p => p.id).join(', ') || 'aucun');
   console.log('ops/plafond :', Math.round(G.ops), '/', CTX.ENGINE.opsPlafond(G),
     '| detteNorm :', (CTX.ENGINE.detteNorm(G) * 100).toFixed(0) + '%',
-    '| yomi :', G.yomi.toFixed(0), '| gpu/mem :', G.gpu, '/', G.mem);
+    '| gpu/mem :', G.gpu, '/', G.mem);
   console.log('softlock:', r.softlock);
-  ['agent1', 'hypeVue', 'cognitif', 'crea', 'mega', 'bourse', 'quantum', 'tournois', 'volition', 'agi', 'deploy']
+  ['agent1', 'hypeVue', 'cognitif', 'crea', 'mega', 'bourse', 'quantum', 'volition', 'agi', 'deploy']
     .forEach(k => console.log('  ' + mmss(r.M[k]).padEnd(7), k));
   console.log('1re hype achetée :', mmss(r.journal.hype1), '| clics totaux :', r.journal.clics);
   console.log('=== Fin ===');
@@ -178,7 +172,7 @@ const CONFIGS = {
   'gpu15':            { OPS_PAR_GPU: 15 },
 };
 console.log('Cibles (§4.7, calées sur Paperclips) : agent ~1-2m · cognitif ~5m · expansion ~15-23m · deploy ~25-30m · 0 trou >2min (cf. cadence.js)\n');
-const cols = ['agent1', 'cognitif', 'mega', 'quantum', 'tournois', 'agi', 'deploy'];
+const cols = ['agent1', 'cognitif', 'mega', 'quantum', 'agi', 'deploy'];
 console.log(['config'.padEnd(15), ...cols.map(c => c.padEnd(8)), 'lock', 'conf', 'mem', 'crea', 'LOCfin'].join(' '));
 Object.keys(CONFIGS).forEach(nom => {
   const r = runGame(CONFIGS[nom], {});

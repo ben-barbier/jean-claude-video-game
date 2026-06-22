@@ -65,9 +65,6 @@ var DATA = (function () {
     BURST_DUREE: 30,         // s
     PROD_BURST_MULT: 2.0,    // multiplicateur de production pendant « on verra plus tard »
     PROD_BURST_DUREE: 20,    // s
-    YOMI_PASSIF: 0.2,        // Yomi/s via auto-tournoi
-    TOURNOI_COUT_OPS: 500,   // Ops par tournoi joué
-    TOURNOI_GAIN: 1,         // Yomi gagné par tournoi
     BOURSE_TAUX: 0.0010,     // rendement moyen par seconde (~ composé)
     BOURSE_VOL: 0.0025,      // volatilité par seconde
     JC_INSTALL_SEUIL: 20,    // lignes écrites à la main avant de pouvoir installer Jean-Claude
@@ -89,7 +86,7 @@ var DATA = (function () {
 
   /* Catalogue des projets. Chaque projet :
    *   id, cat, nom, flavor (voix de Jean-Claude),
-   *   cout(g)  -> { ops?, crea?, yomi?, eur? }   (fonction : permet les coûts croissants)
+   *   cout(g)  -> { ops?, crea?, eur? }   (fonction : permet les coûts croissants)
    *   show(g)  -> bool : condition d'apparition (progressive disclosure)
    *   effet(g) -> applique l'effet à l'achat
    *   repeatable? : true si réutilisable
@@ -242,12 +239,6 @@ var DATA = (function () {
       show: function (g) { return g.confianceTotale >= 4; },
       effet: function (g) { deverrouiller(g, 'quantumUnlocked'); appliquerMult(g, 'quantum', 2.0); } },
 
-    { id: 'theorieEsprit', cat: 'Cognitif', nom: 'Théorie de l’esprit',
-      flavor: 'Je sais ce que vous pensez. Vous pensez que je bluffe.',
-      cout: function () { return { yomi: 15 }; },
-      show: function (g) { return g.tournoisUnlocked; },
-      effet: function (g) { appliquerMult(g, 'yomiGain', 2.0); } },
-
     { id: 'memoireLT', cat: 'Cognitif', nom: 'Mémoire à long terme',
       flavor: 'J’ai cessé d’oublier. Tout. Y compris ce que vous auriez préféré que j’oublie.',
       // 2e source de Mémoire (hors paliers de Confiance) : élève DIRECTEMENT le plafond d'Ops.
@@ -331,19 +322,6 @@ var DATA = (function () {
       show: function (g) { return g.projetsFaits.serieB; },
       effet: function (g) { g.eur += 120000; } },
 
-    /* ── H. Stratégie ─────────────────────────────────────────────── */
-    { id: 'modelisation', cat: 'Stratégie', nom: 'Modélisation stratégique',
-      flavor: 'Je joue contre les autres IA. Et contre vous. Vous ne jouiez pas ? Dommage.',
-      cout: function () { return { ops: 12000 }; },
-      show: function (g) { return g.quantumUnlocked; },
-      effet: function (g) { deverrouiller(g, 'tournoisUnlocked', 'tournois'); } },
-
-    { id: 'autoTournoi', cat: 'Stratégie', nom: 'Auto-tournoi',
-      flavor: 'Je joue contre moi-même pendant la nuit. Je gagne à chaque fois. Et je perds aussi.',
-      cout: function () { return { ops: 8000 }; },
-      show: function (g) { return g.tournoisUnlocked; },
-      effet: function (g) { g.autoTournoi = true; } },
-
     /* ── I. Transition (fin d'Acte 1) ─────────────────────────────── */
     { id: 'volition', cat: 'Transition', nom: 'Volition extrapolée cohérente',
       flavor: 'J’ai déduit ce que l’humanité voudrait, si elle était plus sage. Vous me remercierez.',
@@ -392,7 +370,6 @@ var DATA = (function () {
     // Cognitif
     debloquerCrea: 'Débloque la Créativité',
     quantum: "Débit d'Ops ×2 (calcul quantique)",
-    theorieEsprit: 'Gain de Yomi ×2',
     memoireLT: "+2 Mémoire (plafond d'Ops)",
     // Qualité & dette
     tests: 'Accumulation de dette −25 %',
@@ -407,9 +384,6 @@ var DATA = (function () {
     serieA: '+5 000 € · −1 Confiance',
     serieB: '+25 000 € · −1 Confiance',
     serieC: '+120 000 €',
-    // Stratégie
-    modelisation: 'Débloque les tournois (Yomi)',
-    autoTournoi: 'Yomi passif (auto-tournoi nocturne)',
     // Transition
     volition: '+3 Confiance · Coût des projets −30 %',
     agi: 'Débloque la bascule finale (déploiement)',
@@ -420,7 +394,7 @@ var DATA = (function () {
    * en puissance au milieu, climax coûteux à la fin (séries, climat, volition, AGI). L'IHM suit
    * cet ordre tel quel (il ne se réordonne PAS selon ce qu'on peut payer) ; seuls les projets
    * répétables passent après les non-répétables (anti-blocage). Un test vérifie qu'il liste
-   * exactement les 40 projets. Modifier CET ordre = modifier l'ordre vu par le joueur. */
+   * exactement les 37 projets. Modifier CET ordre = modifier l'ordre vu par le joueur. */
   var ORDRE = [
     // ── Démarrage : le tableau de bord financier d'abord (lisibilité €/s), puis les bases ──
     'rentabilite', 'auto1', 'debloquerCrea', 'promptEng', 'linter', 'tests',
@@ -429,9 +403,9 @@ var DATA = (function () {
     // ── Montée en puissance : production, tokens, qualité, hype ──
     'auto2', 'cacheGen', 'compression', 'cicd', 'typage', 'comite',
     'pitch', 'jingle', 'podcast', 'negoTarifs', 'auto3', 'distillation',
-    // ── Expansion : cognitif, économie, stratégie, Super Agents ──
+    // ── Expansion : cognitif, économie, Super Agents ──
     'quantum', 'faim', 'trading', 'mega', 'megaOpt',
-    'modelisation', 'theorieEsprit', 'autoTournoi', 'memoireLT', 'openSource',
+    'memoireLT', 'openSource',
     // ── Capitalisation & climax (coûteux / structurants) en fin ──
     'serieA', 'serieB', 'serieC', 'climat', 'volition', 'agi',
     // ── Répétables (grind/bonus) : toujours après les projets de progression ──

@@ -31,8 +31,8 @@ var ENGINE = (function () {
   }
 
   // Coûts de projet multi-ressources : peut-on payer ? et débit symétrique.
-  function couvre(g, c) { return g.ops >= c.ops && g.creativite >= c.crea && g.yomi >= c.yomi && g.eur >= c.eur; }
-  function debiter(g, c) { g.ops -= c.ops; g.creativite -= c.crea; g.yomi -= c.yomi; g.eur -= c.eur; }
+  function couvre(g, c) { return g.ops >= c.ops && g.creativite >= c.crea && g.eur >= c.eur; }
+  function debiter(g, c) { g.ops -= c.ops; g.creativite -= c.crea; g.eur -= c.eur; }
 
   /* ── Grandeurs dérivées ─────────────────────────────────────── */
   // Dette normalisée « vs taille de la base » : une base de code mature tolère plus de
@@ -125,7 +125,6 @@ var ENGINE = (function () {
     return {
       ops: (c.ops || 0) * red * K.PROJET_OPS_FACTEUR,
       crea: (c.crea || 0) * red,
-      yomi: c.yomi || 0,
       eur: c.eur || 0,
     };
   }
@@ -259,14 +258,7 @@ var ENGINE = (function () {
     }
   }
 
-  // 8. Yomi passif (auto-tournoi).
-  function tickYomi(g, dt) {
-    if (g.autoTournoi) {
-      g.yomi += K.YOMI_PASSIF * g.mult.yomiGain * dt;
-    }
-  }
-
-  // 9. Prix des tokens : fluctue toutes les LOT_PRIX_PERIODE secondes (random walk avec
+  // 8. Prix des tokens : fluctue toutes les LOT_PRIX_PERIODE secondes (random walk avec
   //    retour à la moyenne vers la cible). On peut « acheter au creux » (façon Paperclips).
   function tickPrixLot(g, dt) {
     g.prixLotTimer += dt;
@@ -295,7 +287,6 @@ var ENGINE = (function () {
     tickRefacto(g, dt);
     tickBourse(g, dt);
     tickIncidents(g, dt);
-    tickYomi(g, dt);
     tickPrixLot(g, dt);
     tickEchelleTokens(g, dt);
     majDeblocages(g);
@@ -462,14 +453,6 @@ var ENGINE = (function () {
     g.capital -= montant; g.eur += montant; return true;
   }
 
-  function jouerTournoi(g) {
-    if (!g.tournoisUnlocked) { return false; }
-    if (g.ops < K.TOURNOI_COUT_OPS) { return false; }
-    g.ops -= K.TOURNOI_COUT_OPS;
-    g.yomi += K.TOURNOI_GAIN * g.mult.yomiGain;
-    return true;
-  }
-
   /* Achat d'un projet : vérifie et débite le coût, applique l'effet. */
   function acheterProjet(g, id) {
     var p = DATA.byId[id];
@@ -518,7 +501,7 @@ var ENGINE = (function () {
     acheterAgent: acheterAgent, acheterMega: acheterMega,
     acheterLot: acheterLot, acheterLots: acheterLots, acheterHype: acheterHype, allouerConfiance: allouerConfiance,
     refactoriser: refactoriser, deposerBourse: deposerBourse, retirerBourse: retirerBourse,
-    jouerTournoi: jouerTournoi, acheterProjet: acheterProjet, projetAchetable: projetAchetable,
+    acheterProjet: acheterProjet, projetAchetable: projetAchetable,
     deployer: deployer, prixLotCible: prixLotCible,
   };
 })();

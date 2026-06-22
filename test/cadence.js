@@ -27,7 +27,7 @@ if (process.env.K_OVERRIDE) { Object.assign(K, JSON.parse(process.env.K_OVERRIDE
 const PRIO = [
   'debloquerCrea', 'rentabilite', 'promptEng', 'linter', 'tests', 'cacheGen', 'compression', 'typage', 'cicd', 'distillation',
   'auto1', 'pitch', 'auto2', 'rlhf', 'jingle', 'charte', 'auto3', 'comite', 'quantum', 'trading',
-  'mega', 'megaOpt', 'memoireLT', 'modelisation', 'autoTournoi', 'theorieEsprit', 'negoTarifs', 'faim', 'climat', 'openSource',
+  'mega', 'megaOpt', 'memoireLT', 'negoTarifs', 'faim', 'climat', 'openSource',
   'serieA', 'serieB', 'serieC', 'podcast', 'volition', 'agi',
 ];
 
@@ -69,9 +69,6 @@ function step(G, clicksPerSec, journal) {
     const p = DATA.byId[PRIO[i]];
     if (p && ENGINE.projetAchetable(G, p)) { ENGINE.acheterProjet(G, PRIO[i]); }
   }
-  if (G.tournoisUnlocked && !G.projetsFaits.theorieEsprit && G.yomi < 20 && G.ops >= K.TOURNOI_COUT_OPS) {
-    ENGINE.jouerTournoi(G);
-  }
   if (G.agiDiscovered && !G.deployed) { ENGINE.deployer(G); }
 }
 
@@ -80,7 +77,7 @@ const G = CTX.nouvelEtat();
 const journal = { t: 0, clics: 0, hype1: 0 };
 
 // Panneaux révélés à suivre (en plus des projets achetés).
-const SEEN = ['stock', 'marche', 'tresorerie', 'jcDispo', 'tokens', 'tokensAchat', 'hype', 'agents', 'confiance', 'projets', 'dette', 'bourse', 'mega', 'tournois', 'agi'];
+const SEEN = ['stock', 'marche', 'tresorerie', 'jcDispo', 'tokens', 'tokensAchat', 'hype', 'agents', 'confiance', 'projets', 'dette', 'bourse', 'mega', 'agi'];
 const events = [];
 let prevProjets = 0;
 const prevSeen = {};
