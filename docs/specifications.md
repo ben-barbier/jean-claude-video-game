@@ -211,8 +211,12 @@ Bouton dramatique et **irréversible** : **« Déployer en autonomie / Sortir du
   - `dette_par_ligne` = `BASE_DETTE` × source_factor × (1 + `K_VÉLOCITÉ` × prod_brute/`SEUIL`)
     × ∏(réductions projets préventifs).
   - source_factor : clic manuel ≈ 0,2 ; production auto (agents **et** Super Agents) = 1 (même qualité).
-- Réduction : dette −= (Ops de refacto × `TAUX_REFACTO`) + (`N_agents` × `part_refactoring` × `TAUX_AGENT_REFACTO`).
-  Le refacto **par agents** consomme des tokens (cf. `conso_tokens`) et ralentit au prorata des
+- Réduction : dette −= (Ops de refacto × `TAUX_REFACTO`) + (`capacité_refacto` × `TAUX_REFACTO_PAR_LOC`).
+  - `capacité_refacto` = lignes-équivalent réécrites/s = (`N_agents` × `DEBIT_AGENT` × mult_agent
+    + `N_megas` × `DEBIT_MEGA` × mult_mega) × `part_refactoring`. Le curseur `part_refactoring` est un
+    **levier global** : il pilote agents **et** Super Agents (à 100 % refacto, toute la flotte cesse de
+    produire et passe à l'entretien → la dette est toujours résorbable, jamais de soft-lock).
+  Le refacto **par la flotte IA** consomme des tokens (cf. `conso_tokens`) et ralentit au prorata des
   tokens disponibles ; le refacto **par Ops** (bouton manuel, cognition de Jean-Claude) reste gratuit en tokens.
 - `dette_norm` = dette normalisée (vs taille de la base) → pilote les malus par paliers.
 
@@ -373,7 +377,7 @@ Ordre de construction interne recommandé (cf. §4.4) :
 | `K_DETTE` | 1,5 | malus coût token (×1 → ×2,5 à saturation) |
 | Seuil incidents | dette_norm > 0,8 | events aléatoires −Confiance |
 | `TAUX_REFACTO` (Ops) | 0,5 dette / Op dépensée | refactoring manuel |
-| `TAUX_AGENT_REFACTO` | 0,3 dette/s | par agent affecté au refacto |
+| `TAUX_REFACTO_PAR_LOC` | 0,3 dette / ligne-équiv. réécrite | refacto auto de la flotte (agents + Super Agents) |
 | Hype — coût niv. n | `30 × 2ⁿ⁻¹ €` | 1re hype abordable tôt (meilleur ROI) |
 | Hype — mult niv. n | `1,5ⁿ⁻¹` | multiplicateur de demande |
 

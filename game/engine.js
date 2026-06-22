@@ -52,17 +52,23 @@ var ENGINE = (function () {
   function prodAgentsParS(g) {
     return g.agents * (1 - g.partRefacto) * K.DEBIT_AGENT * g.mult.agentDebit * multProd(g);
   }
+  // Les Super Agents sont pilotés par le MÊME curseur refacto que les agents (1 - partRefacto) :
+  // à 100 % refacto, TOUTE la flotte cesse de produire et passe à l'entretien (anti soft-lock).
   function prodMegaParS(g) {
-    return g.megaUnlocked ? g.megas * K.DEBIT_MEGA * g.mult.megaDebit * multProd(g) : 0;
+    return g.megaUnlocked ? g.megas * (1 - g.partRefacto) * K.DEBIT_MEGA * g.mult.megaDebit * multProd(g) : 0;
   }
   function prodBruteParS(g) { return prodAgentsParS(g) + prodMegaParS(g); }
 
-  // Débit du refacto AUTO (agents affectés à l'entretien), en « lignes-équivalent » réécrites/s.
-  // Réécrire du code reste du code généré → ce travail CONSOMME des tokens, comme la production
-  // (cf. tickRefacto). N'est pas soumis au burst de production (multProd) : c'est de l'entretien.
+  // Débit du refacto AUTO (toute la flotte IA affectée à l'entretien), en « lignes-équivalent »
+  // réécrites/s : capacité de code des agents ET des Super Agents, pondérée par leurs débits
+  // respectifs, prise à la fraction partRefacto. Réécrire du code reste du code généré → ce travail
+  // CONSOMME des tokens, comme la production (cf. tickRefacto). N'est pas soumis au burst de
+  // production (multProd) : c'est de l'entretien.
   function refactoCodingParS(g) {
-    return (g.partRefacto > 0 && g.dette > 0)
-      ? g.agents * g.partRefacto * K.DEBIT_AGENT * g.mult.agentDebit : 0;
+    if (!(g.partRefacto > 0 && g.dette > 0)) { return 0; }
+    var capAgents = g.agents * K.DEBIT_AGENT * g.mult.agentDebit;
+    var capMegas = g.megaUnlocked ? g.megas * K.DEBIT_MEGA * g.mult.megaDebit : 0;
+    return (capAgents + capMegas) * g.partRefacto;
   }
   // Tokens/s réclamés par TOUTE l'activité des agents : production + refactoring.
   function consoTokensParS(g) { return (prodBruteParS(g) + refactoCodingParS(g)) * coutTokenLigne(g); }
@@ -202,12 +208,15 @@ var ENGINE = (function () {
   // 5. Refactoring automatique (agents affectés à l'entretien) : CONSOMME des tokens (les agents
   //    réécrivent du code). À sec de tokens, le refacto ralentit d'autant (ratio de couverture).
   function tickRefacto(g, dt) {
-    if (g.partRefacto > 0 && g.agents > 0 && g.dette > 0) {
-      var tokensReq = refactoCodingParS(g) * coutTokenLigne(g) * dt;
+    if (g.partRefacto > 0 && g.dette > 0) {
+      var loc = refactoCodingParS(g);                 // lignes-équivalent réécrites/s (agents + Super Agents)
+      var tokensReq = loc * coutTokenLigne(g) * dt;
       var ratio = 1;
       if (tokensReq > g.tokens) { ratio = tokensReq > 0 ? g.tokens / tokensReq : 0; tokensReq = g.tokens; }
       g.tokens = Math.max(0, g.tokens - tokensReq);
-      g.dette = Math.max(0, g.dette - g.agents * g.partRefacto * K.TAUX_AGENT_REFACTO * ratio * dt);
+      // Chaque ligne réécrite retire TAUX_REFACTO_PAR_LOC de dette → la dette retirée dérive de la
+      // MÊME grandeur que la conso de tokens : à 100 % refacto la dette est toujours résorbable.
+      g.dette = Math.max(0, g.dette - loc * K.TAUX_REFACTO_PAR_LOC * ratio * dt);
     }
   }
 

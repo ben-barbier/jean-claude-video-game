@@ -299,10 +299,10 @@
     <legend><b>Dette technique &amp; refactoring</b></legend>
     <p>Dette&nbsp;: <meter id="dette-meter" min="0" max="1" low="0.5" high="0.8" optimum="0" value="0"></meter>
        <span id="dette-val">0</span></p>
-    <p>Agents — Production <span id="refacto-prod">100</span>&nbsp;%
+    <p>IA — Production <span id="refacto-prod">100</span>&nbsp;%
        ↔ Refactoring <span id="refacto-part">0</span>&nbsp;%<br>
        <input id="refacto-slider" type="range" min="0" max="100" step="1" value="0"
-              aria-label="Répartition des agents entre production et refactoring, en pourcentage"></p>
+              aria-label="Répartition de l’IA (agents et Super Agents) entre production et refactoring, en pourcentage"></p>
     <p id="bloc-refacto" hidden><button id="btn-refacto" type="button">Refactoriser (200 Ops)</button></p>
   </fieldset>
 
@@ -349,7 +349,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '35';
+    var version = '36';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {

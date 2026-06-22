@@ -54,7 +54,8 @@ var DATA = (function () {
     SEUIL_INCIDENT: 0.8,     // dette_norm au-delà duquel des incidents surviennent
     INCIDENT_PROBA: 0.015,   // proba/s d'un incident quand au-dessus du seuil
     TAUX_REFACTO: 0.5,       // dette retirée par Op dépensée (refacto manuel)
-    TAUX_AGENT_REFACTO: 0.3, // dette/s par agent affecté au refacto
+    TAUX_REFACTO_PAR_LOC: 0.3, // dette retirée par ligne-équivalent réécrite par les agents/Super Agents
+                             // (calé pour neutralité à megas=0 / mults de base : DEBIT_AGENT×0,3 = ancien « par agent »)
     REFACTO_LOT_OPS: 200,    // Ops dépensées par clic « Refactoriser »
     HYPE_COUT_BASE: 30,      // ×2^(n-1) (équilibré : 1re Hype abordable, casse le mur de trésorerie)
     HYPE_MULT_BASE: 1.5,     // ^(n-1)
