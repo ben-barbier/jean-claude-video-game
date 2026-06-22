@@ -8,6 +8,15 @@ var UI = (function () {
   var projSignature = ''; // pour ne reconstruire la liste de projets qu'au changement
   var premierRendu = true; // le tout 1er rendu ne « flashe » pas (sinon flash général au chargement)
 
+  // Paliers des boutons Placer/Retirer de la bourse : dénominations d'affichage (pas des
+  // constantes d'équilibrage). `suffixe` ↔ id du bouton (btn-depot-<suffixe> / btn-retrait-<suffixe>).
+  var BOURSE_PALIERS = [
+    { suffixe: '100',  montant: 100 },
+    { suffixe: '1k',   montant: 1000 },
+    { suffixe: '10k',  montant: 10000 },
+    { suffixe: '100k', montant: 100000 },
+  ];
+
   function $(id) { return document.getElementById(id); }
 
   /* ── Formatage français ─────────────────────────────────────── */
@@ -70,9 +79,15 @@ var UI = (function () {
     $('btn-refacto').addEventListener('click', function () { rendreApresAction(ENGINE.refactoriser); });
     $('btn-tournoi').addEventListener('click', function () { rendreApresAction(ENGINE.jouerTournoi); });
 
-    $('btn-depot').addEventListener('click', function () { rendreApresAction(function (s) { ENGINE.deposerBourse(s, 100); }); });
+    BOURSE_PALIERS.forEach(function (p) {
+      $('btn-depot-' + p.suffixe).addEventListener('click', function () {
+        rendreApresAction(function (s) { ENGINE.deposerBourse(s, p.montant); });
+      });
+      $('btn-retrait-' + p.suffixe).addEventListener('click', function () {
+        rendreApresAction(function (s) { ENGINE.retirerBourse(s, p.montant); });
+      });
+    });
     $('btn-depot-max').addEventListener('click', function () { rendreApresAction(function (s) { ENGINE.deposerBourse(s, s.eur); }); });
-    $('btn-retrait').addEventListener('click', function () { rendreApresAction(function (s) { ENGINE.retirerBourse(s, 100); }); });
     $('btn-retrait-max').addEventListener('click', function () { rendreApresAction(function (s) { ENGINE.retirerBourse(s, s.capital); }); });
 
     // Le prix se règle uniquement aux boutons − / + (curseur retiré), pas par pas de 0,01 €.
@@ -329,9 +344,11 @@ var UI = (function () {
   function renderBourse() {
     montre('bloc-bourse', g.seen.bourse);
     txt('capital-val', big(g.capital));
-    actif('btn-depot', g.eur >= 100);
+    BOURSE_PALIERS.forEach(function (p) {
+      actif('btn-depot-' + p.suffixe, g.eur >= p.montant);
+      actif('btn-retrait-' + p.suffixe, g.capital >= p.montant);
+    });
     actif('btn-depot-max', g.eur > 0);
-    actif('btn-retrait', g.capital >= 100);
     actif('btn-retrait-max', g.capital > 0);
   }
 

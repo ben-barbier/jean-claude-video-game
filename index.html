@@ -46,6 +46,16 @@
   /* « Token : [====] 1234 » sur une ligne ; la jauge occupe tout l'espace libre. */
   #ligne-tokens { display: flex; align-items: center; gap: 0.6ch; }
   #tokens-bar { flex: 1; min-width: 0; }
+  /* Bourse : rangées « Placer / Retirer » alignées — label + 5 paliers de largeur égale.
+     inline-grid → la grille reste à la largeur de son contenu ; les colonnes 1fr s'égalisent
+     et les boutons (border-box, width 100%) s'alignent colonne par colonne entre les rangées. */
+  #bourse-actions {
+    display: inline-grid;
+    grid-template-columns: auto repeat(5, 1fr);
+    gap: 5px 6px;
+    align-items: center;
+  }
+  #bourse-actions button { box-sizing: border-box; width: 100%; }
   /* Mise en page en colonnes (flex). Desktop : colonnes côte à côte (largeur = contenu) ;
      si la fenêtre est trop étroite, les colonnes passent à la ligne (reflow) AU LIEU de
      provoquer un scroll horizontal. Mobile (≤ 820px) : on empile en une colonne. */
@@ -246,10 +256,20 @@
   <fieldset id="bloc-bourse" hidden>
     <legend><b>Moteur d’investissement</b></legend>
     <p>Capital placé&nbsp;: <span id="capital-val">0</span>&nbsp;€</p>
-    <p><button id="btn-depot" type="button">Placer 100&nbsp;€</button>
-       <button id="btn-depot-max" type="button">Tout placer</button>
-       <button id="btn-retrait" type="button">Retirer 100&nbsp;€</button>
-       <button id="btn-retrait-max" type="button">Tout retirer</button></p>
+    <div id="bourse-actions">
+      <span>Placer&nbsp;:</span>
+      <button id="btn-depot-100" type="button">100&nbsp;€</button>
+      <button id="btn-depot-1k" type="button">1K&nbsp;€</button>
+      <button id="btn-depot-10k" type="button">10K&nbsp;€</button>
+      <button id="btn-depot-100k" type="button">100K&nbsp;€</button>
+      <button id="btn-depot-max" type="button">tout</button>
+      <span>Retirer&nbsp;:</span>
+      <button id="btn-retrait-100" type="button">100&nbsp;€</button>
+      <button id="btn-retrait-1k" type="button">1K&nbsp;€</button>
+      <button id="btn-retrait-10k" type="button">10K&nbsp;€</button>
+      <button id="btn-retrait-100k" type="button">100K&nbsp;€</button>
+      <button id="btn-retrait-max" type="button">tout</button>
+    </div>
   </fieldset>
 
 </div>
@@ -329,7 +349,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '34';
+    var version = '35';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {
