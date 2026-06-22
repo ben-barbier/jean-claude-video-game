@@ -1,12 +1,4 @@
-# production-automatisee
-
-## Purpose
-
-Définit l'indicateur de cadence de production affiché dans le tableau de bord : ce qu'il mesure
-(le débit automatique réel de l'IA, hors clics du joueur), comment il se comporte (lissé, retombe
-en rupture de tokens) et à quel moment il devient visible.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Indicateur de production automatisée
 
@@ -32,17 +24,3 @@ Le tableau de bord SHALL afficher un indicateur de cadence intitulé **« Produc
 
 - **WHEN** la production automatique est faible (peu d'agents) et les lignes sont produites sporadiquement
 - **THEN** l'indicateur « Production automatisée » reste proche du débit réellement soutenu et ne bondit pas bien au-dessus de celui-ci
-
-### Requirement: Visibilité liée à la phase d'automatisation
-
-L'indicateur « Production automatisée » SHALL n'apparaître qu'une fois l'automatisation par l'IA débloquée (drapeau `g.seen.agents`, posé après l'installation de Jean-Claude), et non dès la première ligne écrite à la main. Le but est de ne jamais présenter une cadence « 0 lignes/s » trompeuse pendant la phase de développement purement manuelle.
-
-#### Scenario: Caché pendant la phase de clic manuel
-
-- **WHEN** le joueur a écrit des lignes à la main mais n'a pas encore installé Jean-Claude (`g.seen.agents` faux)
-- **THEN** l'indicateur « Production automatisée » n'est pas affiché
-
-#### Scenario: Visible après l'installation de l'IA
-
-- **WHEN** Jean-Claude est installé et le déblocage `agents` est posé (`g.seen.agents` vrai)
-- **THEN** l'indicateur « Production automatisée » devient visible dans le tableau de bord

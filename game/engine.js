@@ -8,6 +8,11 @@ var ENGINE = (function () {
   /* ── Petits helpers numériques (factorisation DRY, sans effet de bord) ── */
   // Lissage exponentiel : rapproche `val` de `cible` d'une fraction `facteur`.
   function lissageEMA(val, cible, facteur) { return val + (cible - val) * facteur; }
+  // Facteur de lissage des débits AFFICHÉS à constante de temps FIXE K.DEBIT_TAU (indépendant du pas) :
+  // α = 1 − e^(−dt/τ). Contrairement à un facteur constant, une ligne ENTIÈRE isolée (bas régime) ne
+  // fait monter le débit affiché que de ~1/τ (son débit réel), au lieu d'une pointe à 1/dt → l'indicateur
+  // ne bondit plus à 3–4 (cf. change lisser-debit-ventes). Sans biais : converge exactement vers le réel.
+  function facteurDebit(dt) { return dt > 0 ? 1 - Math.exp(-dt / K.DEBIT_TAU) : 0; }
   // Choc aléatoire centré dans [−vol ; +vol] (un seul appel à Math.random()).
   function chocAleatoire(vol) { return (Math.random() - 0.5) * 2 * vol; }
   // Courbe saturante (dérivée bornée) : 0 → max, moitié atteinte en x = demi.
@@ -163,7 +168,8 @@ var ENGINE = (function () {
     }
     // Débit de production AUTO RÉELLEMENT réalisé (token-limité), pour l'affichage : il tombe
     // à 0 en rupture de tokens, même si le débit NOMINAL (prodBruteParS) reste positif.
-    g.prodAutoParS = lissageEMA(g.prodAutoParS, dt > 0 ? prodTotal / dt : 0, K.EXP_SMOOTH);
+    // Lissage à constante de temps fixe (cf. facteurDebit) : pas de sursaut à bas régime.
+    g.prodAutoParS = lissageEMA(g.prodAutoParS, dt > 0 ? prodTotal / dt : 0, facteurDebit(dt));
   }
 
   // 2. Vente + débit de ventes lissé. On n'écoule QUE des lignes ENTIÈRES : la demande
@@ -183,7 +189,9 @@ var ENGINE = (function () {
     }
     // Débit de ventes RÉEL (lissé) : reflète ce qui s'écoule vraiment, même quand le stock
     // est vendu aussi vite qu'il est produit (l'affichage ne tombe plus à 0 à tort).
-    g.ventesParS = lissageEMA(g.ventesParS, dt > 0 ? ventes / dt : 0, K.EXP_SMOOTH);
+    // Lissage à constante de temps fixe (cf. facteurDebit) : on ne vend que des lignes ENTIÈRES,
+    // donc à bas régime une vente isolée ne fait plus bondir l'indicateur à 3–4.
+    g.ventesParS = lissageEMA(g.ventesParS, dt > 0 ? ventes / dt : 0, facteurDebit(dt));
     if (g.burstTimer > 0) { g.burstTimer = Math.max(0, g.burstTimer - dt); }
     if (g.prodBurstTimer > 0) { g.prodBurstTimer = Math.max(0, g.prodBurstTimer - dt); }
   }

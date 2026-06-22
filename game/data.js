@@ -72,7 +72,9 @@ var DATA = (function () {
     BOURSE_VOL: 0.0025,      // volatilité par seconde
     JC_INSTALL_SEUIL: 20,    // lignes écrites à la main avant de pouvoir installer Jean-Claude
     JC_INSTALL_COUT: 10,     // coût (€) de l'installation de Jean-Claude
-    EXP_SMOOTH: 0.3,         // lissage exponentiel des débits affichés (ventes, production automatisée)
+    DEBIT_TAU: 4,            // constante de temps (s) du lissage des débits affichés (Ventes, Production
+                             // automatisée) : EMA à facteur α = 1−e^(−dt/τ), indépendant du pas. Une ligne
+                             // isolée ne fait monter le débit que de ~1/τ (≈ son réel), pas d'une pointe à 1/dt.
     TICK_MS: 100,
     DT: 0.1,
   };
