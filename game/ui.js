@@ -283,9 +283,11 @@ var UI = (function () {
 
     // Prompt du terminal : user@main avant l'IA, jean-claude@bac-a-sable après.
     txt('journal-host', g.jcInstalled ? 'jean-claude@bac-a-sable' : 'user@main');
-    // Compteur de lignes écrites, en bas à droite (rien tant qu'aucune ligne).
+    // Compteur de lignes écrites + durée de jeu (HH:MM:SS), en bas à droite (rien tant qu'aucune ligne).
     var nLignes = Math.floor(g.lignesProduites);
-    txt('journal-rows', nLignes >= 1 ? (nLignes + (nLignes === 1 ? ' row' : ' rows')) : '');
+    txt('journal-rows', nLignes >= 1
+      ? (nLignes + (nLignes === 1 ? ' row' : ' rows') + ' (' + ENGINE.formatDuree(g.tempsEcoule) + ')')
+      : '');
   }
 
   function renderInstallJC() {

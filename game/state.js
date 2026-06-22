@@ -27,6 +27,7 @@ function nouvelEtat() {
     /* ── Rôle : on est un DEV qui, à terme, installe l'IA ───── */
     jcInstalled: false,    // Jean-Claude installé (débloque tokens, agents, etc.)
     lignesProduites: 0,    // cumul de lignes produites (déclencheur d'installation)
+    tempsEcoule: 0,        // durée de jeu écoulée en secondes (cumul, persisté) → affichée dans le terminal
     prodAutoParS: 0,       // débit de prod AUTO réel lissé (token-limité) → 0 en rupture de tokens
                            // C'est la seule valeur affichée (« Production automatisée »), hors clics.
     ventesParS: 0,         // débit de ventes réel lissé (affichage « Ventes »)

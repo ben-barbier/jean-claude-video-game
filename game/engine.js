@@ -14,6 +14,17 @@ var ENGINE = (function () {
   function saturation(x, max, demi) { return max * x / (x + demi); }
   // Coût géométrique brut : base × facteur^expo (sans arrondi).
   function coutCroissant(base, facteur, expo) { return base * Math.pow(facteur, expo); }
+  // Durée en secondes → "HH:MM:SS". Minutes/secondes sur 2 chiffres ; heures sur au moins
+  // 2 chiffres mais NON bornées (au-delà de 99 h : "100:00:00", pas de troncature).
+  function formatDuree(s) {
+    var t = Math.max(0, Math.floor(s));
+    var h = Math.floor(t / 3600);
+    var m = Math.floor((t % 3600) / 60);
+    var sec = t % 60;
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+    return pad(h) + ':' + pad(m) + ':' + pad(sec);
+  }
+
   // Coûts de projet multi-ressources : peut-on payer ? et débit symétrique.
   function couvre(g, c) { return g.ops >= c.ops && g.creativite >= c.crea && g.yomi >= c.yomi && g.eur >= c.eur; }
   function debiter(g, c) { g.ops -= c.ops; g.creativite -= c.crea; g.yomi -= c.yomi; g.eur -= c.eur; }
@@ -267,7 +278,8 @@ var ENGINE = (function () {
   }
 
   function tick(g, dt) {
-    if (g.deployed) { return; } // Acte 1 terminé : la simulation s'arrête.
+    if (g.deployed) { return; } // Acte 1 terminé : la simulation s'arrête (la durée se fige aussi).
+    g.tempsEcoule += dt;        // durée de jeu écoulée (simple scalaire : aucun Math.random, ordre des phases neutre)
     tickProduction(g, dt);
     tickVente(g, dt);
     tickPaliersConfiance(g);
@@ -484,7 +496,7 @@ var ENGINE = (function () {
   }
 
   return {
-    K: K, clamp: clamp,
+    K: K, clamp: clamp, formatDuree: formatDuree,
     detteNorm: detteNorm, coutTokenLigne: coutTokenLigne, qualite: qualite,
     multHype: multHype, demandeParS: demandeParS, rentabiliteParS: rentabiliteParS,
     prodAgentsParS: prodAgentsParS, prodMegaParS: prodMegaParS, prodBruteParS: prodBruteParS,
