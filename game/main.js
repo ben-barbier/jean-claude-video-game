@@ -62,6 +62,51 @@
     window.location.reload();
   };
 
+  // Menu du terminal : un bouton discret (haut-droite) ouvre un panneau d'options qui PREND LA
+  // PLACE du terminal (journal + invite masqués) et propose la réinitialisation, confirmée par une
+  // boîte de dialogue native (window.confirm). La logique destructrice reste resetJeanClaude().
+  (function installerMenuTerminal() {
+    var btn = document.getElementById('term-menu-btn');
+    var menu = document.getElementById('terminal-menu');
+    var journal = document.getElementById('journal');
+    var invite = document.getElementById('journal-prompt');
+    if (!btn || !menu || !journal || !invite) { return; }
+
+    function ouvrirMenu() {
+      journal.hidden = true; invite.hidden = true; menu.hidden = false;
+      btn.setAttribute('aria-label', 'Fermer le menu');
+      btn.setAttribute('aria-expanded', 'true');
+      ajusterOffsetTerminal(); // la hauteur du cadre peut changer → on resynchronise le padding du body
+    }
+    function fermerMenu() {
+      menu.hidden = true; journal.hidden = false; invite.hidden = false;
+      btn.setAttribute('aria-label', 'Ouvrir le menu');
+      btn.setAttribute('aria-expanded', 'false');
+      ajusterOffsetTerminal();
+    }
+    btn.addEventListener('click', function () { if (menu.hidden) { ouvrirMenu(); } else { fermerMenu(); } });
+
+    var btnRetour = document.getElementById('menu-retour');
+    if (btnRetour) { btnRetour.addEventListener('click', fermerMenu); }
+
+    // Réinitialisation : confirmation native (comme le double-ÉCHAP), qui vérifie le choix du joueur.
+    var btnReset = document.getElementById('menu-reset');
+    if (btnReset) {
+      btnReset.addEventListener('click', function () {
+        if (window.confirm('Réinitialiser la partie ? Toute progression sera perdue — vous repartirez de zéro, comme à votre première visite.')) {
+          window.resetJeanClaude();
+        }
+      });
+    }
+
+    // Échap : ferme le menu s'il est ouvert. En phase de CAPTURE + stopImmediatePropagation pour
+    // passer AVANT le double-ÉCHAP (ci-dessous) et le neutraliser tant que le menu est ouvert.
+    window.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape' && e.keyCode !== 27) { return; }
+      if (!menu.hidden) { e.stopImmediatePropagation(); fermerMenu(); }
+    }, true);
+  })();
+
   // Double-ÉCHAP (< 800 ms) : proposer de réinitialiser la partie (retour première visite).
   var dernierEchap = 0;
   window.addEventListener('keydown', function (e) {

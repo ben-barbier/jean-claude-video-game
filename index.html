@@ -116,6 +116,58 @@
   }
   /* Respecte la préférence système « mouvement réduit ». */
   @media (prefers-reduced-motion: reduce) { .flash-new { animation: none; } }
+  /* ── Bouton « menu » du terminal : discret (transparence) au repos, lisible au survol/focus ──
+     #journal-term est en position: fixed → il sert de référent pour ce bouton en absolu. */
+  #term-menu-btn {
+    position: absolute;
+    top: 5px; right: 7px;
+    z-index: 2;
+    background: transparent;
+    border: 1px solid rgba(70, 224, 122, 0.4);
+    color: #46e07a;
+    border-radius: 3px;
+    padding: 0 7px;
+    font-family: inherit;
+    font-size: 1em;
+    line-height: 1.55;
+    cursor: pointer;
+    opacity: 0.28;                         /* discret au repos (en transparence) */
+    transition: opacity 0.18s ease, box-shadow 0.18s ease;
+  }
+  #term-menu-btn:hover,
+  #term-menu-btn:focus-visible {
+    opacity: 1;                            /* nettement lisible au survol et au focus clavier */
+    box-shadow: 0 0 7px rgba(70, 224, 122, 0.5);
+  }
+  @media (prefers-reduced-motion: reduce) { #term-menu-btn { transition: none; } }
+  /* Le menu prend la place du terminal (journal + invite masqués), dans le même cadre. */
+  #terminal-menu { min-height: 7.5em; padding: 0.1em 0; }
+  #terminal-menu .menu-titre { margin: 0 0 0.6em 0; opacity: 0.7; }
+  #terminal-menu button {
+    display: block;
+    margin: 0.35em 0;
+    padding: 5px 11px;
+    font-family: inherit;
+    color: #8effb6;
+    background: rgba(70, 224, 122, 0.08);
+    border: 1px solid #14301c;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  #terminal-menu button:hover,
+  #terminal-menu button:focus-visible {
+    background: rgba(70, 224, 122, 0.18);
+    box-shadow: 0 0 7px rgba(70, 224, 122, 0.4);
+  }
+  /* Action destructrice → bouton ROUGE PLEIN, bien distinct des autres entrées du menu.
+     Sélecteur à 2 id (#terminal-menu #menu-reset) pour battre `#terminal-menu button` ci-dessus. */
+  #terminal-menu #menu-reset { color: #fff; background: #c62828; border-color: #ff5c5c; }
+  #terminal-menu #menu-reset:hover, #terminal-menu #menu-reset:focus-visible {
+    background: #e03131; box-shadow: 0 0 9px rgba(255, 80, 80, 0.6);
+  }
+  /* `display:flex` (sur #journal-prompt) l'emporterait sur l'attribut [hidden] (règle UA
+     display:none, moins spécifique) : on rétablit explicitement le masquage de l'invite. */
+  #journal-prompt[hidden] { display: none; }
   /* ── Projets de R&D : ce sont eux qui font avancer l'histoire → on les met en avant ── */
   #bloc-projets { border: 1px solid #46e07a; border-radius: 5px; }
   #bloc-projets > legend { color: #1f8a4c; }
@@ -183,8 +235,16 @@
 
 <!-- Terminal (Journal) : bannière pleine largeur en haut de page, façon Universal Paperclips. -->
 <div id="journal-term">
+  <!-- Bouton discret (en transparence) : ouvre un menu qui prend la place du terminal. -->
+  <button id="term-menu-btn" type="button" aria-label="Ouvrir le menu" aria-expanded="false" title="Menu">☰</button>
   <div id="journal"></div>
   <div id="journal-prompt"><span><span id="journal-host">user@main</span>:~$&nbsp;<span id="journal-cursor">▮</span></span><span id="journal-rows"></span></div>
+  <!-- Menu : remplace le journal + l'invite dans le même cadre (masqué par défaut). -->
+  <div id="terminal-menu" hidden>
+    <p class="menu-titre">› menu — options</p>
+    <button id="menu-reset" type="button">Réinitialiser la partie</button>
+    <button id="menu-retour" type="button">‹ Revenir au terminal</button>
+  </div>
 </div>
 
 <!-- ─────────────────────── Bandeau de statistiques ─────────────────────── -->
@@ -344,7 +404,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '41';
+    var version = '43';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {
