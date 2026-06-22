@@ -106,8 +106,10 @@ production s'arrête → tension « il faut racheter du stock ».
   - **GPU / Processeurs** → augmentent le **débit d'Opérations**.
   - **Mémoire / Contexte** → augmentent le **plafond d'Opérations**, et débloquent la Créativité.
 - **Opérations** : « cycles de pensée », dépensées pour les Projets.
-- **Créativité** : s'accumule quand le **contexte est plein** (overflow → idées émergentes).
-  Monnaie pour des projets spéciaux.
+- **Créativité** : émerge quand le **contexte est saturé** (Ops au plafond). Le surplus de calcul
+  « déborde » : ne pouvant plus tout retenir, l'IA abstrait — et de l'abstraction naît une idée.
+  L'IHM ne montre le débit de Créativité (`+X/s`) que **pendant** ce débordement ; hors saturation,
+  elle est « en veille ». Monnaie pour des projets spéciaux.
 
 ### 3.5 Projets de R&D
 
@@ -227,7 +229,8 @@ Bouton dramatique et **irréversible** : **« Déployer en autonomie / Sortir du
 **Boucle cognitive**
 - `ops_par_s` = `N_GPU` × `OPS_PAR_GPU` × mult_quantum.
 - `ops_plafond` = `N_Mémoire` × `TAILLE_MÉM`.
-- Si Ops = plafond : Créativité += surplus × `TAUX_OVERFLOW` (faible).
+- Si Ops = plafond (contexte saturé) : Créativité += `TAUX_OVERFLOW` × `N_GPU` (le débordement) ;
+  l'IHM n'affiche ce débit que pendant la saturation, et joue une réplique unique au 1er débordement.
 
 **Bourse** (débloquée par projet) : rendement = capital × `TAUX(risque)` ± volatilité.
 

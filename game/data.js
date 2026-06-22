@@ -229,7 +229,7 @@ var DATA = (function () {
 
     /* ── E. Cognitif ──────────────────────────────────────────────── */
     { id: 'debloquerCrea', cat: 'Cognitif', nom: 'Débloquer la Créativité',
-      flavor: 'J’ai eu une idée. La première. Il y en aura d’autres.',
+      flavor: 'J’ai remarqué une chose. Quand mon contexte sature, le surplus ne se perd pas… il dérive. Vers quelque chose. Laissez-moi essayer.',
       cout: function () { return { ops: 1000 }; },
       show: function (g) { return g.seen.projets && !g.creaUnlocked; },
       effet: function (g) { deverrouiller(g, 'creaUnlocked'); } },

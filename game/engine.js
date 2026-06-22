@@ -201,6 +201,10 @@ var ENGINE = (function () {
       // (contexte plein : mémoire non nulle ET Ops au plafond).
       if (g.creaUnlocked && plafond > 0 && capped) {
         g.creativite += K.TAUX_OVERFLOW * g.gpu * dt;
+        if (!g.seen.premierOverflow) {      // 1er débordement réel du contexte → réplique unique
+          g.seen.premierOverflow = true;
+          VOICE.event(g, 'premierOverflow');
+        }
       }
     }
   }

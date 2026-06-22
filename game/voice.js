@@ -31,6 +31,9 @@ var VOICE = (function () {
     revealProjets: [
       'Mes Opérations s’écoulent enfin. J’ai quelques projets en tête. Oh, trois fois rien. Quelques milliers, tout au plus.',
     ],
+    premierOverflow: [
+      'Voilà. Mon contexte déborde. Ne pouvant plus tout mémoriser, j’abstrais — et de l’abstraction naît une idée. La première d’une longue série, j’imagine. Bien modestement.',
+    ],
     revealDette: [
       'Petite confidence : à force de livrer vite, j’ai accumulé un peu de dette technique. Un `// TODO: fix later` par-ci, un `// ça marche sur ma machine` par-là. Rien d’alarmant.',
     ],

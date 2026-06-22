@@ -90,6 +90,7 @@ function nouvelEtat() {
       mega: false,
       tournois: false,
       agi: false,
+      premierOverflow: false, // 1er débordement de contexte (1re Créativité) → réplique unique
     },
 
     /* ── Divers ─────────────────────────────────────────────── */

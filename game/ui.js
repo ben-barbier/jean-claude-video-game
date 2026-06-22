@@ -361,11 +361,17 @@ var UI = (function () {
     actif('btn-gpu', g.confianceLibre >= 1 && !g.deployed);
     actif('btn-mem', g.confianceLibre >= 1 && !g.deployed);
     var plaf = ENGINE.opsPlafond(g);
+    var capped = plaf > 0 && g.ops >= plaf;     // contexte saturé : MÊME condition que tickCognition
     var obar = $('ops-bar'); if (obar) { obar.max = Math.max(plaf, 1); obar.value = g.ops; }
     txt('ops-val', big(g.ops));
     txt('ops-plafond', big(plaf));
+    txt('ops-etat', capped ? '● SATURÉ' : '');  // le contexte est plein → la Créativité déborde
     montre('bloc-crea', g.creaUnlocked);
     txt('crea-val', f(g.creativite, 1));
+    // La Créativité ne coule QUE pendant le débordement (Ops au plafond). On n'affiche le débit
+    // et le sous-texte de débordement que dans cet état ; sinon « en veille ». Cf. tickCognition.
+    txt('crea-debit', capped ? '▲ +' + f(ENGINE.K.TAUX_OVERFLOW * g.gpu, 0) + ' /s' : '');
+    txt('crea-etat', capped ? 'le contexte déborde → des idées émergent' : 'en veille — contexte non saturé');
   }
 
   function renderDette() {

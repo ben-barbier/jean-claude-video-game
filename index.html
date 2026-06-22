@@ -289,10 +289,12 @@
       Mémoire&nbsp;: <span id="mem-count">0</span>
     </p>
     <hr>
-    <p><b>Opérations&nbsp;:</b><br>
+    <p><b>Contexte&nbsp;(Opérations)&nbsp;:</b> <span id="ops-etat"></span><br>
        <progress id="ops-bar" value="0" max="1000"></progress><br>
        <span id="ops-val">0</span> / <span id="ops-plafond">0</span></p>
-    <p id="bloc-crea" hidden><b>Créativité&nbsp;:</b> <span id="crea-val">0</span></p>
+    <p id="bloc-crea" hidden><b>Créativité&nbsp;:</b> <span id="crea-val">0</span>
+       <span id="crea-debit"></span><br>
+       <small id="crea-etat"></small></p>
   </fieldset>
 
   <fieldset id="bloc-dette" hidden>
@@ -349,7 +351,7 @@
      ⚠️ BUMPER `version` à chaque modification d'un fichier game/*.js. -->
 <script>
   (function () {
-    var version = '36';
+    var version = '38';
     var q = (location.protocol === 'file:') ? '' : ('?v=' + version);
     var fichiers = ['data', 'voice', 'state', 'engine', 'ui', 'main'];
     for (var i = 0; i < fichiers.length; i++) {
