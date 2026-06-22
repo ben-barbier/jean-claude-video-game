@@ -1,20 +1,48 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+# Project context — montré à l'IA lors de la création des artefacts (proposal, design, specs, tasks).
+context: |
+  Projet : « Jean-Claude — Code Maximizer », jeu incrémental/idle (clone d'Universal Paperclips).
+  On incarne un dev qui écrit du code, puis installe une IA (Jean-Claude) qui automatise tout
+  jusqu'à découvrir l'AGI (fin de l'Acte 1).
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  Stack : JavaScript vanilla, AUCUN build, AUCUNE dépendance. Déployé en statique sur GitHub Pages
+  (.github/workflows/pages.yml, sur push main). Tests via Bun (bun test). Pas de linter.
+
+  Langue : TOUT en français (UI, commentaires, commits, voix de l'IA, et ces artefacts OpenSpec).
+
+  Architecture :
+  - `G` est l'UNIQUE source de vérité (forme définie par nouvelEtat() dans game/state.js).
+  - Séparation par couches, clé pour la testabilité :
+    * game/data.js (constantes K + les 40 projets de R&D), game/voice.js (répliques),
+      game/state.js (nouvelEtat() + SAVE localStorage), game/engine.js (formules + boucle + actions)
+      → AUCUN accès au DOM, testables hors navigateur via test/harness.js (contexte vm partagé).
+    * game/ui.js (rendu DOM, un renderX() par panneau) et game/main.js (amorçage + boucle)
+      → SEULS fichiers qui touchent le DOM. L'UI lit G mais ne le modifie QUE via les actions d'ENGINE.
+  - Chargement : chaque game/*.js est à la fois script "navigateur" (var DATA = …) ET module CJS.
+    Ils se référencent via globales (DATA, VOICE, ENGINE) → ne pas les require() directement.
+  - Boucle (main.js) : pas fixe DT (10 Hz) avec accumulateur, piloté par requestAnimationFrame ;
+    autosave toutes les 15 s. engine.tick(g, dt) orchestre des phases isolées. L'ORDRE des phases
+    est load-bearing (il fixe l'ordre des appels Math.random : bourse → incidents → prix).
+  - Déblocage progressif : drapeaux g.seen.* (posés par ENGINE.majDeblocages()/reveler(), logique
+    pure), affichés par l'UI via montre(). Le pivot du jeu est g.jcInstalled.
+
+  Équilibrage : toutes les constantes vivent dans DATA.K. Le rythme se mesure avec balance.js
+  (jalons) et cadence.js (trou max entre déblocages — l'indicateur de fun). Les paliers de Confiance
+  suivent round(1500 × CONFIANCE_PALIER_FACTEUR^k) avec un facteur ≈ φ.
+
+  Invariant maintenu partout : confianceTotale = confianceLibre + gpu + mem.
+
+# Per-artifact rules — règles appliquées à la génération de chaque type d'artefact.
+rules:
+  proposal:
+    - Rédiger en français, sections Why / What Changes / Capabilities / Impact.
+    - Lister dans Impact les fichiers touchés en respectant la séparation par couches.
+  design:
+    - Garder data/voice/state/engine SANS DOM (c'est ce qui les rend testables via vm).
+    - Toute nouvelle constante d'équilibrage va dans DATA.K, jamais en dur dans le code.
+    - Respecter l'invariant confianceTotale = confianceLibre + gpu + mem.
+  tasks:
+    - Inclure systématiquement une tâche « bumper var version dans index.html » dès qu'un game/*.js change (cache-busting GitHub Pages).
+    - Inclure une tâche de vérification « bun test au vert ».
+    - Inclure une tâche de vérification « node test/cadence.js : rythme sans trou ≥ 2 min » pour tout changement de gameplay/balance.
